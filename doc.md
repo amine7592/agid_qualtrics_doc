@@ -23,7 +23,7 @@ if (new URL(window.location.href).searchParams.get("Q_CHL") === "preview") {
 ​
 ## Parte II
 ​
-### Formula Btot06 riga 1
+### Formula Btot06 riga 1 & Riga 3
 Per la riga 1 inserisci questo script nell'onReady, per la riga 3 sostituisci in columnIds ed in destination gli id degli input che servono come menzionato nella formula in excel seguendo lo stesso ordine.
 Lo script funziona per tutta la riga dando solo gli id che servono alla prima cella
 ​
@@ -41,6 +41,7 @@ var selectors = [];
 var destinations = [];
 var columns = [];
 var values = [];
+​
 function columnExtractor(value){
     value = parseInt(value.slice(value.length - 6).slice(0, 5));
     return value
@@ -76,127 +77,135 @@ for(let i = 1; i <9; i++){
 ​
 ​
 ```
-### Formula Btot06 Riga 2
+### Btot06 Riga 2 & Riga 4
 ​
-Come sopra, inserendo gli id manualmente si può usare anche per la riga 4
+Questa è per la riga 2, per la riga 4 riportare in columnIds, multiplierIds, dividerId e destination gli di delle celle menzionati nel file excel riguardo alla prima casella.
 ​
 ```javascript
+​
 var columnIds = [
-        'QR~QID15~6~1~TEXT', //cella b13
-        'QR~QID18~3~1~TEXT', //cella b48
-        'QR~QID21~1~1~TEXT', //cella b78
-        'QR~QID24~3~1~TEXT', //cella b106
-        'QR~QID27~10~1~TEXT' //cella b141
-    ];
+    'QR~QID15~6~1~TEXT', //cella b13
+    'QR~QID18~3~1~TEXT', //cella b48
+    'QR~QID21~1~1~TEXT', //cella b78
+    'QR~QID24~3~1~TEXT', //cella b106
+    'QR~QID27~10~1~TEXT' //cella b141
+];
+var multiplierIds = [
+    'QR~QID15~7~1~TEXT', //cella b14
+    'QR~QID18~4~1~TEXT', //cella b49
+    'QR~QID21~2~1~TEXT', //cella b79
+    'QR~QID24~4~1~TEXT', //cella b107
+    'QR~QID27~11~1~TEXT' //cella b142
+];
 ​
-    var multiplierIds = [
-        'QR~QID15~7~1~TEXT', //cella b14
-        'QR~QID18~4~1~TEXT', //cella b49
-        'QR~QID21~2~1~TEXT', //cella b79
-        'QR~QID24~4~1~TEXT', //cella b107
-        'QR~QID27~11~1~TEXT' //cella b142
-    ];
-   
-    var dividerId = 'QR~QID30~1~1~TEXT'; //cella b173
+var dividerId = 'QR~QID30~1~1~TEXT'; //cella b173
 ​
-    var destination = "QR~QID30~2~1~TEXT"; //cella b174
-​
-    var selectors = new Array();
-    var multipliers = new Array();
-    var dividers = new Array();
-    var destinations = new Array();
-​
-    function multiplyValueChanged(e){
-    var id = e.target.id.slice;
-    id = id.slice(id.length - 6);
-    id = id.slice(0, 5);
-    var column = parseInt(id);
-    var values = new Array();
-    for(let i = 1; i <selectors.length; i++){
-        var valueOne = jQuery("#" + selectors[column][i]).val();
-        var valueTwo = jQuert("#" + multipliers[column][i]).val();
-        values.push(parseInt(valueOne) * parseInt(valueTwo));
+var destination = "QR~QID30~2~1~TEXT"; //cella b173
+var selectors = [];
+var destinations = [];
+var multipliers = [];
+var dividers = [];
+var columns = [];
+var values = [];
+function columnExtractor(value){
+    value = parseInt(value.slice(value.length - 6).slice(0, 5));
+    return value
+}
+function selectorParser(value, column){
+    value = (value.slice(0, -6) + column + '~TEXT').replaceAll('~', '\\~');
+    return value
+}
+function valueParser(value){
+    value = parseInt(value.replaceAll('.', ''));
+    if(isNaN(value)) return 0
+    else return value
+}
+function infinityChecker(value){
+    if (isNaN(value) || !isFinite(value)) return 0
+    else return value
+}
+function secondRowOperation(e){
+    var column = columnExtractor(e.target.id);
+    values.length = 0;
+    for(let i = 0; i < 5; i++){
+        var one =  jQuery("#" + selectors[column][i]).val();
+        var two = jQuery("#" + multipliers[column][i]).val();
+        var product = valueParser(one) * valueParser(two);
+        values.push(product)
     }
-    var total = values.reduce((a,b) => {return a+b }, 0);
-    isNaN(total / dividers[column]) ? (total = 0) : (total = total/dividers[column]);
-    jQuery("#" + destinations[column]).val(total)
+    var sum = values.reduce((a,b) => {return a+b}, 0);
+    var divisionUnit = valueParser(jQuery("#" + dividers[column]).val());
+    var partial = sum / divisionUnit;
+    var total = infinityChecker(partial);
+    jQuery("#" + destinations[column]).val(total);
 }
 ​
-for(let i = 1; i<9; i++){
+for(let i = 1; i <9; i++){
     selectors[i] = new Array();
     columnIds.map(key => {
-        var sliced = key.slice(0, -6);
-        var column = sliced + i + '~TEXT';
-        var parsed = column.replaceAll("~", "\\~");
-            jQuery("#" + parsed).on('change', multiplyValueChanged) 
+        var parsed = selectorParser(key, i);
+        jQuery("#" + parsed).on('change', secondRowOperation);
         selectors[i].push(parsed);
     })
     multipliers[i] = new Array();
     multiplierIds.map(key => {
-        var multiSliced = key.slice(0, -6);
-        var multiColumn = multiSliced + i + '~TEXT';
-        var multiParsed = multiColumn.replaceAll("~", "\\~");
-            jQuery("#" + multiParsed).on('change', multiplyValueChanged)
+        var multiParsed = selectorParser(key, i);
+        jQuery("#" + multiParsed).on('change', secondRowOperation);
         multipliers[i].push(multiParsed);
     })
-    var sliceDestination = destination.slice(0, -6);
-    var columnDestination = sliceDestination + i +'~TEXT';
-    var parsedDestination = columnDestination.replaceAll("~", "\\~");
-    destinations[i].push(parsedDestination);
-    var sliceDivider = dividerId.slice(0, -6);
-    var columnDivider = sliceDivider + i + '~TEXT';
-    var parsedDivider = columnDivider.replaceAll("~", "\\~");
-    dividers[i].push(parsedDivider);
-}
-```
-## Riga 4 Btot06 - Totali
-Una volta inserita copia i totali in tutta la riga in automatico
-```javascript
-var first = 'QR~QID30~1~1~TEXT';
-var second = 'QR~QID30~3~1~TEXT';
-var destination = 'QR~QID30~5~1~TEXT';
-​
-var firstLines = new Array();
-var secondLines = new Array();
-var destinations = new Array();
-var firstValues = new Array();
-var secondValues = new Array();
-​
-function sumTwoValues(e){
-    console.log('sum two called');
-    var id = e.target.id;
-    id = id.slice(id.length - 6);
-    id = id.slice(0, 5);
-    var column = parseInt(id);
-    firstVal = jQuery("#" + firstLines[column]).val();
-    secondVal = jQuery("#" + secondLines[column]).val();
-    firstValues[column] = isNaN(parseInt(firstVal)) ? 0 : parseInt(firstVal);
-    secondValues[column] = isNaN(parseInt(secondVal)) ? 0 : parseInt(secondVal);
-    var total = firstValues[column] + secondValues[column];
-    jQuery("#" + destinations[column]).val(total);
-}
-​
-for(let i = 1; i < 9; i++){
-    var firstSliced = first.slice(0,-6);
-    var secondSliced = second.slice(0,-6);
-    var firstColumn = firstSliced + i + '~TEXT';
-    var secondColumn = secondSliced + i + '~TEXT';
-    var firstParsed = firstColumn.replaceAll("~", "\\~");
-    var secondParsed = secondColumn.replaceAll("~", "\\~");
-        jQuery("#" + firstParsed).on('change', sumTwoValues);
-        jQuery("#" + secondParsed).on('change', sumTwoValues);
-    firstLines[i] = firstParsed;
-    secondLines[i] = secondParsed;
-    var sliceDestination = destination.slice(0, -6);
-    var columnDestination = sliceDestination + i +'~TEXT';
-    var parsedDestination = columnDestination.replaceAll("~", "\\~");
+    var dividerParsed = selectorParser(dividerId, i);
+        jQuery("#" + dividerParsed).on('change', secondRowOperation);
+    dividers[i] = dividerParsed;
+    var parsedDestination = selectorParser(destination, i);
     destinations[i] = parsedDestination;
-        jQuery("#" + destinations[i]).attr("disabled", true)
 }
 ​
+​
+​
 ```
-## Btot 06 riga 5
-Avviene in automatico
+## Btot06 riga 5 Totali
+Automatica
+​
+```javascript
+​
+var inputs = jQuery("#QID30 input")
+​
+var columns = [];
+​
+function columnExtractor(value){
+    value = parseInt(value.slice(value.length - 6).slice(0, 5));
+    return value
+}
+​
+function valueParser(value){
+    value = parseInt(value.replaceAll('.', ''));
+    if(isNaN(value)) return 0
+    else return value
+}
+​
+function thirdRowOperation(e){
+    var column = columnExtractor(e.target.id);
+    var one = jQuery(columns[column][0]).val();
+    var two = jQuery(columns[column][2]).val();
+    var total = valueParser(one) + valueParser(two);
+    jQuery(columns[column][4]).val(total);
+}
+​
+for(let i = 0; i < 40; i++){
+    var test = i%8 +1;
+    if (columns[test] == undefined) columns[test] = new Array();
+    columns[test].push(inputs[i]);
+}
+columns.map((array, index) => {
+    array.map((element, ind) => {
+        if(ind == 0 || ind == 2) jQuery(element).on('change', thirdRowOperation);
+    })
+})
+​
+​
+```
+## Btot 06 riga 6 (Percentuali)
+Automatica
 ​
 ```javascript
 var inputs = jQuery("#QID30 input")
@@ -291,7 +300,6 @@ jQuery(inputs).each(function(i,b){
 ### Trasferimento di dati tra celle
 Sempre nell'onReady, aggiunge un keyup a inputId e outputId, ogni volta che cambia input il valore viene copiato in output.
 ```javascript
-
 ​
 function stringFormatter (string) {
     var first = string.replaceAll("\~","\\~");
@@ -321,7 +329,5 @@ jQuery.fn.mirror = function (selector) {
 var outputId = "QR~QID15~1~2~TEXT";
 
 jQuery('#' + stringFormatter(inputId)).mirror('#' + stringFormatter(outputId))
-
-
 
 ```
