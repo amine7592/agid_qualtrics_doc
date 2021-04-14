@@ -23,6 +23,7 @@ if (new URL(window.location.href).searchParams.get("Q_CHL") === "preview") {
 ​
 ## Parte II
 ​
+## Btot06
 ### Formula Btot06 riga 1 & Riga 3
 Per la riga 1 inserisci questo script nell'onReady, per la riga 3 sostituisci in columnIds ed in destination gli id degli input che servono come menzionato nella formula in excel seguendo lo stesso ordine.
 Lo script funziona per tutta la riga dando solo gli id che servono alla prima cella
@@ -204,39 +205,53 @@ columns.map((array, index) => {
 ​
 ​
 ```
-## Btot 06 riga 6 (Percentuali)
+## Btot 06 riga 6 Percentuali
+
+**Da testare**
 Automatica
 ​
 ```javascript
 var inputs = jQuery("#QID30 input")
 ​
 var columns = [];
-for(let i = 0; i < 40; i++){
-    var test = i%8 +1;
-    if (columns[test] == undefined) columns[test] = new Array();
-    columns[test].push(inputs[i]);     
-}
+​var values = [];
 function columnExtractor(value){
     value = parseInt(value.slice(value.length - 6).slice(0, 5));
     return value
 }
 ​
-function operation(e){
-    var column = columnExtractor(e.target.id);
-    var values = new Array();
-    for(let i = 0; i < 6; i++){
-        values[i] = jQuery(columns[column][i]).val();
-    };
-    values = values.map(Number);
-    var total = (values[0] * values[1] + values[2] * values[3]) / values[4];
-    isNaN(total) ?  jQuery("#QR\\~QID30\\~6\\~" + column + "\\~TEXT").val(0) : jQuery("#QR\\~QID30\\~6\\~" + column + "\\~TEXT").val(total)
+function valueParser(value){
+    value = parseInt(value.replaceAll('.', ''));
+    if(isNaN(value)) return 0
+    else return value
+}
+function infinityChecker(value){
+    if (isNaN(value) || !isFinite(value)) return 0
+    else return value
 }
 ​
-columns.map((array, index) => {
-    array.map((entry => {
-        jQuery(entry).on("change", operation)
-    }))
-})
+function sixthRowOperation(e){
+    var column = columnExtractor(e.target.id);
+    columns[column].map(entry => {
+        values.push(jQuery(entry).val());
+    });
+    values = values.map(entry => {
+        return valueParser(entry)
+    });
+    values = values.map(Number);
+
+    var total = (values[0] * values[1] + values[2] * values[3]) / values[4];
+
+    jQuery(columns[column][5]).val(infinitChecker(total));
+}
+​
+for(let i = 0; i < 48; i++){
+    var test = i%8 +1;
+    if (columns[test] == undefined) columns[test] = new Array();
+    columns[test].push(inputs[i]);
+    if(i > 39) jQuery(inputs[i]).on('change', sixthRowOperation);
+}
+​
 ​
 ```
 ​
