@@ -291,18 +291,13 @@ jQuery(inputs).each(function(i,b){
 ### Trasferimento di dati tra celle
 Sempre nell'onReady, aggiunge un keyup a inputId e outputId, ogni volta che cambia input il valore viene copiato in output.
 ```javascript
-var inputId = "QR~QID15~1~1~TEXT";
-var outputId = "QR~QID15~1~2~TEXT";
+
 ​
 function stringFormatter (string) {
     var first = string.replaceAll("\~","\\~");
     var output =first;
     return output
 }
-​
-var originalCell = stringFormatter(inputId);
-var destinationCell = stringFormatter(outputId);
-​
 //funzione globale per trasferire dati tra celle
 jQuery.fn.mirror = function (selector) {
     return this.each(function () {
@@ -314,6 +309,19 @@ jQuery.fn.mirror = function (selector) {
         });
     });
 };
-​
-jQuery('#' + originalCell).mirror('#' + destinationCell)
+
+/* 
+    snippet da replicare per ogni coppia in celle
+    usare un numero progressivo per i successivi
+
+    es. inputId1 inputId2
+
+*/
+​var inputId = "QR~QID15~1~1~TEXT";
+var outputId = "QR~QID15~1~2~TEXT";
+
+jQuery('#' + stringFormatter(inputId)).mirror('#' + stringFormatter(outputId))
+
+
+
 ```
