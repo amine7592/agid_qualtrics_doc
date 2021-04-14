@@ -255,7 +255,7 @@ for(let i = 0; i < 48; i++){
 ```
 ## Formule Btot07
 
-## Riga 1 e 3
+### Riga 1 e 3
 L'esempio è funzionante per la riga 1, inserendo gli id delle celle B48 B59 B78 B87 B106 B115 B141 B157 in cellsToSum
 e cambiando destination in "QR~QID31~3~1~TEXT" la formula funziona anche per la riga 3.
 ```javascript
@@ -304,6 +304,47 @@ columnsToSum.map((array, index) => {
         jQuery("#" + key).on('change', firstRowOperation)
     })
 })
+```
+
+### Riga 5 Totali
+Automatica
+```javascript
+
+var inputs = jQuery("#QID31 input");
+
+var columns = [];
+
+function columnExtractor(value){
+    value = parseInt(value.slice(value.length - 6).slice(0, 5));
+    return value
+};
+
+function valueParser(value){
+    value = parseInt(value.replaceAll('.', ''));
+    if(isNaN(value)) return 0
+    else return value
+};
+
+function thirdRowOperation(e){
+    var column = columnExtractor(e.target.id);
+    var one = jQuery(columns[column][0]).val();
+    var two = jQuery(columns[column][2]).val();
+    var total = valueParser(one) + valueParser(two);
+    jQuery(columns[column][4]).val(total);
+};
+
+for(let i = 0; i < 40; i++){
+    var test = i%8 +1;
+    if (columns[test] == undefined) columns[test] = new Array();
+    columns[test].push(inputs[i]);
+};
+columns.map((array, index) => {
+    array.map((element, ind) => {
+        if(ind == 0 || ind == 2) jQuery(element).on('change', thirdRowOperation);
+    })
+});
+
+
 ```
 ​
 ## **Tutte le domande**
