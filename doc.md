@@ -219,17 +219,17 @@ var storeValues = [];
 function columnExtractor(value){
     value = parseInt(value.slice(value.length - 6).slice(0, 5));
     return value
-}
+};
 
 function valueParser(value){
     value = parseInt(value.replaceAll('.', ''));
     if(isNaN(value)) return 0
     else return value
-}
+};
 function infinityChecker(value){
     if (isNaN(value) || !isFinite(value)) return 0
     else return value
-}
+};
 
 function sixthRowOperation(e){
     var column = columnExtractor(e.target.id);
@@ -242,14 +242,14 @@ function sixthRowOperation(e){
     });    
     var total = (storeValues[0] * storeValues[1] + storeValues[2] * storeValues[3]) / storeValues[4];
     jQuery(columns[column][5]).val(infinityChecker(total)); 
-}
+};
 
 for(let i = 0; i < 48; i++){
     var test = i%8 +1;
     if (columns[test] == undefined) columns[test] = new Array();
     columns[test].push(inputs[i]);
     if(i < 40) jQuery(inputs[i]).on('change', sixthRowOperation); 
-}
+};
 ​
 ​
 ```
@@ -344,9 +344,54 @@ columns.map((array, index) => {
     })
 });
 
-
 ```
+ ### Riga 6 Percentuali
+ Automatica​
+
+```javascript
+
+var inputs = jQuery("#QID31 input");
+
+var columns = [];
+var storeValues = [];
+
+function columnExtractor(value){
+    value = parseInt(value.slice(value.length - 6).slice(0, 5));
+    return value
+};
+
+function valueParser(value){
+    value = parseInt(value.replaceAll('.', ''));
+    if(isNaN(value)) return 0
+    else return value
+};
+function infinityChecker(value){
+    if (isNaN(value) || !isFinite(value)) return 0
+    else return value
+};
+
+function sixthRowOperation(e){
+    var column = columnExtractor(e.target.id);
+    storeValues.length = 0;
+    columns[column].map(entry => {
+        storeValues.push(jQuery(entry).val());
+    });
+    storeValues = storeValues.map(entry => {
+        return valueParser(entry)
+    });    
+    var total = (storeValues[0] * storeValues[1] + storeValues[2] * storeValues[3]) / storeValues[4];
+    jQuery(columns[column][5]).val(infinityChecker(total)); 
+};
+
+for(let i = 0; i < 48; i++){
+    var test = i%8 +1;
+    if (columns[test] == undefined) columns[test] = new Array();
+    columns[test].push(inputs[i]);
+    if(i < 40) jQuery(inputs[i]).on('change', sixthRowOperation); 
+};
 ​
+```
+
 ## **Tutte le domande**
 ### Somma valori in riga dei totali, blocca input di testo
 ​
