@@ -306,6 +306,72 @@ columnsToSum.map((array, index) => {
 })
 ```
 
+### Riga 2 
+
+Automatica
+```javascript
+var inputs = [
+    "QR~QID15~6~1~TEXT", //cella b13
+    "QR~QID15~7~1~TEXT", //cella b14
+    "QR~QID184~6~1~TEXT", //cella b27
+    "QR~QID184~7~1~TEXT" //cella b28
+];
+
+var divider = "QR~QID31~1~1~TEXT"; //cella b183
+var destination = "QR~QID31~2~1~TEXT"; //cella b184
+
+var columns = [];
+var dividers = [];
+var destinations = [];
+var storedValues = [];
+
+function selectorParser(value, column){
+    value = (value.slice(0, -6) + column + '~TEXT').replaceAll('~', '\\~');
+    return value
+};
+
+function columnExtractor(value){
+    value = parseInt(value.slice(value.length - 6).slice(0, 5));
+    return value
+};
+function valueArrayParser(array){
+    array = array.map(entry => { return entry.replaceAll('.', '')});
+    array = array.map(Number);
+    return array
+};
+function infinityChecker(value){
+    if (isNaN(value) || !isFinite(value)) return 0
+    else return value
+};
+
+function secondRowFunction(e){
+    var column = columnExtractor(e.target.id);
+    storedValues = [];
+    storedValues[0] = jQuery("#" + columns[column][0]).val();
+    storedValues[1] = jQuery("#" +columns[column][1]).val();
+    storedValues[2] = jQuery("#" + columns[column][2]).val();
+    storedValues[3] = jQuery("#" + columns[column][3]).val();
+    storedValues = valueArrayParser(storedValues);
+    var divisionUnit = jQuery("#" + dividers[column]).val();
+    divisionUnit = parseInt(divisionUnit.replaceAll('.', ''))
+    var total = (storedValues[0] * storedValues[1] + storedValues[2] * storedValues[3]) / divisionUnit;
+    jQuery("#" + destinations[column]).val(infinityChecker(total));
+};
+
+for(let i = 1; i < 9 ; i++){
+    if(columns[i] === undefined) columns[i] = new Array();
+    var tempArray = inputs.map(input => {
+        var val =  selectorParser(input, i);
+            jQuery("#" + val).on('click', secondRowFunction);
+        return val
+    })
+    columns[i] = tempArray;
+    destinations[i] = selectorParser(destination, i);
+    dividers[i] = selectorParser(divider, i);
+        jQuery("#" + dividers[i]).on('click', secondRowFunction);
+};
+```
+
 ### Riga 5 Totali
 Automatica
 ```javascript
