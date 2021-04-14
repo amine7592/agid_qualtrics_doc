@@ -24,6 +24,8 @@ if (new URL(window.location.href).searchParams.get("Q_CHL") === "preview") {
 ## Parte II
 ​
 ## Btot06
+
+Quelle che seguono sono le formule per compilare in automatico i campi della domanda btot06, dal momento che condividono i nomi delle funzioni e delle variabili, per inserirle tutte contemporaneamente oltre a seguire le indicazioni per ciascuna formula per la compilazione dei vari id, è necessario usare nomi diversi per gli array e le variabili in cui sono inseriti onde evitare conflitti.
 ### Formula Btot06 riga 1 & Riga 3
 Per la riga 1 inserisci questo script nell'onReady, per la riga 3 sostituisci in columnIds ed in destination gli id degli input che servono come menzionato nella formula in excel seguendo lo stesso ordine.
 Lo script funziona per tutta la riga dando solo gli id che servono alla prima cella
@@ -206,8 +208,6 @@ columns.map((array, index) => {
 ​
 ```
 ## Btot 06 riga 6 Percentuali
-
-**Da testare**
 Automatica
 ​
 ```javascript
@@ -233,24 +233,22 @@ function infinityChecker(value){
 
 function sixthRowOperation(e){
     var column = columnExtractor(e.target.id);
+    storeValues.length = 0;
     columns[column].map(entry => {
         storeValues.push(jQuery(entry).val());
     });
     storeValues = storeValues.map(entry => {
         return valueParser(entry)
-    });
-    storeValues = storeValues.map(Number);
-    console.log('values', storeValues);
+    });    
     var total = (storeValues[0] * storeValues[1] + storeValues[2] * storeValues[3]) / storeValues[4];
-
-    jQuery(columns[column][5]).val(infinityChecker(total));
+    jQuery(columns[column][5]).val(infinityChecker(total)); 
 }
 
 for(let i = 0; i < 48; i++){
     var test = i%8 +1;
     if (columns[test] == undefined) columns[test] = new Array();
     columns[test].push(inputs[i]);
-    if(i > 39) jQuery(inputs[i]).on('change', sixthRowOperation); // SFACCIMMA
+    if(i < 40) jQuery(inputs[i]).on('change', sixthRowOperation); 
 }
 ​
 ​
