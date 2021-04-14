@@ -253,6 +253,58 @@ for(let i = 0; i < 48; i++){
 ​
 ​
 ```
+## Formule Btot07
+
+## Riga 1 e 3
+L'esempio è funzionante per la riga 1, inserendo gli id delle celle B48 B59 B78 B87 B106 B115 B141 B157 in cellsToSum
+e cambiando destination in "QR~QID31~3~1~TEXT" la formula funziona anche per la riga 3.
+```javascript
+var cellsToSum = [
+    "QR~QID15~6~1~TEXT", //cella b13
+    "QR~QID184~6~1~TEXT" //cella b27
+];
+
+var destination = "QR~QID31~1~1~TEXT"; //cella b183
+var columnsToSum = [];
+var destinations = [];
+var storedValues = [];
+function selectorParser(value, column){
+    value = (value.slice(0, -6) + column + '~TEXT').replaceAll('~', '\\~');
+    return value
+}
+function columnExtractor(value){
+    value = parseInt(value.slice(value.length - 6).slice(0, 5));
+    return value
+}
+ function valueArrayParser(array){
+    array = array.map(entry => { return entry.replaceAll('.', '')});
+    array = array.map(Number);
+    return array
+} 
+function firstRowOperation(e){
+    var column = columnExtractor(e.target.id);
+    storedValues = [];
+    storedValues.push(jQuery("#" + columnsToSum[column][0]).val());
+    storedValues.push(jQuery("#" + columnsToSum[column][1]).val());
+    storedValues = valueArrayParser(storedValues);
+    var total = storedValues.reduce((a, b) => {return a+b}, 0);
+    jQuery("#" + destinations[column]).val(total)
+}
+
+for(let i = 1; i < 9; i++){
+    if(columnsToSum[i] == undefined) columnsToSum[i] = new Array();
+    var parsed = cellsToSum.map(key => {return selectorParser(key, i)});
+    columnsToSum[i] = parsed
+    var destParsed = selectorParser(destination, i);
+    destinations[i] = destParsed;
+}
+
+columnsToSum.map((array, index) => {
+    array.map(key => {
+        jQuery("#" + key).on('change', firstRowOperation)
+    })
+})
+```
 ​
 ## **Tutte le domande**
 ### Somma valori in riga dei totali, blocca input di testo
