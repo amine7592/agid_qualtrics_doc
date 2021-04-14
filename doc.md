@@ -212,14 +212,15 @@ Automatica
 ​
 ```javascript
 var inputs = jQuery("#QID30 input")
-​
+
 var columns = [];
-​var values = [];
+var storeValues = [];
+
 function columnExtractor(value){
     value = parseInt(value.slice(value.length - 6).slice(0, 5));
     return value
 }
-​
+
 function valueParser(value){
     value = parseInt(value.replaceAll('.', ''));
     if(isNaN(value)) return 0
@@ -229,27 +230,27 @@ function infinityChecker(value){
     if (isNaN(value) || !isFinite(value)) return 0
     else return value
 }
-​
+
 function sixthRowOperation(e){
     var column = columnExtractor(e.target.id);
     columns[column].map(entry => {
-        values.push(jQuery(entry).val());
+        storeValues.push(jQuery(entry).val());
     });
-    values = values.map(entry => {
+    storeValues = storeValues.map(entry => {
         return valueParser(entry)
     });
-    values = values.map(Number);
+    storeValues = storeValues.map(Number);
+    console.log('values', storeValues);
+    var total = (storeValues[0] * storeValues[1] + storeValues[2] * storeValues[3]) / storeValues[4];
 
-    var total = (values[0] * values[1] + values[2] * values[3]) / values[4];
-
-    jQuery(columns[column][5]).val(infinitChecker(total));
+    jQuery(columns[column][5]).val(infinityChecker(total));
 }
-​
+
 for(let i = 0; i < 48; i++){
     var test = i%8 +1;
     if (columns[test] == undefined) columns[test] = new Array();
     columns[test].push(inputs[i]);
-    if(i > 39) jQuery(inputs[i]).on('change', sixthRowOperation);
+    if(i > 39) jQuery(inputs[i]).on('change', sixthRowOperation); // SFACCIMMA
 }
 ​
 ​
