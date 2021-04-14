@@ -295,7 +295,7 @@ var inputId = "QR~QID15~1~1~TEXT";
 var outputId = "QR~QID15~1~2~TEXT";
 ​
 function stringFormatter (string) {
-    var first = string.replaceAll("\~","\\\\~");
+    var first = string.replaceAll("\~","\\~");
     var output =first;
     return output
 }
