@@ -607,13 +607,36 @@ jQuery(inputs).each(function(i,b){
                 } 
             
     })
+
 });
 ```
 ​
 ### Trasferimento di dati tra celle
-Sempre nell'onReady, aggiunge un keyup a inputId e outputId, ogni volta che cambia input il valore viene copiato in output.
+**VERSIONE II**
+Usa un onChange per copiare il valore in inputId in outputId;
 ```javascript
-​
+function stringFormatter(string) {
+    string =  string.replaceAll("\~","\\~");
+    return string
+}
+
+function copyValue(){
+    var value = jQuery("#" + stringFormatter(inputId)).val();
+    jQuery("#" + stringFormatter(outputId)).val(value)
+}
+
+
+​var inputId = "QR~QID15~1~1~TEXT";
+var outputId = "QR~QID15~1~2~TEXT";
+
+jQuery("#" + stringFormatter(inputId)).on('change', copyValue)
+
+```
+
+**VERSIONE I**
+Sempre nell'onReady, aggiunge un keyup a inputId e outputId, ogni volta che cambia input il valore viene copiato in output.
+
+```javascript
 function stringFormatter (string) {
     var first = string.replaceAll("\~","\\~");
     var output =first;
