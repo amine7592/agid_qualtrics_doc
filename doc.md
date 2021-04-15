@@ -552,8 +552,37 @@ for(let i = 0; i < 48; i++){
 };
 ​
 ```
+## Sezione D ##
+### D02A, D02B - Impostare convalida data nella forma mm/aaaa
+Inserire nella relativa domanda
+```javascript
+jQuery("#QR\\~1_QID136").attr("type", "date")
+
+jQuery("#QR\\~1_QID137").attr("type", "date")
+```
 
 ## **Tutte le domande**
+
+### Eliminare popup di conferma quando si preme il tasto indietro
+Da inserire in ogni domanda, il tasto indietro porta automaticamente indietro senza popup di conferma.
+
+```javascript
+var observer = new MutationObserver(function() {
+    
+    const div = document.querySelector("#Page > div > div.PageErrorDialog.TOC");
+    if (div) {
+        div.style.display = "none";
+        jQuery("#Page > div > div.PageErrorDialog.TOC > div.ErrorButtons > button:nth-child(1)").trigger('click');
+        observer.disconnect();
+        observer = null;
+    }
+});
+observer.observe(document.querySelector("#Page"), {
+    childList: true,
+    subtree: true
+});
+
+```
 ### Somma valori in riga dei totali, blocca input di testo
 ​
 Per questa bisogna inserire l'id di ciascuna domanda. Una volta messo nell'onReady si applica a quella domanda;
@@ -641,3 +670,4 @@ var outputId = "QR~QID15~1~2~TEXT";
 jQuery("#" + stringFormatter(inputId)).on('change', copyValue)
 
 ```
+
