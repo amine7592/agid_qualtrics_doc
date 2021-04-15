@@ -55,11 +55,9 @@ function selectorParser(value, column){
 }
 ​
 function firstRowOperation(e){
-    console.log('firstRow called from ', e.target.id)
     var column = columnExtractor(e.target.id);
     values.length = 0;
     selectors[column].map(entry => {
-        console.log('mapping ', entry);
         values.push(jQuery("#"+entry).val())
     })
     values = values.map(entry =>  entry = entry.replaceAll('.', ''));
@@ -372,16 +370,8 @@ for(let i = 1; i < 9 ; i++){
 };
 ```
 ### Riga 4 
-**Da testare**
+Automatica
 ```javascript
-//btot07
-
-
-//4 B48*B49+B59*B60+B78*B79+B87*B88+B106*B107+B115*B116+B141*B142+B157*B158)/B185 || 0
-
-//1
-
-
 var firstOp = [
     "QR~QID18~3~1~TEXT", //b48
     "QR~QID185~3~1~TEXT", //b59
@@ -404,7 +394,6 @@ var secondOp = [
     "QR~QID186~11~1~TEXT"//b158
 ];
 
-
 var divider = "QR~QID31~3~1~TEXT"; //cella b185
 var destination = "QR~QID31~4~1~TEXT"; //cella b186
 
@@ -412,7 +401,9 @@ var columns = [];
 var multipliers = [];
 var dividers = [];
 var destinations = [];
-var storedValues = [];
+var storedColumn = [];
+var storedMultipliers = [];
+var storedProducts = [];
 
 function selectorParser(value, column){
     value = (value.slice(0, -6) + column + '~TEXT').replaceAll('~', '\\~');
@@ -423,62 +414,57 @@ function columnExtractor(value){
     value = parseInt(value.slice(value.length - 6).slice(0, 5));
     return value
 };
-function valueArrayParser(array){
-    array = array.map(entry => { return entry.replaceAll('.', '')});
-    array = array.map(Number);
-    return array
+
+function valueExtractor(value){
+    value = jQuery("#" + value).val();
+    value = value.replaceAll('.', '');
+    value = parseInt(value);
+    if(isNaN(value)) return 0
+    else return value
 };
+
 function infinityChecker(value){
     if (isNaN(value) || !isFinite(value)) return 0
     else return value
 };
 
 function fourthRowFunction(e){
+    console.log('starting')
     var column = columnExtractor(e.target.id);
-    storedValues = [];
-
-    for(let i = 1 ; i < 9; i++){
-        var one = jQuery("#" + columns[column][i]).val();
-        var two = jQuery("#" + multipliers[column][i]).val();
-        one = one.replaceAll('.', '');
-        two = two.replaceAll('.', '');
-        one = parseInt(one);
-        two = parseInt(two);
-        var mult = one * two;
-        if(isNaN(mult)) storedValues.push(0)
-        else storedValues.push(mult);
-    }
-    var sum = storedValues.reduce((a,b) => {return a+b},0);
-    var divisionUnit = valuesParser(jQuery("#" + dividers[column]));
-    var total = sum / divisionUnit;
-    total = infinityChecker(total);
+    storedColumn.length = 0;
+    storedMultipliers.length = 0;
+    storedProducts.length = 0;
+    storedColumn = columns[column].map(entry => {return valueExtractor(entry)});
+    storedMultipliers = multipliers[column].map(entry => {return valueExtractor(entry)});
+    storedProducts = storedColumn.map((entry, index) => {return entry * storedMultipliers[index]});
+    var sum = storedProducts.reduce((a,b) => {return a+b}, 0);
+    var divisionUnit = valueExtractor(dividers[column]);
+    var total = infinityChecker(sum / divisionUnit);
     jQuery("#" + destinations[column]).val(total)
 };
 
 for(let i = 1; i < 9 ; i++){
     if(columns[i] === undefined) columns[i] = new Array();
     if(multipliers[i] === undefined) multipliers[i] = new Array();
-
-
     var tempArray = firstOp.map(input => {
         var val =  selectorParser(input, i);
             jQuery("#" + val).on('click', fourthRowFunction);
         return val
-    })
+    });
     columns[i] = tempArray;
-
     var tempMulti = secondOp.map(input => {
         var mul = selectorParser(input, i);
             jQuery("#" + mul).on('click', fourthRowFunction)
         return mul
     });
-
     multipliers[i] = tempMulti;
-
     destinations[i] = selectorParser(destination, i);
     dividers[i] = selectorParser(divider, i);
-        jQuery("#" + dividers[i]).on('click', fourthRowFunction);
 };
+
+dividers.map(entry => {
+    jQuery("#" + entry).on('click', fourthRowFunction)
+})
 ```
 
 ### Riga 5 Totali
