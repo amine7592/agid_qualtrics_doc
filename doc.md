@@ -612,9 +612,12 @@ jQuery(inputs).each(function(i,b){
 ```
 ​
 ### Trasferimento di dati tra celle
-**VERSIONE II**
-Usa un onChange per copiare il valore in inputId in outputId;
+
+
+Inserire questo snippet di codice in ogni domanda che contiene una matrice con calcolo automatico del totale.
+
 ```javascript
+
 function stringFormatter(string) {
     string =  string.replaceAll("\~","\\~");
     return string
@@ -626,44 +629,15 @@ function copyValue(){
 }
 
 
+``` 
+
+ Ripetere questo snippet per ogni cella che si desidera copiare
+
+```javascript
+
 ​var inputId = "QR~QID15~1~1~TEXT";
 var outputId = "QR~QID15~1~2~TEXT";
 
 jQuery("#" + stringFormatter(inputId)).on('change', copyValue)
-
-```
-
-**VERSIONE I**
-Sempre nell'onReady, aggiunge un keyup a inputId e outputId, ogni volta che cambia input il valore viene copiato in output.
-
-```javascript
-function stringFormatter (string) {
-    var first = string.replaceAll("\~","\\~");
-    var output =first;
-    return output
-}
-//funzione globale per trasferire dati tra celle
-jQuery.fn.mirror = function (selector) {
-    return this.each(function () {
-        console.log('mirror called')
-        var $this = jQuery(this);
-        var $selector = jQuery(selector);
-        jQuery(this).bind('keyup', function () { //'keyup'
-            $selector.val(($this.val()));
-        });
-    });
-};
-
-/* 
-    snippet da replicare per ogni coppia in celle
-    usare un numero progressivo per i successivi
-
-    es. inputId1 inputId2
-
-*/
-​var inputId = "QR~QID15~1~1~TEXT";
-var outputId = "QR~QID15~1~2~TEXT";
-
-jQuery('#' + stringFormatter(inputId)).mirror('#' + stringFormatter(outputId))
 
 ```
