@@ -65,7 +65,7 @@ function firstRowOperation(e){
     jQuery("#" + destinations[column]).val(total);
 }
 ​
-for(let i = 1; i <9; i++){
+for(let i = 5; i <9; i++){
     selectors[i] = new Array();
     columnIds.map(key => {
         var parsed = selectorParser(key, i);
@@ -141,7 +141,7 @@ function secondRowOperation(e){
     jQuery("#" + destinations[column]).val(total);
 }
 ​
-for(let i = 1; i <9; i++){
+for(let i = 5; i <9; i++){
     selectors[i] = new Array();
     columnIds.map(key => {
         var parsed = selectorParser(key, i);
@@ -169,39 +169,41 @@ Automatica
 ​
 ```javascript
 ​
-var inputs = jQuery("#QID30 input")
-​
+var inputs = jQuery("#QID30 input")​;
 var columns = [];
 ​
 function columnExtractor(value){
     value = parseInt(value.slice(value.length - 6).slice(0, 5));
     return value
-}
+};
 ​
 function valueParser(value){
     value = parseInt(value.replaceAll('.', ''));
     if(isNaN(value)) return 0
     else return value
-}
+};
 ​
 function thirdRowOperation(e){
     var column = columnExtractor(e.target.id);
-    var one = jQuery(columns[column][0]).val();
-    var two = jQuery(columns[column][2]).val();
-    var total = valueParser(one) + valueParser(two);
-    jQuery(columns[column][4]).val(total);
-}
+        var one = jQuery(columns[column][0]).val();
+        var two = jQuery(columns[column][2]).val();
+        var total = valueParser(one) + valueParser(two);
+        jQuery(columns[column][4]).val(total);
+};
 ​
 for(let i = 0; i < 40; i++){
     var test = i%8 +1;
     if (columns[test] == undefined) columns[test] = new Array();
     columns[test].push(inputs[i]);
-}
+};
+
 columns.map((array, index) => {
-    array.map((element, ind) => {
+    if(index > 4){
+        array.map((element, ind) => {
         if(ind == 0 || ind == 2) jQuery(element).on('change', thirdRowOperation);
-    })
-})
+        })
+    }
+});
 ​
 ​
 ```
@@ -209,7 +211,8 @@ columns.map((array, index) => {
 Automatica
 ​
 ```javascript
-var inputs = jQuery("#QID30 input")
+var inputs = jQuery("#QID30 input");
+var skipped = [0, 1 , 2 , 3];
 
 var columns = [];
 var storeValues = [];
@@ -246,7 +249,7 @@ for(let i = 0; i < 48; i++){
     var test = i%8 +1;
     if (columns[test] == undefined) columns[test] = new Array();
     columns[test].push(inputs[i]);
-    if(i < 40) jQuery(inputs[i]).on('change', sixthRowOperation); 
+    if(i < 40 && !skipped.includes(i%8)) jQuery(inputs[i]).on('change', sixthRowOperation);
 };
 ​
 ​
@@ -298,15 +301,17 @@ for(let i = 1; i < 9; i++){
 }
 
 columnsToSum.map((array, index) => {
-    array.map(key => {
-        jQuery("#" + key).on('change', firstRowOperation)
-    })
+    if(index > 4){
+        array.map(key => {
+            jQuery("#" + key).on('change', firstRowOperation)
+        });
+    };
 })
 ```
 
 ### Riga 2 
 
-Automatica
+Automatica, lenta
 ```javascript
 var inputs = [
     "QR~QID15~6~1~TEXT", //cella b13
@@ -356,21 +361,22 @@ function secondRowFunction(e){
     jQuery("#" + destinations[column]).val(infinityChecker(total));
 };
 
-for(let i = 1; i < 9 ; i++){
+for(let i = 5; i < 9 ; i++){
     if(columns[i] === undefined) columns[i] = new Array();
-    var tempArray = inputs.map(input => {
-        var val =  selectorParser(input, i);
+    
+        var tempArray = inputs.map(input => {
+            var val =  selectorParser(input, i);
             jQuery("#" + val).on('click', secondRowFunction);
-        return val
-    })
+            return val
+        });
     columns[i] = tempArray;
     destinations[i] = selectorParser(destination, i);
     dividers[i] = selectorParser(divider, i);
-        jQuery("#" + dividers[i]).on('click', secondRowFunction);
+    jQuery("#" + dividers[i]).on('click', secondRowFunction);
 };
 ```
 ### Riga 4 
-Automatica
+Automatica, lenta
 ```javascript
 var firstOp = [
     "QR~QID18~3~1~TEXT", //b48
@@ -440,10 +446,11 @@ function fourthRowFunction(e){
     var sum = storedProducts.reduce((a,b) => {return a+b}, 0);
     var divisionUnit = valueExtractor(dividers[column]);
     var total = infinityChecker(sum / divisionUnit);
-    jQuery("#" + destinations[column]).val(total)
+    jQuery("#" + destinations[column]).val(total);
+    console.log('done')
 };
 
-for(let i = 1; i < 9 ; i++){
+for(let i = 5; i < 9 ; i++){
     if(columns[i] === undefined) columns[i] = new Array();
     if(multipliers[i] === undefined) multipliers[i] = new Array();
     var tempArray = firstOp.map(input => {
@@ -500,9 +507,11 @@ for(let i = 0; i < 40; i++){
     columns[test].push(inputs[i]);
 };
 columns.map((array, index) => {
-    array.map((element, ind) => {
-        if(ind == 0 || ind == 2) jQuery(element).on('change', thirdRowOperation);
-    })
+    if(index > 4){
+        array.map((element, ind) => {
+            if(ind == 0 || ind == 2) jQuery(element).on('change', thirdRowOperation);
+        });
+    };
 });
 
 ```
@@ -533,6 +542,7 @@ function infinityChecker(value){
 
 function sixthRowOperation(e){
     var column = columnExtractor(e.target.id);
+    if(column > 4){
     storeValues.length = 0;
     columns[column].map(entry => {
         storeValues.push(jQuery(entry).val());
@@ -542,6 +552,7 @@ function sixthRowOperation(e){
     });    
     var total = (storeValues[0] * storeValues[1] + storeValues[2] * storeValues[3]) / storeValues[4];
     jQuery(columns[column][5]).val(infinityChecker(total)); 
+    };
 };
 
 for(let i = 0; i < 48; i++){
@@ -612,12 +623,10 @@ var totals = inputs.map((a,b) => {
 }).slice(-inputColumns).slice(0,-inputColumns/2);
 outerDestinations = outerDestinations.map(entry => { return entry.replaceAll("~", "\\~")});
 function columnExtractor(value){
-    console.log('column extractor called ', value)
     value = parseInt(value.slice(value.length - 6).slice(0, 5));
     return value
 };
 function rowExtractor(value){
-    console.log('rowextractor called, ', value)
     value = value.replaceAll("QR~" + id + "~", '');
     if(value[1]=='~')return parseInt(value[0]);
     else return parseInt(value[0]+value[1]);
