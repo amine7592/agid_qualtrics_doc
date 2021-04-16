@@ -583,91 +583,77 @@ observer.observe(document.querySelector("#Page"), {
 });
 
 ```
-### Somma valori in riga dei totali, blocca input di testo
+### Somma valori in riga dei totali, blocca input di testo, copia dei valori totali in altra tabella
 ​
-Per questa bisogna inserire l'id di ciascuna domanda. Una volta messo nell'onReady si applica a quella domanda;
+Da inserire in ogni domanda specificando in id l'id della domanda e in outerDestinations gli id delle celle in cui devono essere copiati i totali.
+Nel codice d'esempio le colonne da 5 a 8 della domanda QID15 si sommano in automatico e si trasferiscono in automatico nella cella corrispondente sulla prima riga della domanda QID17.
 ​
 ```javascript
 var id = "QID15";
-​
-var inputs = jQuery("#"+id+ "> div.Inner.BorderColor.TE > div > fieldset > div > table input");
-var table = jQuery("#"+id + " > div.Inner.BorderColor.TE > div > fieldset > div > table > tbody > tr");
-var inputColumns = jQuery(table[0]).children().length -1
-var totalsPosition = jQuery(jQuery("#"+id + " > div.Inner.BorderColor.TE > div > fieldset > div > table > tbody")[0]).children().length -1;
-var columnCells = totalsPosition -1;
-var  horizontalIndex = 0;
-var columnIndex = 0;
-var maximum = inputColumns * columnCells;
-var sums = []
-var total = 0;
-jQuery(inputs).each(function(i,b){
-    jQuery(this).on("keypress",function(evt){
-​
-        if(evt.which < 48 || evt.which > 57){
-            console.log("ev.with",evt.which);
-            evt.preventDefault();
-            return false;
-        }
-​
-    });
-    jQuery(this).on("keyup",function(evt){
-                
-                jQuery(this).val(function(index, value) {
-                    console.log("value",value);
-                    return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                });
-                console.log('input columns', inputColumns)
-​
-                if(i < maximum){
-                    horizontalIndex = Math.floor(i/inputColumns);
-                    columnIndex = i - inputColumns * horizontalIndex;
-                    if( sums[columnIndex] == undefined) {
-                        sums[columnIndex] = new Array();
-                        sums[columnIndex].length = columnCells;
-                        isNaN(parseInt(this.value)) ? sums[columnIndex][horizontalIndex] = 0 : sums[columnIndex][horizontalIndex] = parseInt(this.value.replaceAll("\.",""));
-                    } else {
-                        sums[columnIndex][horizontalIndex] = this.value;
-                        isNaN(parseInt(this.value)) ? sums[columnIndex][horizontalIndex] = 0 : sums[columnIndex][horizontalIndex] = parseInt(this.value.replaceAll("\.",""));
-​
-                    }
-                    total = sums[columnIndex].reduce((a, b) => a+b, 0);
-                    console.log('total ', total)
-                    jQuery("#QR\\~"+ id + "\\~"+totalsPosition+"\\~"+(columnIndex+1)+"\\~TEXT").val(total.toLocaleString())
-                } 
-            
-    })
+var outerDestinations = [
+    'QR~QID17~1~5~TEXT',
+    'QR~QID17~1~6~TEXT',
+    'QR~QID17~1~7~TEXT',
+    'QR~QID17~1~8~TEXT'
+];
 
+var skipped = [0, 1 , 2 , 3];
+var inputs = jQuery("#" + id + " input");
+var table = jQuery("#" + id + " table tr");
+var inputColumns = jQuery(table[0]).children().length -1;
+var totalsPosition = jQuery(jQuery("#" + id + " table tbody")[0]).children().length -1;
+var columns = [];
+var tester = inputColumns * (totalsPosition -1);
+var realInputs = inputs.map((a, b) => { 
+    if(!skipped.includes(a % inputColumns)) return b
+}).slice(0, -inputColumns);
+var totals = inputs.map((a,b) => {
+    if(!skipped.includes(a % inputColumns))return b
+}).slice(-inputColumns).slice(0,-inputColumns/2);
+outerDestinations = outerDestinations.map(entry => { return entry.replaceAll("~", "\\~")});
+function columnExtractor(value){
+    console.log('column extractor called ', value)
+    value = parseInt(value.slice(value.length - 6).slice(0, 5));
+    return value
+};
+function rowExtractor(value){
+    console.log('rowextractor called, ', value)
+    value = value.replaceAll("QR~" + id + "~", '');
+    if(value[1]=='~')return parseInt(value[0]);
+    else return parseInt(value[0]+value[1]);
+};
+function elaborateSum(array){
+    array = array.map(entry => { return entry.replaceAll('.', '')});
+    var value = array.map(Number).reduce((a,b) => {return a+b});
+    return value
+};
+
+jQuery(realInputs).each(function(i,b){
+    //prevent text input
+    jQuery(this).on("keypress",function(evt){
+                if(evt.which < 48 || evt.which > 57){
+                    evt.preventDefault();
+                    return false;
+                }
+            });
+    //format input
+    jQuery(this).on("keyup",function(evt){
+        jQuery(this).val(function(index, value) {
+            return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        });​
+    });
+    //store value in array
+    jQuery(this).on('change', function(evt){
+        var inputValue = (jQuery(this).val());
+        var column = columnExtractor(jQuery(this).attr('id'));
+        var totalsIndex = column - (inputColumns / 2)  -1;
+        var row = rowExtractor(jQuery(this).attr('id'));
+        if(columns[column] == undefined) columns[column] = new Array();
+        columns[column][row -1] = inputValue;
+        var total = elaborateSum(columns[column]);
+        jQuery(totals[totalsIndex]).val(total);
+        jQuery("#" + outerDestinations[totalsIndex]).val(total)
+    });
 });
 ```
 ​
-### Trasferimento di dati tra celle
-
-
-Inserire questo snippet di codice in ogni domanda che contiene una matrice con calcolo automatico del totale.
-
-```javascript
-
-function stringFormatter(string) {
-    string =  string.replaceAll("\~","\\~");
-    return string
-}
-
-function copyValue(){
-    var value = jQuery("#" + stringFormatter(inputId)).val();
-    jQuery("#" + stringFormatter(outputId)).val(value)
-}
-
-
-``` 
-
- Ripetere questo snippet per ogni cella che si desidera copiare
-
-```javascript
-
-​var inputId = "QR~QID15~1~1~TEXT";
-var outputId = "QR~QID15~1~2~TEXT";
-
-jQuery("#" + stringFormatter(inputId)).on('change', copyValue)
-
-```
-
