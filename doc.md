@@ -750,5 +750,30 @@ jQuery(realInputs).each(function(i,b){
         jQuery("#" + outerDestinations[totalsIndex]).val(total).trigger('change');
     });
 });
+
+
+### Trasferimento di dati tra celle
+
+
+Inserire questo snippet di codice in ogni domanda che contiene una matrice con calcolo automatico del totale.
+
+```javascript
+function stringFormatter(string) {
+    string =  string.replaceAll("\~","\\~");
+    return string
+}
+function copyValue(){
+    var value = jQuery("#" + stringFormatter(inputId)).val();
+    jQuery("#" + stringFormatter(outputId)).val(value)
+}
+``` 
+
+ Ripetere questo snippet per ogni cella che si desidera copiare
+
+```javascript
+​var inputId = "QR~QID15~1~1~TEXT";
+var outputId = "QR~QID15~1~2~TEXT";
+jQuery("#" + stringFormatter(inputId)).on('change', copyValue)
+```
 ```
 ​
