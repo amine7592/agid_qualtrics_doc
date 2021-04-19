@@ -22,6 +22,83 @@ if (new URL(window.location.href).searchParams.get("Q_CHL") === "preview") {
 ```
 ​
 ## Parte II
+
+## SEZIONE A - Riepilogo Dati in excel
+
+Da copiare nell'intestazione della domanda, inserisce un bottone "Salva in Excel" in corrispondenza del bottone salva e prosegui. Una volta cliccato scarica in automatico un file excel contenente i dati inseriti.
+
+```javascript
+
+var body = jQuery("#SurveyEngineBody");
+body.prepend('<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>');
+var newInput = "<input id='customButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='SALVA IN EXCEL' type='button' align='center'></input>";
+jQuery('#Buttons').prepend(newInput);
+
+function elaborateTable(){
+    var wb = XLSX.utils.book_new();
+    var ids =[];
+    var topLabels = ['A1','B1','C1','D1','E1','F1', 'G1','H1','I1']; //aumentare se aumentano colonne
+    var sideLabels = ['A1','A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15'] //aumentare se aumentano righe
+    var row = 0; //inserire quantità di righe
+    jQuery('div[questionId]').each(function(a,b,c){
+        ids.push("#" + jQuery(this).attr("questionId"));
+    });
+    var sheets = [];
+    ids.map(entry => {
+        //table to sheet
+        var test = document.querySelector(entry + " table");
+        if(test !== null ){
+            row = jQuery(entry + " tr").length -1
+            var workbook = XLSX.utils.table_to_book(test);
+            var firstRow = topLabels.map(label => {
+                if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]['v'];
+            }); 
+            var sideRow = sideLabels.map(label => {
+                if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]["v"];
+            });
+            firstRow = firstRow.filter(cell => cell !== undefined);
+            sideRow = sideRow.filter(cell => cell != undefined);
+            var inputs = jQuery(entry +  " input");
+            var rows = [];
+        
+            inputs.map((index, input) => {
+                
+                var checker =  (Math.floor(index / row)) +1;
+                if(rows[checker] == undefined) rows[checker] = new Array();
+                rows[checker][0] = sideRow[checker];
+                rows[checker].push(jQuery(input).val())
+            });
+            
+            rows[0] = firstRow;
+            //if(jQuery(entry + " h3")[0]) var titleRow = [ jQuery(entry + " h3")[0].outerText];
+            var titleRow = [jQuery( entry + " legend")[0].innerText ];
+            rows.unshift(titleRow);
+            rows.push([]);
+    
+            sheets = sheets.concat(rows);     
+            
+            
+    
+        };
+        if(test == null){
+            //li to sheet
+            var title = [jQuery( entry + " h3").text()] ; 
+            var choise = [jQuery(entry + " .q-checked").text()];  
+            var arr = [title, choise, []];
+            sheets = sheets.concat(arr);
+    
+        }
+    });
+    
+    var sheetTitle = 'Sezione ' + jQuery(" h2").text().slice(0, 1);
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheets), sheetTitle);
+    XLSX.writeFile(wb, 'sezione A.xlsx');
+
+};
+
+jQuery('#customButton').on('click', elaborateTable);
+
+```
 ​
 ## Btot06
 
@@ -62,7 +139,7 @@ function firstRowOperation(e){
     })
     values = values.map(entry =>  entry = entry.replaceAll('.', ''));
     var total = values.map(Number).reduce((a,b) => {return a+b}, 0);
-    jQuery("#" + destinations[column]).val(total);
+    jQuery("#" + destinations[column]).val(total).trigger('change');
 }
 ​
 for(let i = 5; i <9; i++){
@@ -138,7 +215,7 @@ function secondRowOperation(e){
     var divisionUnit = valueParser(jQuery("#" + dividers[column]).val());
     var partial = sum / divisionUnit;
     var total = infinityChecker(partial);
-    jQuery("#" + destinations[column]).val(total);
+    jQuery("#" + destinations[column]).val(total).trigger('change');
 }
 ​
 for(let i = 5; i <9; i++){
@@ -188,7 +265,7 @@ function thirdRowOperation(e){
         var one = jQuery(columns[column][0]).val();
         var two = jQuery(columns[column][2]).val();
         var total = valueParser(one) + valueParser(two);
-        jQuery(columns[column][4]).val(total);
+        jQuery(columns[column][4]).val(total).trigger('change');
 };
 ​
 for(let i = 0; i < 40; i++){
@@ -242,7 +319,7 @@ function sixthRowOperation(e){
         return valueParser(entry)
     });    
     var total = (storeValues[0] * storeValues[1] + storeValues[2] * storeValues[3]) / storeValues[4];
-    jQuery(columns[column][5]).val(infinityChecker(total)); 
+    jQuery(columns[column][5]).val(infinityChecker(total)).trigger('change'); 
 };
 
 for(let i = 0; i < 48; i++){
@@ -289,7 +366,7 @@ function firstRowOperation(e){
     storedValues.push(jQuery("#" + columnsToSum[column][1]).val());
     storedValues = valueArrayParser(storedValues);
     var total = storedValues.reduce((a, b) => {return a+b}, 0);
-    jQuery("#" + destinations[column]).val(total)
+    jQuery("#" + destinations[column]).val(total).trigger('change');
 }
 
 for(let i = 1; i < 9; i++){
@@ -358,7 +435,7 @@ function secondRowFunction(e){
     var divisionUnit = jQuery("#" + dividers[column]).val();
     divisionUnit = parseInt(divisionUnit.replaceAll('.', ''))
     var total = (storedValues[0] * storedValues[1] + storedValues[2] * storedValues[3]) / divisionUnit;
-    jQuery("#" + destinations[column]).val(infinityChecker(total));
+    jQuery("#" + destinations[column]).val(infinityChecker(total)).trigger('change');
 };
 
 for(let i = 5; i < 9 ; i++){
@@ -446,7 +523,7 @@ function fourthRowFunction(e){
     var sum = storedProducts.reduce((a,b) => {return a+b}, 0);
     var divisionUnit = valueExtractor(dividers[column]);
     var total = infinityChecker(sum / divisionUnit);
-    jQuery("#" + destinations[column]).val(total);
+    jQuery("#" + destinations[column]).val(total).trigger('change');
     console.log('done')
 };
 
@@ -498,7 +575,7 @@ function thirdRowOperation(e){
     var one = jQuery(columns[column][0]).val();
     var two = jQuery(columns[column][2]).val();
     var total = valueParser(one) + valueParser(two);
-    jQuery(columns[column][4]).val(total);
+    jQuery(columns[column][4]).val(total).trigger('change');
 };
 
 for(let i = 0; i < 40; i++){
@@ -551,7 +628,7 @@ function sixthRowOperation(e){
         return valueParser(entry)
     });    
     var total = (storeValues[0] * storeValues[1] + storeValues[2] * storeValues[3]) / storeValues[4];
-    jQuery(columns[column][5]).val(infinityChecker(total)); 
+    jQuery(columns[column][5]).val(infinityChecker(total)).trigger('change'); 
     };
 };
 
@@ -573,6 +650,15 @@ jQuery("#QR\\~1_QID137").attr("type", "date")
 ```
 
 ## **Tutte le domande**
+
+### Inserimento Headers grafici
+​
+```javascript
+var tHead = jQuery("#" + id + " > div.Inner.BorderColor.TE > div > fieldset > div > table > thead");
+var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Rilevazione 2018</th><th colspan='4' style='background-color:#D0E2F5'>Rilevazione 2019</th></tr>" 
+​
+tHead.prepend(newHeader)
+```
 
 ### Eliminare popup di conferma quando si preme il tasto indietro
 Da inserire in ogni domanda, il tasto indietro porta automaticamente indietro senza popup di conferma.
@@ -660,8 +746,8 @@ jQuery(realInputs).each(function(i,b){
         if(columns[column] == undefined) columns[column] = new Array();
         columns[column][row -1] = inputValue;
         var total = elaborateSum(columns[column]);
-        jQuery(totals[totalsIndex]).val(total);
-        jQuery("#" + outerDestinations[totalsIndex]).val(total)
+        jQuery(totals[totalsIndex]).val(total).trigger('change');
+        jQuery("#" + outerDestinations[totalsIndex]).val(total).trigger('change');
     });
 });
 ```
