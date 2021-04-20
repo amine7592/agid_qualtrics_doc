@@ -649,6 +649,94 @@ jQuery("#QR\\~1_QID136").attr("type", "date")
 jQuery("#QR\\~1_QID137").attr("type", "date")
 ```
 
+## Sezione B
+
+### B11 Controllo valori 2a riga
+Automatico valido per tutte e 4 le colonne
+```javascript
+var inputs = jQuery("#QID187 input")​;
+var columns = [];
+var errorLabel = "<div id='errorLabel' style='background : red; text-align : center; color: white'> ATTENZIONE: Il valore nella seconda riga non può essere maggiore del valore inserito nella prima riga </div>";
+function columnExtractor(value){
+    value = parseInt(value.slice(value.length - 6).slice(0, 5));
+    return value
+};
+function valueParser(value){
+    value = parseInt(value.replaceAll('.', ''));
+    if(isNaN(value)) return 0
+    else return value
+};
+function errorCheck(e){
+    var column = columnExtractor(e.target.id);
+    var one = jQuery(columns[column][0]).val();
+    var two = jQuery(columns[column][1]).val();
+        var error = valueParser(one) < valueParser(two);
+        if(error){
+            jQuery("#errorLabel").show();
+        }else{
+            jQuery("#errorLabel").hide();
+        }
+};
+for(let i = 0; i < 8; i++){
+    var test = i%4 +1;
+    if (columns[test] == undefined) columns[test] = new Array();
+    columns[test].push(inputs[i]);
+};
+
+columns.map((array, index) => {
+        array.map((element, ind) => {
+            jQuery(element).on('change', errorCheck);
+        })
+});
+
+jQuery("#QID187").append(errorLabel);
+jQuery("#errorLabel").hide();
+
+```
+Automatico, valido solo per le ultime due colonne;
+```javascript
+var inputs = jQuery("#QID187 input")​;
+var columns = [];
+var errorLabel = "<div id='errorLabel' style='background : red; text-align : center; color: white'> ATTENZIONE: Il valore nella seconda riga non può essere maggiore del valore inserito nella prima riga </div>";
+function columnExtractor(value){
+    value = parseInt(value.slice(value.length - 6).slice(0, 5));
+    return value
+};
+function valueParser(value){
+    value = parseInt(value.replaceAll('.', ''));
+    if(isNaN(value)) return 0
+    else return value
+};
+function errorCheck(e){
+    var column = columnExtractor(e.target.id);
+    var one = jQuery(columns[column][0]).val();
+    var two = jQuery(columns[column][1]).val();
+        var error = valueParser(one) < valueParser(two);
+        if(error){
+            jQuery("#errorLabel").show();
+        }else{
+            jQuery("#errorLabel").hide();
+        }
+};
+for(let i = 0; i < 8; i++){
+    var test = i%4 +1;
+    if (columns[test] == undefined) columns[test] = new Array();
+    columns[test].push(inputs[i]);
+};
+
+columns.map((array, index) => {
+    if(index > 2){
+        array.map((element, ind) => {
+            jQuery(element).on('change', errorCheck);
+        })
+    }
+});
+
+jQuery("#QID187").append(errorLabel);
+jQuery("#errorLabel").hide();
+
+```
+
 ## **Tutte le domande**
 
 ## Impedimento input testo in ultima riga
