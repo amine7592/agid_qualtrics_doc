@@ -663,8 +663,13 @@ lastRow.each(function(){
                 if(evt.which < 48 || evt.which > 57){
                     evt.preventDefault();
                     return false;
-                }
+                };
             });
+    jQuery(this).on('keyup', function(){
+        if((parseInt(jQuery(this).val()) > 100){
+            jQuery(this).val(100);
+        };
+    });
 })
 
 ```
