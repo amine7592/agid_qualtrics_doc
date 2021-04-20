@@ -651,6 +651,24 @@ jQuery("#QR\\~1_QID137").attr("type", "date")
 
 ## **Tutte le domande**
 
+## Impedimento input testo in ultima riga
+Va indicato in **cells** il numero di celle nell'ultima riga della domanda da modificare.
+```javascript
+var id = "#QID15";
+var cells = 8;
+var inputs = jQuery(id + " input");
+var lastRow = inputs.slice(-cells);
+lastRow.each(function(){
+    jQuery(this).on("keypress",function(evt){
+                if(evt.which < 48 || evt.which > 57){
+                    evt.preventDefault();
+                    return false;
+                }
+            });
+})
+
+```
+
 ### Inserimento Headers grafici
 ​
 ```javascript
