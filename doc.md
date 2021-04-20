@@ -707,6 +707,7 @@ observer.observe(document.querySelector("#Page"), {
 ​
 Da inserire in ogni domanda specificando in id l'id della domanda e in outerDestinations gli id delle celle in cui devono essere copiati i totali.
 Nel codice d'esempio le colonne da 5 a 8 della domanda QID15 si sommano in automatico e si trasferiscono in automatico nella cella corrispondente sulla prima riga della domanda QID17.
+Per applicarla ad altre domande bisogna inoltre rimpiazzare a mano l'id della domanda all'interno della funzione rowExtractor (vedi commento)
 ​
 ```javascript
 var id = "QID15";
@@ -723,23 +724,32 @@ var table = jQuery("#" + id + " table tr");
 var inputColumns = jQuery(table[0]).children().length -1;
 var totalsPosition = jQuery(jQuery("#" + id + " table tbody")[0]).children().length -1;
 var columns = [];
+
 var tester = inputColumns * (totalsPosition -1);
+
 var realInputs = inputs.map((a, b) => { 
     if(!skipped.includes(a % inputColumns)) return b
 }).slice(0, -inputColumns);
+
 var totals = inputs.map((a,b) => {
     if(!skipped.includes(a % inputColumns))return b
 }).slice(-inputColumns).slice(0,-inputColumns/2);
+
 outerDestinations = outerDestinations.map(entry => { return entry.replaceAll("~", "\\~")});
+
 function columnExtractor(value){
     value = parseInt(value.slice(value.length - 6).slice(0, 5));
     return value
 };
-function rowExtractor(value){
-    value = value.replaceAll("QR~" + id + "~", '');
+
+function rowExtractor(value){;
+    value = value.replaceAll("QR~", "");
+	value = value.replaceAll("QID15~", "");
+    //SOSTIRUIRE A MANO ID (ES value = value.replaceAll('QID187~', '');
     if(value[1]=='~')return parseInt(value[0]);
-    else return parseInt(value[0]+value[1]);
+    else return parseInt(value[0] + value[1]);
 };
+
 function elaborateSum(array){
     array = array.map(entry => { return entry.replaceAll('.', '')});
     var value = array.map(Number).reduce((a,b) => {return a+b});
@@ -758,22 +768,25 @@ jQuery(realInputs).each(function(i,b){
     jQuery(this).on("keyup",function(evt){
         jQuery(this).val(function(index, value) {
             return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        });​
+        });
     });
     //store value in array
     jQuery(this).on('change', function(evt){
         var inputValue = (jQuery(this).val());
         var column = columnExtractor(jQuery(this).attr('id'));
         var totalsIndex = column - (inputColumns / 2)  -1;
+        
         var row = rowExtractor(jQuery(this).attr('id'));
+        
         if(columns[column] == undefined) columns[column] = new Array();
         columns[column][row -1] = inputValue;
         var total = elaborateSum(columns[column]);
         jQuery(totals[totalsIndex]).val(total).trigger('change');
-        jQuery("#" + outerDestinations[totalsIndex]).val(total).trigger('change');
+        jQuery("#" + outerDestinations[totalsIndex]).val(total).trigger('change'); 
     });
 });
 
+```
 
 ### Trasferimento di dati tra celle
 
