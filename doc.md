@@ -33,167 +33,155 @@ body.prepend('<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></scrip
 ​
 in onReady dell'intestazione della domanda
 ```javascript
-
-		var excelButton = "<div style='text-align: center; display: center'><input id='customButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='SALVA IN EXCEL' type='button' align='center'></input></div>";
-		var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='AVANTI' type='button' align='center'></input>"
-		jQuery("#Footer").prepend(excelButton);
-		jQuery('#Buttons').prepend(fakeNext);
-
-		var observer = new MutationObserver(function() {
     
-		const div = document.querySelector("#NextButton");
-		if (div) {
-			div.style.display = "none";
-		}
+    var observer = new MutationObserver(function() {
+    const div = document.querySelector("#NextButton");
+        if(div) {
+            div.style.display = "none";
+        }
+    });
+    observer.observe(document.querySelector("#Page"), {
+        childList: true,
+        subtree: true
+    });
 
-		});
-		observer.observe(document.querySelector("#Page"), {
-			childList: true,
-			subtree: true
-		});
+    var excelButton = "<div style='text-align: center; display: center'><input id='customButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='SALVA IN EXCEL' type='button' align='center'></input></div>";
+    var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='AVANTI' type='button' align='center'></input>"
+    jQuery("#Footer").prepend(excelButton);
+    jQuery('#Buttons').prepend(fakeNext);
 
+    var topLabels = ['A1','B1','C1','D1','E1','F1', 'G1','H1','I1']; 
+    var sideLabels = ['A1','A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15'] 
+    jQuery('div[questionId]').each(function(a,b,c){
+            ids.push("#" + jQuery(this).attr("questionId"));
+    });
 
-		function saveExcel(){
-			var wb = XLSX.utils.book_new();
-			var ids =[];
-			var topLabels = ['A1','B1','C1','D1','E1','F1', 'G1','H1','I1']; //aumentare se aumentano colonne
-			var sideLabels = ['A1','A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15'] //aumentare se aumentano righe
-			var row = 0; //inserire quantità di righe
-			jQuery('div[questionId]').each(function(a,b,c){
-				ids.push("#" + jQuery(this).attr("questionId"));
-			});
-			var sheets = [];
+    function saveExcel(){
+        var wb = XLSX.utils.book_new();
+        var ids =[];
+        var row = 0; 
+        var sheets = [];
+        ids.map(entry => {
+            var test = document.querySelector(entry + " table");
+            if(test !== null ){
+                row = 5;
+                var workbook = XLSX.utils.table_to_book(test);
+                var firstRow = topLabels.map(label => {
+                    if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]['v'];
+                }); 
+                var sideRow = sideLabels.map(label => {
+                    if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]["v"];
+                });
+                firstRow = firstRow.filter(cell => cell !== undefined);
+                sideRow = sideRow.filter(cell => cell != undefined);
+                var inputs = jQuery(entry +  " input");
+                var rows = [];
 
-			ids.map(entry => {
-				//table to sheet
-				var test = document.querySelector(entry + " table");
-				if(test !== null ){
-					row = 5
-					var workbook = XLSX.utils.table_to_book(test);
-					var firstRow = topLabels.map(label => {
-						if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]['v'];
-					}); 
-					var sideRow = sideLabels.map(label => {
-						if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]["v"];
-					});
-					firstRow = firstRow.filter(cell => cell !== undefined);
-					sideRow = sideRow.filter(cell => cell != undefined);
-					var inputs = jQuery(entry +  " input");
-					var rows = [];
+                inputs.map((index, input) => {
+                    var checker =  (Math.floor(index / row)) +1;
+                    if(rows[checker] == undefined) rows[checker] = new Array();
+                    rows[checker][0] = sideRow[checker];
+                    rows[checker].push(jQuery(input).val())
+                });
+                rows[0] = firstRow;
+                var titleRow = [jQuery( entry + " legend")[0].innerText ];
+                rows.unshift(titleRow);
+                rows.push([]);
+                sheets = sheets.concat(rows);     
+            };
+            if(test == null){
+                //li to sheet
+                var title = [jQuery( entry + " h3").text()] ; 
+                var choise = [jQuery(entry + " .q-checked").text()];  
+                var arr = [title, choise, []];
+                sheets = sheets.concat(arr);
 
-					inputs.map((index, input) => {
+            };
+        });
+        var sheetTitle = 'Sezione ' + jQuery(" h2").text().slice(0, 1);
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheets), sheetTitle);
+        XLSX.writeFile(wb, 'sezione A.xlsx');
 
-						var checker =  (Math.floor(index / row)) +1;
-						if(rows[checker] == undefined) rows[checker] = new Array();
-						rows[checker][0] = sideRow[checker];
-						rows[checker].push(jQuery(input).val())
-					});
+    };
 
-					rows[0] = firstRow;
-					var titleRow = [jQuery( entry + " legend")[0].innerText ];
-					rows.unshift(titleRow);
-					rows.push([]);
+    function storeLocalSheet(){
+        var wb = XLSX.utils.book_new();
+        var ids =[];
+        var row = 0; 
+        var sheets = [];
+        ids.map(entry => {
+            var test = document.querySelector(entry + " table");
+            if(test !== null ){
+                row = 5;
+                var workbook = XLSX.utils.table_to_book(test);
+                var firstRow = topLabels.map(label => {
+                    if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]['v'];
+                }); 
+                var sideRow = sideLabels.map(label => {
+                    if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]["v"];
+                });
+                firstRow = firstRow.filter(cell => cell !== undefined);
+                sideRow = sideRow.filter(cell => cell != undefined);
+                var inputs = jQuery(entry +  " input");
+                var rows = [];
+                inputs.map((index, input) => {
+                    var checker =  (Math.floor(index / row)) +1;
+                    if(rows[checker] == undefined) rows[checker] = new Array();
+                    rows[checker][0] = sideRow[checker];
+                    rows[checker].push(jQuery(input).val())
+                });
+                rows[0] = firstRow;
+                var titleRow = [jQuery( entry + " legend")[0].innerText ];
+                rows.unshift(titleRow);
+                rows.push([]);
+                sheets = sheets.concat(rows);     
+            };
+            if(test == null){
+                //li to sheet
+                var title = [jQuery( entry + " h3").text()] ; 
+                var choise = [jQuery(entry + " .q-checked").text()];  
+                var arr = [title, choise, []];
+                sheets = sheets.concat(arr);
+            }
+        });
+        var sheetTitle = 'Sezione ' + jQuery(" h2").text().slice(0, 1);
+        var sezionea = XLSX.utils.aoa_to_sheet(sheets);
+        localStorage.setItem('sezionea', JSON.stringify(sezionea));
+        jQuery("#NextButton").trigger('click');
+    };
 
-					sheets = sheets.concat(rows);     
-
-
-
-				};
-				if(test == null){
-					//li to sheet
-					var title = [jQuery( entry + " h3").text()] ; 
-					var choise = [jQuery(entry + " .q-checked").text()];  
-					var arr = [title, choise, []];
-					sheets = sheets.concat(arr);
-
-				}
-			});
-
-			var sheetTitle = 'Sezione ' + jQuery(" h2").text().slice(0, 1);
-			XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheets), sheetTitle);
-			XLSX.writeFile(wb, 'sezione A.xlsx');
-
-		};
-
-			function storeLocalSheet(){
-
-				var wb = XLSX.utils.book_new();
-			var ids =[];
-			var topLabels = ['A1','B1','C1','D1','E1','F1', 'G1','H1','I1']; //aumentare se aumentano colonne
-			var sideLabels = ['A1','A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15'] //aumentare se aumentano righe
-			var row = 0; //inserire quantità di righe
-			jQuery('div[questionId]').each(function(a,b,c){
-				ids.push("#" + jQuery(this).attr("questionId"));
-			});
-			var sheets = [];
-			ids.map(entry => {
-				//table to sheet
-				var test = document.querySelector(entry + " table");
-				if(test !== null ){
-					row = 5
-					var workbook = XLSX.utils.table_to_book(test);
-					var firstRow = topLabels.map(label => {
-						if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]['v'];
-					}); 
-					var sideRow = sideLabels.map(label => {
-						if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]["v"];
-					});
-					firstRow = firstRow.filter(cell => cell !== undefined);
-					sideRow = sideRow.filter(cell => cell != undefined);
-					var inputs = jQuery(entry +  " input");
-					var rows = [];
-
-					inputs.map((index, input) => {
-
-						var checker =  (Math.floor(index / row)) +1;
-						if(rows[checker] == undefined) rows[checker] = new Array();
-						rows[checker][0] = sideRow[checker];
-						rows[checker].push(jQuery(input).val())
-					});
-
-					rows[0] = firstRow;
-					var titleRow = [jQuery( entry + " legend")[0].innerText ];
-					rows.unshift(titleRow);
-					rows.push([]);
-
-					sheets = sheets.concat(rows);     
-
-
-
-				};
-				if(test == null){
-					//li to sheet
-					var title = [jQuery( entry + " h3").text()] ; 
-					var choise = [jQuery(entry + " .q-checked").text()];  
-					var arr = [title, choise, []];
-					sheets = sheets.concat(arr);
-
-				}
-			});
-
-			var sheetTitle = 'Sezione ' + jQuery(" h2").text().slice(0, 1);
-			var sezionea = XLSX.utils.aoa_to_sheet(sheets);
-			localStorage.setItem('sezionea', JSON.stringify(sezionea));
-			jQuery("#NextButton").trigger('click');
-			}
-
-		jQuery('#excelButton').on('click', saveExcel);
-		jQuery("#fakeNext").on('click', storeLocalSheet)
+jQuery('#excelButton').on('click', saveExcel);
+jQuery("#fakeNext").on('click', storeLocalSheet);
 ```
 
 ## SEZIONE B
 
 ### Riepilogo dati in Excel
-
+in addOnLoad : 
 ```javascript
-
 var body = jQuery("#SurveyEngineBody");
 body.prepend('<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>');
-var newInput = "<div style='text-align : center; position: center'> <input id='customButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px; padding : 10; position : center'  title='XLSX button' value='SALVA IN EXCEL' type='button' align='center'></input> </div>";
-jQuery('#Buttons').append(newInput);
+```
 
-function elaborateTable(){
-        
+in onReady: 
+```javascript
+    var observer = new MutationObserver(function() {
+    const div = document.querySelector("#NextButton");
+        if(div) {
+            div.style.display = "none";
+        };
+    });
+    observer.observe(document.querySelector("#Page"), {
+        childList: true,
+        subtree: true
+    });
+
+    var excelButton = "<div style='text-align: center; display: center'><input id='customButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='SALVA IN EXCEL' type='button' align='center'></input></div>";
+    var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='AVANTI' type='button' align='center'></input>"
+
+    jQuery("#Footer").prepend(excelButton);
+    jQuery('#Buttons').prepend(fakeNext);
+
     var topLabels = ['A1','B1','C1','D1','E1','F1', 'G1','H1','I1']; 
     var sideLabels = ['A1','A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15'] 
     var ids = [];
@@ -202,43 +190,85 @@ function elaborateTable(){
     });
     ids = ids.map(entry => {if(document.querySelector(entry + " table") !== null) return entry});
     ids = ids.filter(entry => entry !== undefined);
+
+function saveExcel(){
     var sheets = [];
     var wb = XLSX.utils.book_new(); 
     var row = 0; 
     var columns = 0;
+
     ids.map(entry => {
         columns = jQuery( entry +" table thead tr").children().length-1;
-        //table to sheet
-            row = jQuery(entry + " tr").length -1;
-            var workbook = XLSX.utils.table_to_book(document.querySelector(entry + " table"));
-            var firstRow = topLabels.map(label => {
-                if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]['v'];
-            }); 
-            var sideRow = sideLabels.map(label => {
-                if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]["v"];
-            });
-            firstRow = firstRow.filter(cell => cell !== undefined);
-            sideRow = sideRow.filter(cell => cell != undefined);
-            var inputs = jQuery(entry +  " input");
-            var rows = []; 
-            inputs.map((index, input) => {
-                var checker =  (Math.floor(index / columns)) +1;
-                if(rows[checker] == undefined) rows[checker] = new Array();
-                rows[checker][0] = sideRow[checker];
-                rows[checker].push(jQuery(input).val())
-            });
-            rows[0] = firstRow;
-            var titleRow = [jQuery( entry + " legend")[0].innerText ];
-            rows.unshift(titleRow);
-            rows.push([]);
-            sheets = sheets.concat(rows);         
+        row = jQuery(entry + " tr").length -1;
+        var workbook = XLSX.utils.table_to_book(document.querySelector(entry + " table"));
+        var firstRow = topLabels.map(label => {
+            if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]['v'];
+        }); 
+        var sideRow = sideLabels.map(label => {
+            if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]["v"];
+        });
+        firstRow = firstRow.filter(cell => cell !== undefined);
+        sideRow = sideRow.filter(cell => cell != undefined);
+        var inputs = jQuery(entry +  " input");
+        var rows = []; 
+        inputs.map((index, input) => {
+            var checker =  (Math.floor(index / columns)) +1;
+            if(rows[checker] == undefined) rows[checker] = new Array();
+            rows[checker][0] = sideRow[checker];
+            rows[checker].push(jQuery(input).val())
+        });
+        rows[0] = firstRow;
+        var titleRow = [jQuery( entry + " legend")[0].innerText ];
+           rows.unshift(titleRow);
+        rows.push([]);
+        sheets = sheets.concat(rows);         
     });
-    var sheetTitle = 'Sezione ' + jQuery(" h2").text().slice(0, 1);
+    var sheetTitle = 'Sezione B';
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheets), sheetTitle);
     XLSX.writeFile(wb, 'sezione B.xlsx'); 
 };
-jQuery('#customButton').on('click', elaborateTable);
 
+function storeLocalSheet(){
+    var sheets = [];
+    var wb = XLSX.utils.book_new(); 
+    var row = 0; 
+    var columns = 0;
+
+    ids.map(entry => {
+        columns = jQuery( entry +" table thead tr").children().length-1;
+        row = jQuery(entry + " tr").length -1;
+        var workbook = XLSX.utils.table_to_book(document.querySelector(entry + " table"));
+        var firstRow = topLabels.map(label => {
+            if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]['v'];
+        }); 
+        var sideRow = sideLabels.map(label => {
+            if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]["v"];
+        });
+        firstRow = firstRow.filter(cell => cell !== undefined);
+        sideRow = sideRow.filter(cell => cell != undefined);
+        var inputs = jQuery(entry +  " input");
+        var rows = []; 
+        inputs.map((index, input) => {
+            var checker =  (Math.floor(index / columns)) +1;
+            if(rows[checker] == undefined) rows[checker] = new Array();
+            rows[checker][0] = sideRow[checker];
+            rows[checker].push(jQuery(input).val())
+        });
+        rows[0] = firstRow;
+        var titleRow = [jQuery( entry + " legend")[0].innerText ];
+           rows.unshift(titleRow);
+        rows.push([]);
+        sheets = sheets.concat(rows);         
+    });
+        
+    var sheetTitle = 'Sezione B';
+    var sezioneb = XLSX.utils.aoa_to_sheet(sheets);
+    localStorage.setItem('sezioneb', JSON.stringify(sezioneb));
+    jQuery("#NextButton").trigger('click'); 
+};
+
+jQuery('#excelButton').on('click', saveExcel);
+jQuery('#fakeNext').on('click', storeLocalSheet);
 
 ```
 ## Totali
