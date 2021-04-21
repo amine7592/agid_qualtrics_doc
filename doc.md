@@ -922,7 +922,7 @@ var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Ri
 ​
 tHead.prepend(newHeader)
 ```
-Per ogni domanda modificare l'id riportato nella variabile tHead( "#QID184, #QID21" etc)
+Per ogni domanda modificare l'id riportato nella variabile tHead( "#QID184, #QID21" etc), inserire questo codice per ultimo nell'onReady.
 ### Eliminare popup di conferma quando si preme il tasto indietro
 Da inserire in ogni domanda, il tasto indietro porta automaticamente indietro senza popup di conferma.
 
