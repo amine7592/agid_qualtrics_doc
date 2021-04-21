@@ -715,26 +715,20 @@ Automatico valido per tutte e 4 le colonne
 ```javascript
 var inputs = jQuery("#QID187 input")​;
 var columns = [];
-var errorLabel = "<div id='errorLabel' style='background : red; text-align : center; color: white'> ATTENZIONE: Il valore nella seconda riga non può essere maggiore del valore inserito nella prima riga </div>";
-function columnExtractor(value){
-    value = parseInt(value.slice(value.length - 6).slice(0, 5));
-    return value
-};
+var values = [];
+
 function valueParser(value){
-    value = parseInt(value.replaceAll('.', ''));
-    if(isNaN(value)) return 0
-    else return value
-};
+    if(isNaN(parseInt(value))) return 0
+    else return parseInt(value)
+}
+
 function errorCheck(e){
-    var column = columnExtractor(e.target.id);
-    var one = jQuery(columns[column][0]).val();
-    var two = jQuery(columns[column][1]).val();
-        var error = valueParser(one) < valueParser(two);
-        if(error){
-            jQuery("#errorLabel").show();
-        }else{
-            jQuery("#errorLabel").hide();
-        }
+    values.length = 0;
+    values[0] = valueParser(jQuery(columns[3][0]));
+    values[1] = valueParser(jQuery(columns[3][1]).val());
+    values[2]= valueParser(columns[4][0]).val();
+    values[3] = valueParser(columns[4][1]).val();
+    console.log('values ' , values)
 };
 for(let i = 0; i < 8; i++){
     var test = i%4 +1;
@@ -748,8 +742,6 @@ columns.map((array, index) => {
         })
 });
 
-jQuery("#QID187").append(errorLabel);
-jQuery("#errorLabel").hide();
 
 ```
 Automatico, valido solo per le ultime due colonne;
@@ -822,14 +814,14 @@ lastRow.each(function(){
 ```
 
 ### Inserimento Headers grafici
-​
+​Esempio per la QID15
 ```javascript
-var tHead = jQuery("#" + id + " > div.Inner.BorderColor.TE > div > fieldset > div > table > thead");
+var tHead = jQuery("#QID15 > div.Inner.BorderColor.TE > div > fieldset > div > table > thead");
 var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Rilevazione 2018</th><th colspan='4' style='background-color:#D0E2F5'>Rilevazione 2019</th></tr>" 
 ​
 tHead.prepend(newHeader)
 ```
-
+Per ogni domanda modificare l'id riportato nella variabile tHead( "#QID184, #QID21" etc)
 ### Eliminare popup di conferma quando si preme il tasto indietro
 Da inserire in ogni domanda, il tasto indietro porta automaticamente indietro senza popup di conferma.
 
