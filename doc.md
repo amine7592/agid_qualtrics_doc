@@ -711,9 +711,9 @@ jQuery("#QR\\~1_QID137").attr("type", "date")
 ## Sezione B
 
 ### B11 Controllo valori 2a riga
-Automatico valido per tutte e 4 le colonne
+Automatico valido per tutte e 4 le colonne, 
 ```javascript
-var inputs = jQuery("#QID187 input")​;
+	var inputs = jQuery("#QID187 input");
 var columns = [];
 var values = [];
 
@@ -724,11 +724,31 @@ function valueParser(value){
 
 function errorCheck(e){
     values.length = 0;
-    values[0] = valueParser(jQuery(columns[3][0]));
-    values[1] = valueParser(jQuery(columns[3][1]).val());
-    values[2]= valueParser(columns[4][0]).val();
-    values[3] = valueParser(columns[4][1]).val();
-    console.log('values ' , values)
+    values[0] = valueParser(jQuery(columns[1][0]).val());
+    values[1] = valueParser(jQuery(columns[1][1]).val());
+    values[2] = valueParser(jQuery(columns[2][0]).val());
+    values[3] = valueParser(jQuery(columns[2][1]).val());
+    values[4] = valueParser(jQuery(columns[3][0]).val());
+    values[5] = valueParser(jQuery(columns[3][1]).val());
+    values[6] = valueParser(jQuery(columns[4][0]).val());
+    values[7] = valueParser(jQuery(columns[4][1]).val());
+    
+    if(values[0] < values[1]) {
+		jQuery(columns[1][1]).val('');
+		window.alert('ATTENZIONE : il valore della seconda riga non può essere maggiore del valore della prima');
+	};
+	if(values[2] < values[3]){
+		jQuery(columns[2][1]).val('');
+		window.alert('ATTENZIONE : il valore della seconda riga non può essere maggiore del valore della prima');
+	};
+    if(values[4] < values[5]) {
+		jQuery(columns[3][1]).val('');
+		window.alert('ATTENZIONE : il valore della seconda riga non può essere maggiore del valore della prima');
+	};
+    if(values[6] < values[7]) {
+		jQuery(columns[4][1]).val('');
+		window.alert('ATTENZIONE : il valore della seconda riga non può essere maggiore del valore della prima');
+	};
 };
 for(let i = 0; i < 8; i++){
     var test = i%4 +1;
@@ -741,7 +761,6 @@ columns.map((array, index) => {
             jQuery(element).on('change', errorCheck);
         })
 });
-
 
 ```
 Automatico, valido solo per le ultime due colonne;
