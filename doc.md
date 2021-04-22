@@ -271,236 +271,277 @@ jQuery('#excelButton').on('click', saveExcel);
 jQuery('#fakeNext').on('click', storeLocalSheet);
 
 ```
-## Totali
+### Btot 06 tutte le formule
 
-Quelle che seguono sono le formule per compilare in automatico i campi della domanda btot06, dal momento che condividono i nomi delle funzioni e delle variabili, per inserirle tutte contemporaneamente oltre a seguire le indicazioni per ciascuna formula per la compilazione dei vari id, è necessario usare nomi diversi per gli array e le variabili in cui sono inseriti onde evitare conflitti.
-### Formula Btot06 riga 1 & Riga 3
-Per la riga 1 inserisci questo script nell'onReady, per la riga 3 sostituisci in columnIds ed in destination gli id degli input che servono come menzionato nella formula in excel seguendo lo stesso ordine.
-Lo script funziona per tutta la riga dando solo gli id che servono alla prima cella
-​
+Codice completo per la domanda Btot06 "Totale spesa per canale d'acquisto", riutilizzabile con la Btot07 cambiando gli id con le celle menzionate nell'excel complementare.
+
 ```javascript
-​
-var columnIds = [
-    'QR~QID15~6~1~TEXT', //cella b13
-    'QR~QID18~3~1~TEXT', //cella b48
-    'QR~QID21~1~1~TEXT', //cella b78
-    'QR~QID24~3~1~TEXT', //cella b106
-    'QR~QID27~10~1~TEXT' //cella b141
-];
-var destination = "QR~QID30~1~1~TEXT"; //cella b173
-var selectors = [];
-var destinations = [];
-var columns = [];
-var values = [];
-​
+
+// funzioni condivise da non modificare, qualora si riutilizzi in un'altra domandail codice di una riga in un'altra sezione è necessario copiare le funzioni che vi vengono menzionate
 function columnExtractor(value){
     value = parseInt(value.slice(value.length - 6).slice(0, 5));
     return value
-}
+};
 function selectorParser(value, column){
     value = (value.slice(0, -6) + column + '~TEXT').replaceAll('~', '\\~');
     return value
-}
-​
-function firstRowOperation(e){
-    var column = columnExtractor(e.target.id);
-    values.length = 0;
-    selectors[column].map(entry => {
-        values.push(jQuery("#"+entry).val())
-    })
-    values = values.map(entry =>  entry = entry.replaceAll('.', ''));
-    var total = values.map(Number).reduce((a,b) => {return a+b}, 0);
-    jQuery("#" + destinations[column]).val(total).trigger('change');
-}
-​
-for(let i = 5; i <9; i++){
-    selectors[i] = new Array();
-    columnIds.map(key => {
-        var parsed = selectorParser(key, i);
-        jQuery("#" + parsed).on('change', firstRowOperation);
-        selectors[i].push(parsed);
-    })
-    var parsedDestination = selectorParser(destination, i);
-    destinations[i] = parsedDestination;
-}
-​
-​
-```
-### Btot06 Riga 2 & Riga 4
-​
-Questa è per la riga 2, per la riga 4 riportare in columnIds, multiplierIds, dividerId e destination gli di delle celle menzionati nel file excel riguardo alla prima casella.
-​
-```javascript
-​
-var columnIds = [
-    'QR~QID15~6~1~TEXT', //cella b13
-    'QR~QID18~3~1~TEXT', //cella b48
-    'QR~QID21~1~1~TEXT', //cella b78
-    'QR~QID24~3~1~TEXT', //cella b106
-    'QR~QID27~10~1~TEXT' //cella b141
-];
-var multiplierIds = [
-    'QR~QID15~7~1~TEXT', //cella b14
-    'QR~QID18~4~1~TEXT', //cella b49
-    'QR~QID21~2~1~TEXT', //cella b79
-    'QR~QID24~4~1~TEXT', //cella b107
-    'QR~QID27~11~1~TEXT' //cella b142
-];
-​
-var dividerId = 'QR~QID30~1~1~TEXT'; //cella b173
-​
-var destination = "QR~QID30~2~1~TEXT"; //cella b173
-var selectors = [];
-var destinations = [];
-var multipliers = [];
-var dividers = [];
-var columns = [];
-var values = [];
-function columnExtractor(value){
-    value = parseInt(value.slice(value.length - 6).slice(0, 5));
-    return value
-}
-function selectorParser(value, column){
-    value = (value.slice(0, -6) + column + '~TEXT').replaceAll('~', '\\~');
-    return value
-}
+};
 function valueParser(value){
     value = parseInt(value.replaceAll('.', ''));
     if(isNaN(value)) return 0
     else return value
-}
+};
+
 function infinityChecker(value){
     if (isNaN(value) || !isFinite(value)) return 0
     else return value
-}
-function secondRowOperation(e){
-    var column = columnExtractor(e.target.id);
-    values.length = 0;
-    for(let i = 0; i < 5; i++){
-        var one =  jQuery("#" + selectors[column][i]).val();
-        var two = jQuery("#" + multipliers[column][i]).val();
-        var product = valueParser(one) * valueParser(two);
-        values.push(product)
-    }
-    var sum = values.reduce((a,b) => {return a+b}, 0);
-    var divisionUnit = valueParser(jQuery("#" + dividers[column]).val());
-    var partial = sum / divisionUnit;
-    var total = infinityChecker(partial);
-    jQuery("#" + destinations[column]).val(total).trigger('change');
-}
-​
-for(let i = 5; i <9; i++){
-    selectors[i] = new Array();
-    columnIds.map(key => {
-        var parsed = selectorParser(key, i);
-        jQuery("#" + parsed).on('change', secondRowOperation);
-        selectors[i].push(parsed);
-    })
-    multipliers[i] = new Array();
-    multiplierIds.map(key => {
-        var multiParsed = selectorParser(key, i);
-        jQuery("#" + multiParsed).on('change', secondRowOperation);
-        multipliers[i].push(multiParsed);
-    })
-    var dividerParsed = selectorParser(dividerId, i);
-        jQuery("#" + dividerParsed).on('change', secondRowOperation);
-    dividers[i] = dividerParsed;
-    var parsedDestination = selectorParser(destination, i);
-    destinations[i] = parsedDestination;
-}
-​
-​
-​
-```
-## Btot06 riga 5 Totali
-Automatica
-​
-```javascript
-​
-var inputs = jQuery("#QID30 input")​;
-var columns = [];
-​
-function columnExtractor(value){
-    value = parseInt(value.slice(value.length - 6).slice(0, 5));
-    return value
 };
-​
-function valueParser(value){
-    value = parseInt(value.replaceAll('.', ''));
-    if(isNaN(value)) return 0
-    else return value
-};
-​
-function thirdRowOperation(e){
-    var column = columnExtractor(e.target.id);
-        var one = jQuery(columns[column][0]).val();
-        var two = jQuery(columns[column][2]).val();
+	/* RIGA 01 */
+    //per adattare a btot07 e simili inserire id della prima colonna da manipolare, ricava le altre colonne in automatico
+	var firstColumns = [
+		'QR~QID15~8~1~TEXT', // tot b01
+		'QR~QID18~5~1~TEXT', // tot b03
+		'QR~QID21~3~1~TEXT', // tot b05
+		'QR~QID24~3~1~TEXT', // tot b07
+		'QR~QID27~10~1~TEXT' // tot b09
+	];
+	var firstDestination = "QR~QID30~1~1~TEXT"; // cella di destinazione prima colonna
+	var firstSelectors = []; 
+	var firstDestinations = [];
+	var firstValues = [];
+	function firstRow(e){
+		var firstColumn = columnExtractor(e.target.id);
+		firstValues.length = 0;
+		firstSelectors[firstColumn].map(entry => {
+			firstValues.push(jQuery("#"+entry).val()); 
+		});
+		firstValues = firstValues.map(entry =>  entry = entry.replaceAll('.', ''));
+		var firstTotal = firstValues.map(Number).reduce((a,b) => {return a+b}, 0);
+		jQuery("#" + firstDestinations[firstColumn]).val(firstTotal).trigger('change'); 
+	};
+	for(let i = 5; i <9; i++){
+		firstSelectors[i] = new Array();
+		firstColumns.map(entry => {
+			var parsed = selectorParser(entry, i);
+			jQuery("#" + parsed).on('change', firstRow);
+			firstSelectors[i].push(parsed);
+		});
+		var parsedDestination = selectorParser(firstDestination, i);
+		firstDestinations[i] = parsedDestination;
+	};
+	/* RIGA 02 */
+    //per adattare a btot07 e simili inserire id della prima colonna da manipolare, ricava le altre colonne in automatico
+	var secondColumns = [
+    'QR~QID15~8~1~TEXT', //tot b01
+    'QR~QID18~5~1~TEXT', //tot b03
+    'QR~QID21~3~1~TEXT', //tot b05 
+    'QR~QID24~3~1~TEXT', //tot b07
+    'QR~QID27~10~1~TEXT' //tot b09
+	];
+    //per adattare a btot07 e simili inserire id della prima colonna di moltiplicatori, ricava le altre colonne in automatico
+	var secondMultipliers = [
+		'QR~QID15~9~1~TEXT', //per b01
+		'QR~QID18~6~1~TEXT', //per b03
+		'QR~QID21~4~1~TEXT', //per b05
+		'QR~QID24~4~1~TEXT', //per b07
+		'QR~QID27~11~1~TEXT' //per b09
+	];
+	var secondDivider = 'QR~QID30~1~1~TEXT'; //riga 1 btot06
+	var secondDestination = "QR~QID30~2~1~TEXT"; //riga 2 btot06
+	var secondSelectors = [];
+	var secondDestSelectors = [];
+	var secondMultiSelectors = [];
+	var secondDivSelectors = [];
+	var secondValues = [];
+
+	function secondRow(e){
+		var column = columnExtractor(e.target.id);
+		secondValues.length = 0;
+		for(let i = 0; i < 5; i++){
+			var one =  jQuery("#" + secondSelectors[column][i]).val();
+			var two = jQuery("#" + secondMultiSelectors[column][i]).val();
+			var product = valueParser(one) * valueParser(two);
+			secondValues.push(product)
+		};
+		var sum = secondValues.reduce((a,b) => {return a+b}, 0);
+		var divisionUnit = valueParser(jQuery("#" + secondDivSelectors[column]).val());
+		var partial = sum / divisionUnit;
+		var total = infinityChecker(partial);
+		jQuery("#" + secondDestSelectors[column]).val(total).trigger('change');
+	};
+
+	for(let i = 5; i <9; i++){
+		secondSelectors[i] = new Array();
+		secondColumns.map(key => {
+			var parsed = selectorParser(key, i);
+			jQuery("#" + parsed).on('change', secondRow);
+			secondSelectors[i].push(parsed);
+		});
+		secondMultiSelectors[i] = new Array();
+		secondMultipliers.map(key => {
+			var multiParsed = selectorParser(key, i);
+			jQuery("#" + multiParsed).on('change', secondRow);
+			secondMultiSelectors[i].push(multiParsed);
+		});
+		var dividerParsed = selectorParser(secondDivider, i);
+			jQuery("#" + dividerParsed).on('change', secondRow);
+		secondDivSelectors[i] = dividerParsed;
+		var parsedDestination = selectorParser(secondDestination, i);
+		secondDestSelectors[i] = parsedDestination;
+	};
+	/* RIGA 03 */
+    //compe per riga 1
+	var thirdColumns = [
+    'QR~QID184~8~1~TEXT', // total b02
+    'QR~QID185~5~1~TEXT', // total b04
+    'QR~QID22~3~1~TEXT', // total b06
+    'QR~QID25~3~1~TEXT', // total b08
+    'QR~QID186~10~1~TEXT' // total b10
+	];
+	var thirdDestination = "QR~QID30~3~1~TEXT"; // btot06 riga 3
+	var thirdSelectors = []; 
+	var thirdDestinations = [];
+	var thirdValues = [];
+	function thirdRow(e){
+		var thirdColumn = columnExtractor(e.target.id);
+		thirdValues.length = 0;
+		thirdSelectors[thirdColumn].map(entry => {
+			thirdValues.push(jQuery("#"+entry).val()); 
+		});
+		thirdValues = thirdValues.map(entry =>  entry = entry.replaceAll('.', ''));
+		var thirdTotal = thirdValues.map(Number).reduce((a,b) => {return a+b}, 0);
+		jQuery("#" + thirdDestinations[thirdColumn]).val(thirdTotal).trigger('change'); 
+	};
+	for(let i = 5; i <9; i++){
+		thirdSelectors[i] = new Array();
+		thirdColumns.map(entry => {
+			var parsed = selectorParser(entry, i);
+			jQuery("#" + parsed).on('change', thirdRow);
+			thirdSelectors[i].push(parsed);
+		});
+		var parsedDestination = selectorParser(thirdDestination, i);
+		thirdDestinations[i] = parsedDestination;
+	};
+	/* RIGA 04 */ 
+    //come per riga 2
+	var fourthColumns = [
+        'QR~QID184~8~1~TEXT', //tot b02
+        'QR~QID185~5~1~TEXT', //tot b04
+        'QR~QID22~3~1~TEXT', //tot b06 
+        'QR~QID25~3~1~TEXT', //tot b08
+        'QR~QID186~10~1~TEXT' //tot b10
+    ];
+    var fourthMultipliers = [
+        'QR~QID184~9~1~TEXT', //per b02
+        'QR~QID185~6~1~TEXT', //per b04
+        'QR~QID22~4~1~TEXT', //per b06
+        'QR~QID25~4~1~TEXT', //per b08
+        'QR~QID186~11~1~TEXT' //per b10
+    ];
+
+    var fourthDivider = 'QR~QID30~3~1~TEXT'; //btot06 riga 3
+    var fourthDestination = "QR~QID30~4~1~TEXT"; //btot06 riga 4
+    var fourthSelectors = [];
+    var fourthDestSelectors = [];
+    var fourthMultiSelectors = [];
+    var fourthDivSelectors = [];
+    var fourthValues = [];
+
+    function fourthRow(e){
+        var column = columnExtractor(e.target.id);
+        fourthValues.length = 0;
+        for(let i = 0; i < 5; i++){
+            var one =  jQuery("#" + fourthSelectors[column][i]).val();
+            var two = jQuery("#" + fourthMultiSelectors[column][i]).val();
+            var product = valueParser(one) * valueParser(two);
+            fourthValues.push(product)
+        };
+        var sum = fourthValues.reduce((a,b) => {return a+b}, 0);
+        var divisionUnit = valueParser(jQuery("#" + fourthDivSelectors[column]).val());
+        var partial = sum / divisionUnit;
+        var total = infinityChecker(partial);
+        jQuery("#" + fourthDestSelectors[column]).val(total).trigger('change');
+    };
+
+    for(let i = 5; i <9; i++){
+        fourthSelectors[i] = new Array();
+        fourthColumns.map(key => {
+            var parsed = selectorParser(key, i);
+            jQuery("#" + parsed).on('change', fourthRow);
+            fourthSelectors[i].push(parsed);
+        });
+        fourthMultiSelectors[i] = new Array();
+        fourthMultipliers.map(key => {
+            var multiParsed = selectorParser(key, i);
+            jQuery("#" + multiParsed).on('change', fourthRow);
+            fourthMultiSelectors[i].push(multiParsed);
+        });
+        var dividerParsed = selectorParser(fourthDivider, i);
+            jQuery("#" + dividerParsed).on('change', fourthRow);
+        fourthDivSelectors[i] = dividerParsed;
+        var parsedDestination = selectorParser(fourthDestination, i);
+        fourthDestSelectors[i] = parsedDestination;
+    };
+	/* RIGA 05 */
+    //per adattare sostituire #QID30 nella prima riga con id della domanda di destinazione, es:  'var inputs = jQuery("#QID31 input")
+	var inputs = jQuery("#QID30 input");
+	var fifthColumns = [];
+
+    function fifthRow(e){
+		console.log('fifth called');
+        var column = columnExtractor(e.target.id);
+        var one = jQuery(fifthColumns[column][0]).val();
+        var two = jQuery(fifthColumns[column][2]).val();
         var total = valueParser(one) + valueParser(two);
-        jQuery(columns[column][4]).val(total).trigger('change');
-};
-​
-for(let i = 0; i < 40; i++){
-    var test = i%8 +1;
-    if (columns[test] == undefined) columns[test] = new Array();
-    columns[test].push(inputs[i]);
-};
+		
+        jQuery(fifthColumns[column][4]).val(total).trigger('change');
+    };
 
-columns.map((array, index) => {
-    if(index > 4){
-        array.map((element, ind) => {
-        if(ind == 0 || ind == 2) jQuery(element).on('change', thirdRowOperation);
-        })
-    }
-});
-​
-​
-```
-## Btot 06 riga 6 Percentuali
-Automatica
-​
-```javascript
-var inputs = jQuery("#QID30 input");
-var skipped = [0, 1 , 2 , 3];
+    for(let i = 0; i < 40; i++){
+        var test = i%8 +1;
+        if (fifthColumns[test] == undefined) fifthColumns[test] = new Array();
+        fifthColumns[test].push(inputs[i]);
+    };
 
-var columns = [];
-var storeValues = [];
-
-function columnExtractor(value){
-    value = parseInt(value.slice(value.length - 6).slice(0, 5));
-    return value
-};
-
-function valueParser(value){
-    value = parseInt(value.replaceAll('.', ''));
-    if(isNaN(value)) return 0
-    else return value
-};
-function infinityChecker(value){
-    if (isNaN(value) || !isFinite(value)) return 0
-    else return value
-};
-
-function sixthRowOperation(e){
-    var column = columnExtractor(e.target.id);
-    storeValues.length = 0;
-    columns[column].map(entry => {
-        storeValues.push(jQuery(entry).val());
+    fifthColumns.map((array, index) => {
+        if(index > 4){
+            array.map((element, ind) => {
+            if(ind == 0 || ind == 2) jQuery(element).on('change', fifthRow);
+            })
+        }
     });
-    storeValues = storeValues.map(entry => {
-        return valueParser(entry)
-    });    
-    var total = (storeValues[0] * storeValues[1] + storeValues[2] * storeValues[3]) / storeValues[4];
-    jQuery(columns[column][5]).val(infinityChecker(total)).trigger('change'); 
-};
+	/* RIGA 06 */
+    //riutilizza la prima riga della formula precedente, se importato in altra domanda senza di essa bisogna inserirla con l'id della domanda precedente
+	var skipped = [0, 1 , 2 , 3];
+    var sixthColumns = [];
+    var sixthStoreValues = [];
 
-for(let i = 0; i < 48; i++){
-    var test = i%8 +1;
-    if (columns[test] == undefined) columns[test] = new Array();
-    columns[test].push(inputs[i]);
-    if(i < 40 && !skipped.includes(i%8)) jQuery(inputs[i]).on('change', sixthRowOperation);
-};
-​
-​
+    function sixthRow(e){
+        var column = columnExtractor(e.target.id);
+        sixthStoreValues.length = 0;
+        sixthColumns[column].map(entry => {
+            sixthStoreValues.push(jQuery(entry).val());
+        });
+        sixthStoreValues = sixthStoreValues.map(entry => {
+            return valueParser(entry)
+        });    
+        var total = (sixthStoreValues[0] * sixthStoreValues[1] + sixthStoreValues[2] * sixthStoreValues[3]) / sixthStoreValues[4];
+        total = infinityChecker(total);
+        total = Math.round(total); //arrotondamento per difetto fino a 0,49, per eccesso da 0.50
+        jQuery(sixthColumns[column][5]).val(total).trigger('change'); 
+    };
+
+    for(let i = 0; i < 48; i++){
+        var test = i%8 +1;
+        if (sixthColumns[test] == undefined) sixthColumns[test] = new Array();
+        sixthColumns[test].push(inputs[i]);
+        if(i < 40 && !skipped.includes(i%8)) jQuery(inputs[i]).on('change', sixthRow);
+    };
+
+    /* HEADER GRAFICO */
+    var tHead = jQuery("#QID30 thead");
+    var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Rilevazione 2020</th><th colspan='4' style='background-color:#D0E2F5'>Rilevazione 2021</th></tr>" 
+    tHead.prepend(newHeader)
 ```
 ## Formule Btot07
 
