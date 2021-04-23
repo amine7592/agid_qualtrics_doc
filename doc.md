@@ -169,7 +169,7 @@ Il trasferimento dei dati in un'altra domanda è stato eliminato, verrà impleme
         return value
   		 };
 	function rowExtractor(value){
-		value = value.replaceAll("QR~QID15~", '');
+		value = value.replaceAll("QR~QID15~", ''); //SOSTIRUIRE QID15
 		value = value.replaceAll('~TEXT', '')
 		if(value[1]=='~')return parseInt(value[0]);
 		else return parseInt(value[0]+value[1]);
@@ -178,27 +178,28 @@ Il trasferimento dei dati in un'altra domanda è stato eliminato, verrà impleme
         value = value.replaceAll("~", "\\~");
 		value = "#" + value;
         return value
-    };
+    };	
 	
-	/* VARIABILI CONDIVISE */
-    var inputs = jQuery("#QID15 input"); //sostituire #QID5
+    /*VARIABILI PRINCIPALI*/
+    var inputs = jQuery("#QID15 input"); //SOSTIRUIRE QID15
     var columnSelectors = [];
-    var table = jQuery("#QID15 table tr"); //sostituire #QID15
+    var table = jQuery("#QID15 table tr"); //SOSTIRUIRE QID15
     var inputColumns = jQuery(table[0]).children().length -1;
-    var totalsPosition = jQuery(jQuery("#QID15 table tbody")[0]).children().length -1; //sostituire #QID15
-    var lastRow = totalsPosition + 1 ;    
-	/* PARSING DEI SELETTORI */
+    var totalsPosition = jQuery(jQuery("#QID15 table tbody")[0]). children().length -1; //SOSTIRUIRE QID15
+    var lastRow = totalsPosition + 1 ;   
+    
+    /*PARSING SELETTORI*/
     inputs.map((index,entry) => {
         var currentColumn = columnExtractor(entry.id);
         if(columnSelectors[currentColumn] == undefined) columnSelectors[currentColumn] = new Array();
         columnSelectors[currentColumn].push(selectorFormatter(entry.id))
     });
-	/* SOMMA TOTALI */
+	/*SOMMA */
     function sumValues(e){
         var currentColumn = columnExtractor(e.target.id);
         var tempValues = [];
         columnSelectors[currentColumn].map((entry, index) => {
-			 if(index < totalsPosition - 1) tempValues.push(jQuery(entry).val());
+			 if(index < totalsPosition - 1) tempValues.push(jQuery(entry).val().replaceAll('.', ''));
         });
         tempValues = tempValues.map(Number);
         var total = tempValues.reduce((a,b) => { return a+b},0);
@@ -206,115 +207,136 @@ Il trasferimento dei dati in un'altra domanda è stato eliminato, verrà impleme
         jQuery(destination).val(total).trigger('change')
     };
 
-	/* BINDINGS */
+	/* EVENT BINDINGS */
 	inputs.each(function(){
 		var currentRow = rowExtractor(this.id);
 		var currentColumn = columnExtractor(this.id);
-		// DISABILITA COLONNE 1 a 4
-		if(currentColumn <= 4){ //se la domanda ha meno di 4 colonne modificare il numero
+		
+		if(currentColumn <= 4){
             jQuery(this).attr('readonly', true);
         };
-		// DISABILITA RIGA TOTALI
+		
 		if(currentRow == totalsPosition){
 			jQuery(this).attr('readonly', true);
 		};
-        // SOMMA RIGHE 1 a 7 BLOCCA INPUT TESTO, VIRGOLE ETC
-		if(currentRow < totalsPosition && currentColumn > 4) {
+
+		if(currentRow < 8 && currentColumn > 4) {
 			jQuery(this).on('keypress', function(evt){
 				if(evt.which < 48 || evt.which > 57){
 					evt.preventDefault();
 					return false;
 				};
 			});
+            //FORMATTA CELLE
+			jQuery(this).on("change",function(evt){
+       			 jQuery(this).val(function(index, value) {
+            	return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        	});
+   		 });
 			jQuery(this).on('change', sumValues);
 		} else if(currentRow == totalsPosition +1 && currentColumn > 4) {
-            //BLOCCA INPUT TESTO
 			jQuery(this).on('keypress', function(evt){
                 if(evt.which < 48 || evt.which > 57){
                     evt.preventDefault();
                     return false;
                 };
             });
-            //ARROTONDA A 100 
             jQuery(this).on("keyup", function(evt){
                 if(parseInt(jQuery(this).val()) > 100){
                     jQuery(this).val(100);
                 };
             }).trigger('change');
-		};
+        //FORMATTA TOTALI
+		} else if(currentRow == totalsPosition){
+			jQuery(this).on("change",function(evt){
+                jQuery(this).val(function(index, value) {
+            return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+       			 });
+    		});
+		};		
 	});
-    // BANNER
-	var tHead = jQuery("#QID15 thead"); // sostituire #QID15
+
+	var tHead = jQuery("#QID15 thead"); //SOSTITUIRE QID15
     var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Rilevazione 2020</th><th colspan='4' style='background-color:#D0E2F5'>Rilevazione 2021</th></tr>" 
     tHead.prepend(newHeader)
-	
+		
 ```
 
 ### BTOT01 codice completo
 
 ```javascript
 
-function columnExtractor(value){
-    value = parseInt(value.slice(value.length - 6).slice(0, 5));
-    return value
-};
-
-var inputs = jQuery("#QID17 input");
-
-var firstQuestion = jQuery("#QID15 input");
-var firstQuestionTotals = firstQuestion.slice(-16).slice(4, 8);
-var firstQuestionPercs = firstQuestion.slice(-4);
-
-var secondQuestion = jQuery("#QID184 input");
-var secondQuestionTotals = secondQuestion.slice(-16).slice(4, 8)
-var secondQuestionPercs = secondQuestion.slice(-4);
-
-var firstRow = inputs.map((index, entry) => {if(index>3 && index <8) return entry} );
-var secondRow = inputs.map((index, entry) => {if(index>11 && index <16) return entry} );
-var thirdRow = inputs.map((index, entry) => {if(index>19 && index < 24) return entry} );
-var fourthRow = inputs.map((index, entry) => {if(index>27 && index < 32) return entry} );
-var fifthRow = inputs.map((index, entry) => {if(index>35 && index < 40) return entry} );
-var sixthRow = inputs.map((index, entry) => {if(index > 43 && index <48) return entry} );
-inputs.each(function(){
-    jQuery(this).attr("readonly", true)
-});
-
-function elaborateSixth(one, two, three, four, five, column){
-    var total = 0;
-    var first = parseInt(one) * parseInt(two) + parseInt(three) * parseInt(four);
-    var second = first / parseInt(five);
-    if(isNaN(second) || !isFinite(second))  total = 0;
-    else total = Math.round(second);
-    jQuery(sixthRow[column]).val(total).trigger('change');
-}
-/* RIGHE 1 a 4 */
-function dataTransfer(e){
-    console.log('called from ', e.target.id)
-    var column = columnExtractor(e.target.id);
-    var originIndex = column -5;
-    var one = jQuery(firstQuestionTotals[originIndex]).val();
-    var two = jQuery(firstQuestionPercs[originIndex]).val();
-    var three = jQuery(secondQuestionTotals[originIndex]).val();
-    var four = jQuery(secondQuestionPercs[originIndex]).val();
-    jQuery(firstRow[originIndex]).val(one).trigger('change');
-    jQuery(secondRow[originIndex]).val(two).trigger('change');
-    jQuery(thirdRow[originIndex]).val(three).trigger('change');
-    jQuery(fourthRow[originIndex]).val(four).trigger('change');
-    var sum = parseInt(jQuery(firstRow[originIndex]).val()) + parseInt(jQuery(thirdRow[originIndex]).val());
-    jQuery(fifthRow[originIndex]).val(sum).trigger('change');
-    elaborateSixth(one, two, three, four, sum, originIndex);
-}
-
-//event binding
-for(let i = 0; i < firstQuestionTotals.length; i++){
-    jQuery(firstQuestionTotals[i]).on('change', dataTransfer);
-    jQuery(firstQuestionPercs[i]).on('change', dataTransfer);
-    jQuery(secondQuestionTotals[i]).on('change', dataTransfer);
-    jQuery(secondQuestionPercs[i]).on('change', dataTransfer);
-}
-
-//HEADER
-var tHead = jQuery("#QID17 thead"); // sostituire #QID15
+    function columnExtractor(value){
+        value = parseInt(value.slice(value.length - 6).slice(0, 5));
+        return value
+    };
+    
+    var inputs = jQuery("#QID17 input");
+    
+    var firstQuestion = jQuery("#QID15 input");
+    var firstQuestionTotals = firstQuestion.slice(-16).slice(4, 8);
+    var firstQuestionPercs = firstQuestion.slice(-4);
+    
+    var secondQuestion = jQuery("#QID184 input");
+    var secondQuestionTotals = secondQuestion.slice(-16).slice(4, 8)
+    var secondQuestionPercs = secondQuestion.slice(-4);
+    
+    var firstRow = inputs.map((index, entry) => {if(index>3 && index <8) return entry} );
+    var secondRow = inputs.map((index, entry) => {if(index>11 && index <16) return entry} );
+    var thirdRow = inputs.map((index, entry) => {if(index>19 && index < 24) return entry} );
+    var fourthRow = inputs.map((index, entry) => {if(index>27 && index < 32) return entry} );
+    var fifthRow = inputs.map((index, entry) => {if(index>35 && index < 40) return entry} );
+    var sixthRow = inputs.map((index, entry) => {if(index > 43 && index <48) return entry} );
+    inputs.each(function(){
+        jQuery(this).attr("readonly", true)
+    });
+        
+    function elaborateSixth(one, two, three, four, five, column){
+        var total = 0;
+        var first = parseInt(one) * parseInt(two) + parseInt(three) * parseInt(four);
+        var second = first / parseInt(five);
+        if(isNaN(second) || !isFinite(second))  total = 0;
+        else total = Math.round(second);
+        jQuery(sixthRow[column]).val(total).trigger('change');
+    }
+    /* RIGHE 1 a 4 */
+    function dataTransfer(e){
+        console.log('called from ', e.target.id)
+        var column = columnExtractor(e.target.id);
+        var originIndex = column -5;
+        var one = jQuery(firstQuestionTotals[originIndex]).val().replaceAll('.', '');
+        var two = jQuery(firstQuestionPercs[originIndex]).val();
+        var three = jQuery(secondQuestionTotals[originIndex]).val().replaceAll('.', '');;
+        var four = jQuery(secondQuestionPercs[originIndex]).val();
+        jQuery(firstRow[originIndex]).val(one).trigger('change'); 
+        jQuery(secondRow[originIndex]).val(two).trigger('change');
+        jQuery(thirdRow[originIndex]).val(three).trigger('change');
+        jQuery(fourthRow[originIndex]).val(four).trigger('change');
+        var sum = parseInt(one) + parseInt(three);
+        jQuery(fifthRow[originIndex]).val(sum).trigger('change');
+        elaborateSixth(one, two, three, four, sum, originIndex);
+    }
+    
+    //event binding
+    for(let i = 0; i < firstQuestionTotals.length; i++){
+        jQuery(firstQuestionTotals[i]).on('change', dataTransfer);
+        jQuery(firstQuestionPercs[i]).on('change', dataTransfer);
+        jQuery(secondQuestionTotals[i]).on('change', dataTransfer);
+        jQuery(secondQuestionPercs[i]).on('change', dataTransfer);
+    };
+    
+    //binding format
+    
+    inputs.each(function(){	
+        jQuery(this).on("change",function(evt){
+                    jQuery(this).val(function(index, value) {
+                return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            });
+        });
+    })
+    
+    //HEADER
+    var tHead = jQuery("#QID17 thead"); 
     var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Rilevazione 2020</th><th colspan='4' style='background-color:#D0E2F5'>Rilevazione 2021</th></tr>" 
     tHead.prepend(newHeader)
 
@@ -1031,42 +1053,8 @@ jQuery("#QR\\~1_QID136").attr("type", "date")
 jQuery("#QR\\~1_QID137").attr("type", "date")
 ```
 
-
-
 ## **Tutte le domande**
 
-## Impedimento input testo in ultima riga
-Va indicato in **cells** il numero di celle nell'ultima riga della domanda da modificare.
-```javascript
-var id = "#QID15";
-var cells = 8;
-var inputs = jQuery(id + " input");
-var lastRow = inputs.slice(-cells);
-lastRow.each(function(){
-    jQuery(this).on("keypress",function(evt){
-                if(evt.which < 48 || evt.which > 57){
-                    evt.preventDefault();
-                    return false;
-                };
-            });
-    jQuery(this).on('keyup', function(){
-        if((parseInt(jQuery(this).val()) > 100){
-            jQuery(this).val(100);
-        };
-    });
-})
-
-```
-
-### Inserimento Headers grafici
-​Esempio per la QID15
-```javascript
-var tHead = jQuery("#QID15 > div.Inner.BorderColor.TE > div > fieldset > div > table > thead");
-var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Rilevazione 2018</th><th colspan='4' style='background-color:#D0E2F5'>Rilevazione 2019</th></tr>" 
-​
-tHead.prepend(newHeader)
-```
-Per ogni domanda modificare l'id riportato nella variabile tHead( "#QID184, #QID21" etc), inserire questo codice per ultimo nell'onReady.
 ### Eliminare popup di conferma quando si preme il tasto indietro
 Da inserire in ogni domanda, il tasto indietro porta automaticamente indietro senza popup di conferma.
 
@@ -1086,114 +1074,5 @@ observer.observe(document.querySelector("#Page"), {
     subtree: true
 });
 
-```
-### Somma valori in riga dei totali, blocca input di testo, copia dei valori totali in altra tabella
-​
-Da inserire in ogni domanda specificando in id l'id della domanda e in outerDestinations gli id delle celle in cui devono essere copiati i totali.
-Nel codice d'esempio le colonne da 5 a 8 della domanda QID15 si sommano in automatico e si trasferiscono in automatico nella cella corrispondente sulla prima riga della domanda QID17.
-Per applicarla ad altre domande bisogna inoltre rimpiazzare a mano l'id della domanda all'interno della funzione rowExtractor (vedi commento)
-​
-```javascript
-var id = "QID15";
-var outerDestinations = [
-    'QR~QID17~1~5~TEXT',
-    'QR~QID17~1~6~TEXT',
-    'QR~QID17~1~7~TEXT',
-    'QR~QID17~1~8~TEXT'
-];
-
-var skipped = [0, 1 , 2 , 3];
-var inputs = jQuery("#" + id + " input");
-var table = jQuery("#" + id + " table tr");
-var inputColumns = jQuery(table[0]).children().length -1;
-var totalsPosition = jQuery(jQuery("#" + id + " table tbody")[0]).children().length -1;
-var columns = [];
-
-var tester = inputColumns * (totalsPosition -1);
-
-var realInputs = inputs.map((a, b) => { 
-    if(!skipped.includes(a % inputColumns)) return b
-}).slice(0, -inputColumns);
-
-var totals = inputs.map((a,b) => {
-    if(!skipped.includes(a % inputColumns))return b
-}).slice(-inputColumns).slice(0,-inputColumns/2);
-
-outerDestinations = outerDestinations.map(entry => { return entry.replaceAll("~", "\\~")});
-
-function columnExtractor(value){
-    value = parseInt(value.slice(value.length - 6).slice(0, 5));
-    return value
-};
-
-function rowExtractor(value){;
-    value = value.replaceAll("QR~", "");
-	value = value.replaceAll("QID15~", "");
-    //SOSTIRUIRE A MANO ID (ES value = value.replaceAll('QID187~', '');
-    if(value[1]=='~')return parseInt(value[0]);
-    else return parseInt(value[0] + value[1]);
-};
-
-function elaborateSum(array){
-    array = array.map(entry => { return entry.replaceAll('.', '')});
-    var value = array.map(Number).reduce((a,b) => {return a+b});
-    return value
-};
-
-jQuery(realInputs).each(function(i,b){
-    //prevent text input
-    jQuery(this).on("keypress",function(evt){
-                if(evt.which < 48 || evt.which > 57){
-                    evt.preventDefault();
-                    return false;
-                }
-            });
-    //format input
-    jQuery(this).on("keyup",function(evt){
-        jQuery(this).val(function(index, value) {
-            return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        });
-    });
-    //store value in array
-    jQuery(this).on('change', function(evt){
-        var inputValue = (jQuery(this).val());
-        var column = columnExtractor(jQuery(this).attr('id'));
-        var totalsIndex = column - (inputColumns / 2)  -1;
-        
-        var row = rowExtractor(jQuery(this).attr('id'));
-        
-        if(columns[column] == undefined) columns[column] = new Array();
-        columns[column][row -1] = inputValue;
-        var total = elaborateSum(columns[column]);
-        jQuery(totals[totalsIndex]).val(total).trigger('change');
-        jQuery("#" + outerDestinations[totalsIndex]).val(total).trigger('change'); 
-    });
-});
-
-```
-
-### Trasferimento di dati tra celle
-
-
-Inserire questo snippet di codice in ogni domanda che contiene una matrice con calcolo automatico del totale.
-
-```javascript
-function stringFormatter(string) {
-    string =  string.replaceAll("\~","\\~");
-    return string
-}
-function copyValue(){
-    var value = jQuery("#" + stringFormatter(inputId)).val();
-    jQuery("#" + stringFormatter(outputId)).val(value)
-}
-``` 
-
- Ripetere questo snippet per ogni cella che si desidera copiare
-
-```javascript
-​var inputId = "QR~QID15~1~1~TEXT";
-var outputId = "QR~QID15~1~2~TEXT";
-jQuery("#" + stringFormatter(inputId)).on('change', copyValue)
-```
 ```
 ​
