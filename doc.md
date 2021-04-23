@@ -156,6 +156,98 @@ jQuery("#fakeNext").on('click', storeLocalSheet);
 
 ## SEZIONE B
 
+### B01 Codice completo
+
+Codice completo per la domanda B01 da inserire nell'onReady, adattabile ad altre simili cambiando il **QID** dove è menzionato.
+Disabilita in automatico le prime 4 colonne e le righe dei totali, pertanto non è più necessario disabilitarli nell'onLoad.
+Il trasferimento dei dati in un'altra domanda è stato eliminato, verrà implementata la copia di dati dalla domanda di destinazione.
+```javascript
+	
+	/* GENERAL PURPOSE FUNCTIONS */
+	function columnExtractor(value){
+        value = parseInt(value.slice(value.length - 6).slice(0, 5));
+        return value
+  		 };
+	function rowExtractor(value){
+		value = value.replaceAll("QR~QID15~", '');
+		value = value.replaceAll('~TEXT', '')
+		if(value[1]=='~')return parseInt(value[0]);
+		else return parseInt(value[0]+value[1]);
+	};
+	function selectorFormatter(value){
+        value = value.replaceAll("~", "\\~");
+		value = "#" + value;
+        return value
+    };
+	
+	/* MAIN VAR'S */
+    var inputs = jQuery("#QID15 input");
+    var columnSelectors = [];
+    var table = jQuery("#QID15 table tr");
+    var inputColumns = jQuery(table[0]).children().length -1;
+    var totalsPosition = jQuery(jQuery("#QID15 table tbody")[0]).children().length -1;
+    var lastRow = totalsPosition + 1 ;    
+	/* SELECTORS PARSING  && STORING */
+    inputs.map((index,entry) => {
+        var currentColumn = columnExtractor(entry.id);
+        if(columnSelectors[currentColumn] == undefined) columnSelectors[currentColumn] = new Array();
+        columnSelectors[currentColumn].push(selectorFormatter(entry.id))
+    });
+	/*SUM FUNCTION */
+    function sumValues(e){
+        var currentColumn = columnExtractor(e.target.id);
+        var tempValues = [];
+        columnSelectors[currentColumn].map((entry, index) => {
+			 if(index < totalsPosition - 1) tempValues.push(jQuery(entry).val());
+        });
+        tempValues = tempValues.map(Number);
+        var total = tempValues.reduce((a,b) => { return a+b},0);
+        var destination = columnSelectors[currentColumn][totalsPosition - 1];
+        jQuery(destination).val(total).trigger('change')
+    };
+
+	/* EVENT BINDINGS */
+	inputs.each(function(){
+		var currentRow = rowExtractor(this.id);
+		var currentColumn = columnExtractor(this.id);
+		
+		if(currentColumn <= 4){
+            jQuery(this).attr('readonly', true);
+        };
+		
+		if(currentRow == totalsPosition){
+			jQuery(this).attr('readonly', true);
+		};
+
+		if(currentRow < 8 && currentColumn > 4) {
+			jQuery(this).on('keypress', function(evt){
+				if(evt.which < 48 || evt.which > 57){
+					evt.preventDefault();
+					return false;
+				};
+			});
+			jQuery(this).on('change', sumValues);
+		} else if(currentRow == totalsPosition +1 && currentColumn > 4) {
+			jQuery(this).on('keypress', function(evt){
+                if(evt.which < 48 || evt.which > 57){
+                    evt.preventDefault();
+                    return false;
+                };
+            });
+            jQuery(this).on("keyup", function(evt){
+                if(parseInt(jQuery(this).val()) > 100){
+                    jQuery(this).val(100);
+                };
+            }).trigger('change');
+		};
+	});
+
+	var tHead = jQuery("#QID15 thead");
+    var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Rilevazione 2020</th><th colspan='4' style='background-color:#D0E2F5'>Rilevazione 2021</th></tr>" 
+    tHead.prepend(newHeader)
+	
+```
+
 ### Riepilogo dati in Excel
 in addOnLoad : 
 ```javascript
