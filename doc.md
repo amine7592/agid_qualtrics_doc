@@ -163,7 +163,7 @@ Disabilita in automatico le prime 4 colonne e le righe dei totali, pertanto non 
 Il trasferimento dei dati in un'altra domanda è stato eliminato, verrà implementata la copia di dati dalla domanda di destinazione.
 ```javascript
 	
-	/* GENERAL PURPOSE FUNCTIONS */
+	/* FUNZIONI CONDIVISE */
 	function columnExtractor(value){
         value = parseInt(value.slice(value.length - 6).slice(0, 5));
         return value
@@ -180,20 +180,20 @@ Il trasferimento dei dati in un'altra domanda è stato eliminato, verrà impleme
         return value
     };
 	
-	/* MAIN VAR'S */
-    var inputs = jQuery("#QID15 input");
+	/* VARIABILI CONDIVISE */
+    var inputs = jQuery("#QID15 input"); //sostituire #QID5
     var columnSelectors = [];
-    var table = jQuery("#QID15 table tr");
+    var table = jQuery("#QID15 table tr"); //sostituire #QID15
     var inputColumns = jQuery(table[0]).children().length -1;
-    var totalsPosition = jQuery(jQuery("#QID15 table tbody")[0]).children().length -1;
+    var totalsPosition = jQuery(jQuery("#QID15 table tbody")[0]).children().length -1; //sostituire #QID15
     var lastRow = totalsPosition + 1 ;    
-	/* SELECTORS PARSING  && STORING */
+	/* PARSING DEI SELETTORI */
     inputs.map((index,entry) => {
         var currentColumn = columnExtractor(entry.id);
         if(columnSelectors[currentColumn] == undefined) columnSelectors[currentColumn] = new Array();
         columnSelectors[currentColumn].push(selectorFormatter(entry.id))
     });
-	/*SUM FUNCTION */
+	/* SOMMA TOTALI */
     function sumValues(e){
         var currentColumn = columnExtractor(e.target.id);
         var tempValues = [];
@@ -206,20 +206,20 @@ Il trasferimento dei dati in un'altra domanda è stato eliminato, verrà impleme
         jQuery(destination).val(total).trigger('change')
     };
 
-	/* EVENT BINDINGS */
+	/* BINDINGS */
 	inputs.each(function(){
 		var currentRow = rowExtractor(this.id);
 		var currentColumn = columnExtractor(this.id);
-		
-		if(currentColumn <= 4){
+		// DISABILITA COLONNE 1 a 4
+		if(currentColumn <= 4){ //se la domanda ha meno di 4 colonne modificare il numero
             jQuery(this).attr('readonly', true);
         };
-		
+		// DISABILITA RIGA TOTALI
 		if(currentRow == totalsPosition){
 			jQuery(this).attr('readonly', true);
 		};
-
-		if(currentRow < 8 && currentColumn > 4) {
+        // SOMMA RIGHE 1 a 7 BLOCCA INPUT TESTO, VIRGOLE ETC
+		if(currentRow < totalsPosition && currentColumn > 4) {
 			jQuery(this).on('keypress', function(evt){
 				if(evt.which < 48 || evt.which > 57){
 					evt.preventDefault();
@@ -228,12 +228,14 @@ Il trasferimento dei dati in un'altra domanda è stato eliminato, verrà impleme
 			});
 			jQuery(this).on('change', sumValues);
 		} else if(currentRow == totalsPosition +1 && currentColumn > 4) {
+            //BLOCCA INPUT TESTO
 			jQuery(this).on('keypress', function(evt){
                 if(evt.which < 48 || evt.which > 57){
                     evt.preventDefault();
                     return false;
                 };
             });
+            //ARROTONDA A 100 
             jQuery(this).on("keyup", function(evt){
                 if(parseInt(jQuery(this).val()) > 100){
                     jQuery(this).val(100);
@@ -241,11 +243,81 @@ Il trasferimento dei dati in un'altra domanda è stato eliminato, verrà impleme
             }).trigger('change');
 		};
 	});
-
-	var tHead = jQuery("#QID15 thead");
+    // BANNER
+	var tHead = jQuery("#QID15 thead"); // sostituire #QID15
     var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Rilevazione 2020</th><th colspan='4' style='background-color:#D0E2F5'>Rilevazione 2021</th></tr>" 
     tHead.prepend(newHeader)
 	
+```
+
+### BTOT01 codice completo
+
+```javascript
+
+function columnExtractor(value){
+    value = parseInt(value.slice(value.length - 6).slice(0, 5));
+    return value
+};
+
+var inputs = jQuery("#QID17 input");
+
+var firstQuestion = jQuery("#QID15 input");
+var firstQuestionTotals = firstQuestion.slice(-16).slice(4, 8);
+var firstQuestionPercs = firstQuestion.slice(-4);
+
+var secondQuestion = jQuery("#QID184 input");
+var secondQuestionTotals = secondQuestion.slice(-16).slice(4, 8)
+var secondQuestionPercs = secondQuestion.slice(-4);
+
+var firstRow = inputs.map((index, entry) => {if(index>3 && index <8) return entry} );
+var secondRow = inputs.map((index, entry) => {if(index>11 && index <16) return entry} );
+var thirdRow = inputs.map((index, entry) => {if(index>19 && index < 24) return entry} );
+var fourthRow = inputs.map((index, entry) => {if(index>27 && index < 32) return entry} );
+var fifthRow = inputs.map((index, entry) => {if(index>35 && index < 40) return entry} );
+var sixthRow = inputs.map((index, entry) => {if(index > 43 && index <48) return entry} );
+inputs.each(function(){
+    jQuery(this).attr("readonly", true)
+});
+
+function elaborateSixth(one, two, three, four, five, column){
+    var total = 0;
+    var first = parseInt(one) * parseInt(two) + parseInt(three) * parseInt(four);
+    var second = first / parseInt(five);
+    if(isNaN(second) || !isFinite(second))  total = 0;
+    else total = Math.round(second);
+    jQuery(sixthRow[column]).val(total).trigger('change');
+}
+/* RIGHE 1 a 4 */
+function dataTransfer(e){
+    console.log('called from ', e.target.id)
+    var column = columnExtractor(e.target.id);
+    var originIndex = column -5;
+    var one = jQuery(firstQuestionTotals[originIndex]).val();
+    var two = jQuery(firstQuestionPercs[originIndex]).val();
+    var three = jQuery(secondQuestionTotals[originIndex]).val();
+    var four = jQuery(secondQuestionPercs[originIndex]).val();
+    jQuery(firstRow[originIndex]).val(one).trigger('change');
+    jQuery(secondRow[originIndex]).val(two).trigger('change');
+    jQuery(thirdRow[originIndex]).val(three).trigger('change');
+    jQuery(fourthRow[originIndex]).val(four).trigger('change');
+    var sum = parseInt(jQuery(firstRow[originIndex]).val()) + parseInt(jQuery(thirdRow[originIndex]).val());
+    jQuery(fifthRow[originIndex]).val(sum).trigger('change');
+    elaborateSixth(one, two, three, four, sum, originIndex);
+}
+
+//event binding
+for(let i = 0; i < firstQuestionTotals.length; i++){
+    jQuery(firstQuestionTotals[i]).on('change', dataTransfer);
+    jQuery(firstQuestionPercs[i]).on('change', dataTransfer);
+    jQuery(secondQuestionTotals[i]).on('change', dataTransfer);
+    jQuery(secondQuestionPercs[i]).on('change', dataTransfer);
+}
+
+//HEADER
+var tHead = jQuery("#QID17 thead"); // sostituire #QID15
+    var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Rilevazione 2020</th><th colspan='4' style='background-color:#D0E2F5'>Rilevazione 2021</th></tr>" 
+    tHead.prepend(newHeader)
+
 ```
 
 ### Riepilogo dati in Excel
