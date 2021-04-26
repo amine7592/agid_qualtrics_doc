@@ -1001,6 +1001,10 @@ function valueFormatter(value){
         sixthColumns[test].push(inputs[i]);
         if(i < 40 && !skipped.includes(i%8)) jQuery(inputs[i]).on('change', sixthRow);
     };
+    //disabilita input
+    inputs.each(function(){
+		jQuery(this).attr('readonly', true);
+	})
 
     /* HEADER GRAFICO */
     var tHead = jQuery("#QID31 thead");
