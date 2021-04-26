@@ -460,6 +460,7 @@ jQuery('#fakeNext').on('click', storeLocalSheet);
 ### Btot 06 tutte le formule
 
 Codice completo per la domanda Btot06 "Totale spesa per canale d'acquisto". Commenti come "tot b01" fanno riferimento alla domanda su qualtrics e non al file excel salvo diversamente specificato.
+Il codice disabilita in automatico tutti gli input, pertanto eventuali 'readonly' specificati nell'onLoad vanno cancellati.
 
 ```javascript
 
@@ -722,6 +723,10 @@ function valueFormatter(value){
         sixthColumns[test].push(inputs[i]);
         if(i < 40 && !skipped.includes(i%8)) jQuery(inputs[i]).on('change', sixthRow);
     };
+    //disabilita tutti gli input
+    inputs.each(function(){
+		jQuery(this).attr('readonly', true);
+	})
 
     /* HEADER GRAFICO */
     var tHead = jQuery("#QID30 thead");
