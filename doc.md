@@ -482,6 +482,12 @@ function infinityChecker(value){
     if (isNaN(value) || !isFinite(value)) return 0
     else return value
 };
+function valueFormatter(value){
+    value = value.toString();
+    value = value.replace(/\D/g, "");
+    value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return value
+};
 	/* RIGA 01 */
 	var firstColumns = [
 		'QR~QID15~8~1~TEXT', // tot b01
@@ -502,7 +508,7 @@ function infinityChecker(value){
 		});
 		firstValues = firstValues.map(entry =>  entry = entry.replaceAll('.', ''));
 		var firstTotal = firstValues.map(Number).reduce((a,b) => {return a+b}, 0);
-		jQuery("#" + firstDestinations[firstColumn]).val(firstTotal).trigger('change'); 
+		jQuery("#" + firstDestinations[firstColumn]).val(valueFormatter(firstTotal)).trigger('change'); 
 	};
 	for(let i = 5; i <9; i++){
 		firstSelectors[i] = new Array();
@@ -550,7 +556,7 @@ function infinityChecker(value){
 		var divisionUnit = valueParser(jQuery("#" + secondDivSelectors[column]).val());
 		var partial = sum / divisionUnit;
 		var total = infinityChecker(partial);
-		jQuery("#" + secondDestSelectors[column]).val(total).trigger('change');
+		jQuery("#" + secondDestSelectors[column]).val(Math.round(total)).trigger('change');
 	};
 
 	for(let i = 5; i <9; i++){
@@ -592,7 +598,7 @@ function infinityChecker(value){
 		});
 		thirdValues = thirdValues.map(entry =>  entry = entry.replaceAll('.', ''));
 		var thirdTotal = thirdValues.map(Number).reduce((a,b) => {return a+b}, 0);
-		jQuery("#" + thirdDestinations[thirdColumn]).val(thirdTotal).trigger('change'); 
+		jQuery("#" + thirdDestinations[thirdColumn]).val(valueFormatter(thirdTotal)).trigger('change'); 
 	};
 	for(let i = 5; i <9; i++){
 		thirdSelectors[i] = new Array();
@@ -641,7 +647,7 @@ function infinityChecker(value){
         var divisionUnit = valueParser(jQuery("#" + fourthDivSelectors[column]).val());
         var partial = sum / divisionUnit;
         var total = infinityChecker(partial);
-        jQuery("#" + fourthDestSelectors[column]).val(total).trigger('change');
+        jQuery("#" + fourthDestSelectors[column]).val(Math.round(total)).trigger('change');
     };
 
     for(let i = 5; i <9; i++){
@@ -673,7 +679,7 @@ function infinityChecker(value){
         var two = jQuery(fifthColumns[column][2]).val();
         var total = valueParser(one) + valueParser(two);
 		
-        jQuery(fifthColumns[column][4]).val(total).trigger('change');
+        jQuery(fifthColumns[column][4]).val(valueFormatter(total)).trigger('change');
     };
 
     for(let i = 0; i < 40; i++){
@@ -707,7 +713,7 @@ function infinityChecker(value){
         var total = (sixthStoreValues[0] * sixthStoreValues[1] + sixthStoreValues[2] * sixthStoreValues[3]) / sixthStoreValues[4];
         total = infinityChecker(total);
         total = Math.round(total); //arrotondamento per difetto fino a 0,49, per eccesso da 0.50
-        jQuery(sixthColumns[column][5]).val(total).trigger('change'); 
+        jQuery(sixthColumns[column][5]).val(Math.round(total)).trigger('change'); 
     };
 
     for(let i = 0; i < 48; i++){
@@ -747,6 +753,12 @@ function infinityChecker(value){
     if (isNaN(value) || !isFinite(value)) return 0
     else return value
 };
+function valueFormatter(value){
+    value = value.toString();
+    value = value.replace(/\D/g, "");
+    value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return value
+};
 
 	/* RIGA 01 */
     // formula excel di riferimento B39+B71
@@ -766,7 +778,7 @@ function infinityChecker(value){
 		});
 		firstValues = firstValues.map(entry =>  entry = entry.replaceAll('.', ''));
 		var firstTotal = firstValues.map(Number).reduce((a,b) => {return a+b}, 0);
-		jQuery("#" + firstDestinations[firstColumn]).val(firstTotal).trigger('change'); 
+		jQuery("#" + firstDestinations[firstColumn]).val(valueFormatter(firstTotal)).trigger('change'); 
 	};
 	for(let i = 5; i <9; i++){
 		firstSelectors[i] = new Array();
@@ -815,7 +827,7 @@ function infinityChecker(value){
         var divisionUnit = valueParser(jQuery("#" + secondDivSelectors[column]).val());
         var partial = sum / divisionUnit;
         var total = infinityChecker(partial);
-        jQuery("#" + secondDestSelectors[column]).val(total).trigger('change');
+        jQuery("#" + secondDestSelectors[column]).val(Math.round(total)).trigger('change');
     };
 
     for(let i = 5; i <9; i++){
@@ -856,7 +868,7 @@ function infinityChecker(value){
 		});
 		thirdValues = thirdValues.map(entry =>  entry = entry.replaceAll('.', ''));
 		var thirdTotal = thirdValues.map(Number).reduce((a,b) => {return a+b}, 0);
-		jQuery("#" + thirdDestinations[thirdColumn]).val(thirdTotal).trigger('change'); 
+		jQuery("#" + thirdDestinations[thirdColumn]).val(valueFormatter(thirdTotal)).trigger('change'); 
 	};
 	for(let i = 5; i <9; i++){
 		thirdSelectors[i] = new Array();
@@ -909,7 +921,7 @@ function infinityChecker(value){
         var divisionUnit = valueParser(jQuery("#" + fourthDivSelectors[column]).val());
         var partial = sum / divisionUnit;
         var total = infinityChecker(partial);
-        jQuery("#" + fourthDestSelectors[column]).val(total).trigger('change');
+        jQuery("#" + fourthDestSelectors[column]).val(Math.round(total)).trigger('change');
     };
 
     for(let i = 5; i <9; i++){
@@ -941,7 +953,7 @@ function infinityChecker(value){
         var one = jQuery(fifthColumns[column][0]).val();
         var two = jQuery(fifthColumns[column][2]).val();
         var total = valueParser(one) + valueParser(two);
-        jQuery(fifthColumns[column][4]).val(total).trigger('change');
+        jQuery(fifthColumns[column][4]).val(valueFormatter(total)).trigger('change');
     };
 ​
     for(let i = 0; i < 40; i++){
@@ -975,7 +987,7 @@ function infinityChecker(value){
         var total = (sixthStoreValues[0] * sixthStoreValues[1] + sixthStoreValues[2] * sixthStoreValues[3]) / sixthStoreValues[4];
         total = infinityChecker(total);
         total = Math.round(total);
-        jQuery(sixthColumns[column][5]).val(total).trigger('change'); 
+        jQuery(sixthColumns[column][5]).val(Math.round(total)).trigger('change'); 
     };
 
     for(let i = 0; i < 48; i++){
@@ -992,31 +1004,40 @@ function infinityChecker(value){
 
 ```
 ### B11 Formula Completa
+Rimuovere la parte di codice nell'onLoad, disabilita da sola le celle della prima riga.
 ```javascript
-var firstRow = jQuery("#QID187 input").slice(0, 4);
+     var firstRow = jQuery("#QID187 input").slice(0, 4);
     var secondRow = jQuery("#QID187 input").slice(-4);
     var origins = jQuery("#QID31 input").slice(-12).slice(0,4);
     var message = 'ATTENZIONE : il valore della seconda riga non può essere maggiore del valore della prima';
 
+	function valueFormatter(value){
+		value = value.toString();
+		value = value.replace(/\D/g, "");
+		value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+		return value
+	};
     function columnExtractor(value){
         value = parseInt(value.slice(value.length - 6).slice(0, 5));
         return value
   	};
     function errorCheck () {
 		firstRow.map((index,entry) => {
-            var value = jQuery(entry).val();
-            var secondValue = jQuery(secondRow[index]).val();
+            var value = jQuery(entry).val().replaceAll('.', '');
+            var secondValue = jQuery(secondRow[index]).val().replaceAll('.','');
             if(parseInt(secondValue) > parseInt(value)){
 				window.alert(message);
 				jQuery(secondRow[index]).val('')
+			 }else{
+				var newValue = jQuery(secondRow[index]).val().replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+				jQuery(secondRow[index]).val(newValue);
 			}
         });
     };
     function transferValue(e){
         var column = columnExtractor(e.target.id);
         var value = jQuery(this).val();
-        console.log('column', column, 'value', value, 'destination', secondRow[column-4]);
-        jQuery(firstRow[column - 5]).val(value);
+        jQuery(firstRow[column - 5]).val(valueFormatter(value));
     };
     firstRow.each(function(evt){
         jQuery(this).attr('readonly', true);
@@ -1035,10 +1056,12 @@ var firstRow = jQuery("#QID187 input").slice(0, 4);
         jQuery(this).on('change', transferValue)
     })
 
-var tHead = jQuery("#QID187 > div.Inner.BorderColor.TE > div > fieldset > div > table > thead");
-var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Rilevazione 2021</th>" 
+    var tHead = jQuery("#QID187 > div.Inner.BorderColor.TE > div > fieldset > div > table > thead");
+    var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Rilevazione 2021</th>" 
 
-tHead.prepend(newHeader)
+    tHead.prepend(newHeader)
+        
+	
 	
 ```
 ## Sezione D ##
