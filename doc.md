@@ -220,7 +220,7 @@ Il trasferimento dei dati in un'altra domanda è stato eliminato, verrà impleme
 			jQuery(this).attr('readonly', true);
 		};
 
-		if(currentRow < 8 && currentColumn > 4) {
+		if(currentRow < totalsPosition && currentColumn > 4) {
 			jQuery(this).on('keypress', function(evt){
 				if(evt.which < 48 || evt.which > 57){
 					evt.preventDefault();
