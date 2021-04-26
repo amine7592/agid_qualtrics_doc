@@ -1077,9 +1077,9 @@ Rimuovere la parte di codice nell'onLoad, disabilita da sola le celle della prim
 ### D02A, D02B - Impostare convalida data nella forma mm/aaaa
 Inserire nella relativa domanda
 ```javascript
-jQuery("#QR\\~1_QID136").attr("type", "date")
+jQuery("#QR\\~1_QID136").attr("type", "month")
 
-jQuery("#QR\\~1_QID137").attr("type", "date")
+jQuery("#QR\\~1_QID137").attr("type", "month")
 ```
 
 ## **Tutte le domande**
