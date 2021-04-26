@@ -991,58 +991,55 @@ function infinityChecker(value){
     tHead.prepend(newHeader)
 
 ```
-### B11 Controllo valori 2a riga
-Automatico valido per tutte e 4 le colonne, 
+### B11 Formula Completa
 ```javascript
-var inputs = jQuery("#QID187 input");
-var columns = [];
-var values = [];
+var firstRow = jQuery("#QID187 input").slice(0, 4);
+    var secondRow = jQuery("#QID187 input").slice(-4);
+    var origins = jQuery("#QID31 input").slice(-12).slice(0,4);
+    var message = 'ATTENZIONE : il valore della seconda riga non può essere maggiore del valore della prima';
 
-function valueParser(value){
-    if(isNaN(parseInt(value))) return 0
-    else return parseInt(value)
-};
+    function columnExtractor(value){
+        value = parseInt(value.slice(value.length - 6).slice(0, 5));
+        return value
+  	};
+    function errorCheck () {
+		firstRow.map((index,entry) => {
+            var value = jQuery(entry).val();
+            var secondValue = jQuery(secondRow[index]).val();
+            if(parseInt(secondValue) > parseInt(value)){
+				window.alert(message);
+				jQuery(secondRow[index]).val('')
+			}
+        });
+    };
+    function transferValue(e){
+        var column = columnExtractor(e.target.id);
+        var value = jQuery(this).val();
+        console.log('column', column, 'value', value, 'destination', secondRow[column-4]);
+        jQuery(firstRow[column - 5]).val(value);
+    };
+    firstRow.each(function(evt){
+        jQuery(this).attr('readonly', true);
+    });
 
-function errorCheck(e){
-    values.length = 0;
-    values[0] = valueParser(jQuery(columns[1][0]).val());
-    values[1] = valueParser(jQuery(columns[1][1]).val());
-    values[2] = valueParser(jQuery(columns[2][0]).val());
-    values[3] = valueParser(jQuery(columns[2][1]).val());
-    values[4] = valueParser(jQuery(columns[3][0]).val());
-    values[5] = valueParser(jQuery(columns[3][1]).val());
-    values[6] = valueParser(jQuery(columns[4][0]).val());
-    values[7] = valueParser(jQuery(columns[4][1]).val());
-    
-    if(values[0] < values[1]) {
-		jQuery(columns[1][1]).val('');
-		window.alert('ATTENZIONE : il valore della seconda riga non può essere maggiore del valore della prima');
-	};
-	if(values[2] < values[3]){
-		jQuery(columns[2][1]).val('');
-		window.alert('ATTENZIONE : il valore della seconda riga non può essere maggiore del valore della prima');
-	};
-    if(values[4] < values[5]) {
-		jQuery(columns[3][1]).val('');
-		window.alert('ATTENZIONE : il valore della seconda riga non può essere maggiore del valore della prima');
-	};
-    if(values[6] < values[7]) {
-		jQuery(columns[4][1]).val('');
-		window.alert('ATTENZIONE : il valore della seconda riga non può essere maggiore del valore della prima');
-	};
-};
-for(let i = 0; i < 8; i++){
-    var test = i%4 +1;
-    if (columns[test] == undefined) columns[test] = new Array();
-    columns[test].push(inputs[i]);
-};
+    secondRow.each(function(evt){
+        jQuery(this).on('keypress', function(evt){
+            if(evt.which < 48 || evt.which > 57){
+                evt.preventDefault();
+                return false;
+            };
+        });
+        jQuery(this).on('change', errorCheck);
+    });
+    origins.each(function(e){
+        jQuery(this).on('change', transferValue)
+    })
 
-columns.map((array, index) => {
-        array.map((element, ind) => {
-            jQuery(element).on('change', errorCheck);
-        })
-});
+var tHead = jQuery("#QID187 > div.Inner.BorderColor.TE > div > fieldset > div > table > thead");
+var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Rilevazione 2021</th>" 
 
+tHead.prepend(newHeader)
+	
 ```
 ## Sezione D ##
 ### D02A, D02B - Impostare convalida data nella forma mm/aaaa
