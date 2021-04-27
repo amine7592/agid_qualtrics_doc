@@ -529,7 +529,7 @@ function sheetGenerator(){
                 temp[row].push(jQuery(entry).val())
             });
             //table title
-            var title = [jQuery(id + " h3").text()]
+            var title = [jQuery(id + " label")[0].textContent]
             temp.unshift([title]);
             temp.push([]);
             //concat to main array
