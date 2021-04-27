@@ -1240,6 +1240,18 @@ jQuery("#QR\\~1_QID137").attr("type", "month")
 
 ## **Tutte le domande**
 
+
+### Nascondere dall'indice le ultime due voci
+Da inserire nella testa di ogni sezione (A, B, C etc) nell'onLoad, rimuove "Nota di accompagnamento" e "Conferma invio" dall'indice a tendina.
+
+```javascript
+var sideBar = jQuery("#Toc ul li");
+    sideBar.map((index, entry) => {
+        if(index == sideBar.length -1 || index == sideBar.length -2){
+            jQuery(entry).hide()
+        }
+    })
+```
 ### Eliminare popup di conferma quando si preme il tasto indietro
 Da inserire in ogni domanda, il tasto indietro porta automaticamente indietro senza popup di conferma.
 
