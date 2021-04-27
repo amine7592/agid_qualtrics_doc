@@ -49,7 +49,7 @@ in onReady dell'intestazione della domanda
     var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='AVANTI' type='button' align='center'></input>"
     jQuery("#Footer").prepend(excelButton);
     jQuery('#Buttons').prepend(fakeNext);
-
+    var ids = [];
     var topLabels = ['A1','B1','C1','D1','E1','F1', 'G1','H1','I1']; 
     var sideLabels = ['A1','A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15'] 
     jQuery('div[questionId]').each(function(a,b,c){
@@ -58,7 +58,6 @@ in onReady dell'intestazione della domanda
 
     function saveExcel(){
         var wb = XLSX.utils.book_new();
-        var ids =[];
         var row = 0; 
         var sheets = [];
         ids.map(entry => {
@@ -106,7 +105,6 @@ in onReady dell'intestazione della domanda
 
     function storeLocalSheet(){
         var wb = XLSX.utils.book_new();
-        var ids =[];
         var row = 0; 
         var sheets = [];
         ids.map(entry => {
@@ -342,7 +340,10 @@ Il trasferimento dei dati in un'altra domanda è stato eliminato, verrà impleme
 
 ```
 
-### Riepilogo dati in Excel
+### SEZIONE B Riepilogo dati in Excel
+**N.B.** Affinché la funzionalità sia implementata correttamente il codice del riepilogo dati va inserito nello slot del titolo delle domande, dividendo la prima parte nell'onLoad e la seconda nell'onReady.
+Lo script funziona solo se tutte in tutte le domande a tabella sono stati inseriti gli header grafici.
+
 in addOnLoad : 
 ```javascript
 var body = jQuery("#SurveyEngineBody");
@@ -362,100 +363,255 @@ in onReady:
         subtree: true
     });
 
-    var excelButton = "<div style='text-align: center; display: center'><input id='customButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='SALVA IN EXCEL' type='button' align='center'></input></div>";
-    var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='AVANTI' type='button' align='center'></input>"
+var excelButton = "<div style='text-align: center; display: center'><input id='excelButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='SALVA IN EXCEL' type='button' align='center'></input></div>";
+var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='AVANTI' type='button' align='center'></input>"
 
-    jQuery("#Footer").prepend(excelButton);
-    jQuery('#Buttons').prepend(fakeNext);
+jQuery("#Footer").prepend(excelButton);
+jQuery('#Buttons').prepend(fakeNext);
 
-    var topLabels = ['A1','B1','C1','D1','E1','F1', 'G1','H1','I1']; 
-    var sideLabels = ['A1','A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15'] 
-    var ids = [];
+
+var ids = [];
     jQuery('div[questionId]').each(function(a,b,c){
         ids.push("#" + jQuery(this).attr("questionId"));
     });
-    ids = ids.map(entry => {if(document.querySelector(entry + " table") !== null) return entry});
-    ids = ids.filter(entry => entry !== undefined);
+    ids = ids.filter(entry => entry !== "#QID8");
+    
+var array = [];
 
-function saveExcel(){
-    var sheets = [];
-    var wb = XLSX.utils.book_new(); 
-    var row = 0; 
-    var columns = 0;
+function rowExtractor(value, sliceVal){
+    value = value.slice(sliceVal)
+    if(value[1] == '~') return parseInt(value[0])
+    else return parseInt(value.slice(0,2))
+};
+	
+	function sheetGenerator(){
+		array.length = 0;
+		console.log('starting sheet generator');
+		ids.map(id => {
+            if(id !== "#QID187"){
+				//elaborate slice values
+				var truncated = id.slice(1);
+				var sliceVal = 4 + truncated.length;
 
-    ids.map(entry => {
-        columns = jQuery( entry +" table thead tr").children().length-1;
-        row = jQuery(entry + " tr").length -1;
-        var workbook = XLSX.utils.table_to_book(document.querySelector(entry + " table"));
-        var firstRow = topLabels.map(label => {
-            if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]['v'];
-        }); 
-        var sideRow = sideLabels.map(label => {
-            if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]["v"];
-        });
-        firstRow = firstRow.filter(cell => cell !== undefined);
-        sideRow = sideRow.filter(cell => cell != undefined);
-        var inputs = jQuery(entry +  " input");
-        var rows = []; 
-        inputs.map((index, input) => {
-            var checker =  (Math.floor(index / columns)) +1;
-            if(rows[checker] == undefined) rows[checker] = new Array();
-            rows[checker][0] = sideRow[checker];
-            rows[checker].push(jQuery(input).val())
-        });
-        rows[0] = firstRow;
-        var titleRow = [jQuery( entry + " legend")[0].innerText ];
-           rows.unshift(titleRow);
-        rows.push([]);
-        sheets = sheets.concat(rows);         
+				//temp array to concatenate
+				var temp = [];
+				temp[0] = [];
+				temp[0][0] = '-'
+				//table heads
+				var heads = jQuery(id + " table th").slice(2);
+				heads.map((index, entry) => {
+					if(index < 8){
+						temp[0].push(entry.innerText);
+					} else {
+						temp[index - 7] = new Array();
+						temp[index - 7].push(entry.innerText);
+					}
+				});
+				//table cells
+				var entries = jQuery(id + " input");
+				entries.map((index, entry) => {
+					var row = rowExtractor(entry.id, sliceVal);
+					temp[row].push(jQuery(entry).val())
+				});
+				//table title
+				var title = [jQuery(id + " h3").text()]
+				temp.unshift([title]);
+				temp.push([]);
+				//concat to main array
+				array = array.concat(temp);
+		}else{
+				//temp array to concatenate
+				var temp = [];
+				temp[0] = [];
+				temp[0][0] = '-'
+				//table heads
+				var heads = jQuery("#QID187 table th").slice(1);
+				heads.map((index, entry) => {
+					if(index < 4){
+						temp[0].push(entry.innerText);
+					} else {
+						temp[index - 3] = new Array();
+						temp[index - 3].push(entry.innerText);
+					}
+				});
+				//table cells
+				var entries = jQuery("#QID187 input");
+				entries.map((index, entry) => {
+					if(index < 4)temp[1].push(jQuery(entry).val())
+                    else temp[2].push(jQuery(entry).val())
+				});
+				//table title
+				var title = [jQuery("#QID187 h3").text()]
+				temp.unshift([title]);
+				temp.push([]);
+				//concat to main array
+				array = array.concat(temp);
+        }
+    })
+		return array = array.filter(entry => {if(entry !== undefined)return entry});
+
+	};
+
+	function downloadExcel(){
+    console.log('download called with click')
+    var sheet = sheetGenerator();
+    var sezione = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(sezione, XLSX.utils.aoa_to_sheet(sheet), 'Sezione B ');
+    XLSX.writeFile(sezione, 'Sezione B.xlsx');
+}
+
+function localStoring(){
+    console.log('local storing called with click');
+    var sheet = sheetGenerator();
+    localStorage.setItem('sezioneb', JSON.stringify(sheet));
+    jQuery("#NextButton").trigger('click');
+}
+
+jQuery("#excelButton").on('click', downloadExcel);
+jQuery('#fakeNext').on('click', localStoring);
+
+```
+### SEZIONE B SANITÀ Riepilogo dati in excel
+**N.B.** Affinché la funzionalità sia implementata correttamente il codice del riepilogo dati va inserito nello slot del titolo delle domande, dividendo la prima parte nell'onLoad e la seconda nell'onReady.
+Lo script funziona solo se tutte in tutte le domande a tabella sono stati inseriti gli header grafici.
+
+In onLoad
+```javascript
+var body = jQuery("#SurveyEngineBody");
+body.prepend('<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>');
+```
+In onReady
+```javascript
+var observer = new MutationObserver(function() {
+    const div = document.querySelector("#NextButton");
+        if(div) {
+            div.style.display = "none";
+        };
     });
-    var sheetTitle = 'Sezione B';
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheets), sheetTitle);
-    XLSX.writeFile(wb, 'sezione B.xlsx'); 
+    observer.observe(document.querySelector("#Page"), {
+        childList: true,
+        subtree: true
+    });
+
+var excelButton = "<div style='text-align: center; display: center'><input id='excelButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='SALVA IN EXCEL' type='button' align='center'></input></div>";
+var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='AVANTI' type='button' align='center'></input>"
+
+jQuery("#Footer").prepend(excelButton);
+jQuery('#Buttons').prepend(fakeNext);
+
+
+var ids = [];
+    jQuery('div[questionId]').each(function(a,b,c){
+        ids.push("#" + jQuery(this).attr("questionId"));
+    });
+    ids = ids.filter(entry => entry !== "#QID189");
+    var specialIds = ["#QID128", "#QID226", "#QID227", "#QID231", "#QID127", "#QID230", "#QID228"];
+
+var array = [];
+
+function rowExtractor(value, sliceVal){
+    value = value.slice(sliceVal)
+    if(value[1] == '~') return parseInt(value[0])
+    else return parseInt(value.slice(0,2))
 };
 
-function storeLocalSheet(){
-    var sheets = [];
-    var wb = XLSX.utils.book_new(); 
-    var row = 0; 
-    var columns = 0;
+function sheetGenerator(){
+    array.length = 0;
+    console.log('starting sheet generator');
+    ids.map(id => {
+        if(!specialIds.includes(id)){
+            //elaborate slice values
+            var truncated = id.slice(1);
+            var sliceVal = 4 + truncated.length;
 
-    ids.map(entry => {
-        columns = jQuery( entry +" table thead tr").children().length-1;
-        row = jQuery(entry + " tr").length -1;
-        var workbook = XLSX.utils.table_to_book(document.querySelector(entry + " table"));
-        var firstRow = topLabels.map(label => {
-            if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]['v'];
-        }); 
-        var sideRow = sideLabels.map(label => {
-            if(workbook["Sheets"]["Sheet1"][label]) return workbook["Sheets"]["Sheet1"][label]["v"];
-        });
-        firstRow = firstRow.filter(cell => cell !== undefined);
-        sideRow = sideRow.filter(cell => cell != undefined);
-        var inputs = jQuery(entry +  " input");
-        var rows = []; 
-        inputs.map((index, input) => {
-            var checker =  (Math.floor(index / columns)) +1;
-            if(rows[checker] == undefined) rows[checker] = new Array();
-            rows[checker][0] = sideRow[checker];
-            rows[checker].push(jQuery(input).val())
-        });
-        rows[0] = firstRow;
-        var titleRow = [jQuery( entry + " legend")[0].innerText ];
-           rows.unshift(titleRow);
-        rows.push([]);
-        sheets = sheets.concat(rows);         
-    });
-        
-    var sheetTitle = 'Sezione B';
-    var sezioneb = XLSX.utils.aoa_to_sheet(sheets);
-    localStorage.setItem('sezioneb', JSON.stringify(sezioneb));
-    jQuery("#NextButton").trigger('click'); 
-};
+            //temp array to concatenate
+            var temp = [];
+            temp[0] = [];
+            temp[0][0] = '-'
+            //table heads
+            var heads = jQuery(id + " table th").slice(2);
+            heads.map((index, entry) => {
+                if(index < 8){
+                    if(entry.innerText) temp[0].push(entry.innerText);
+                    else temp[0].push('-');
+                } else {
+                    temp[index - 7] = new Array();
+                    temp[index - 7].push(entry.innerText);
+                }
+            });
+            //table cells
+            var entries = jQuery(id + " input");
+            entries.map((index, entry) => {
+                var row = rowExtractor(entry.id, sliceVal);
+                temp[row].push(jQuery(entry).val())
+            });
+            //table title
+            var title = [jQuery(id + " h3").text()]
+            temp.unshift([title]);
+            temp.push([]);
+            //concat to main array
+            array = array.concat(temp);
+            //special questions
+        } else if (id == '#QID228') {
+            var title = [jQuery("#QID228 h3").text()];
+            var first = ['N. prenotazioni via CUP online : ', jQuery("#QID228 input")[0].value];
+            var second = ['N. prenotazioni complessive : ', jQuery("#QID228 input")[1].value];
+            array.push(title, first, second, [])
+        } else if (id == '#QID230') {
+            var title = [jQuery("#QID230 h3").text()];
+            var first = ['N. referti digitali : ', jQuery("#QID230 input")[0].value];
+            var second = ['N. referti NON digitali : ', jQuery("#QID230 input")[1].value];
+            array.push(title, first,second, [])
+        } else if (id == '#QID231' || id == '#QID127') {
+            var title = [jQuery(id + " h3").text()];
+            var text = [jQuery(id + " input").val()];
+            array.push(title, text, second, [])
+        } else if (id == '#QID227') {
+            var title = [jQuery("#QID227 h3").text()];
+            var choise = [jQuery("#QID227 .q-checked").text()];
+            array.push(title, choise, [])
+        } else if (id == '#QID128' || id == '#QID226') {
+            var labels = [];
+            var checkStatus = [];
+            var wholeQuestion = [];
+            var questionLabels = jQuery(id + " label span");
+            var questionAnswers = jQuery(id + " .MultipleAnswer");
+            var title = [jQuery(id + " h3").text()]
+            questionLabels.each(function () {
+                labels.push(this.innerText)
+            });
+            questionAnswers.each(function () {
+                if (this.className.includes('q-checked')) checkStatus.push('Si')
+                else checkStatus.push('No')
+            });
+            array.push(title);
+            for (let i = 0; i < labels.length; i++) {
+                if (wholeQuestion[i] == undefined) wholeQuestion[i] = [];
+                array.push([labels[i], checkStatus[i]])
+            };
+        }
+    })
 
-jQuery('#excelButton').on('click', saveExcel);
-jQuery('#fakeNext').on('click', storeLocalSheet);
+    return array = array.filter(entry => {if(entry !== undefined)return entry});
+}
 
+function downloadExcel(){
+    console.log('download called with click')
+    var sheet = sheetGenerator();
+    var sezione = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(sezione, XLSX.utils.aoa_to_sheet(sheet), 'Sezione B Sanità');
+    XLSX.writeFile(sezione, 'Sezione B II .xlsx');
+}
+
+function localStoring(){
+    console.log('local storing called with click');
+    var sheet = sheetGenerator();
+    localStorage.setItem('sezionebsanita', JSON.stringify(sheet));
+    jQuery("#NextButton").trigger('click');
+}
+
+jQuery("#excelButton").on('click', downloadExcel);
+jQuery('#fakeNext').on('click', localStoring);
 ```
 ### Btot 06 tutte le formule
 
