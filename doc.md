@@ -1252,6 +1252,26 @@ var sideBar = jQuery("#Toc ul li");
         }
     })
 ```
+Da inserire nella testa della prima sezione 'Piano Triennale per l'Informatica nella Pubblica Amministrazione etc' nell'onLoad per nascondere gli ultimi due link nell'indice generale. Va inserito inoltre nell' addOnUnload della testa della Sezione A per impedire ai link di comparire se l'utente dovesse premere il bottone indietro 
+```javascript
+var observer = new MutationObserver(function() {
+    const toc = document.querySelector("#TOCPage");
+        if(toc) {
+            var links = jQuery("#TOCPage li")
+
+		links.map((index, entry) => {
+			if(index == links.length -1 || index == links.length -2){
+				jQuery(entry).hide()
+			}
+    })
+        };
+    });
+    observer.observe(document.querySelector("#Page"), {
+        childList: true,
+        subtree: true
+    });
+```
+
 ### Eliminare popup di conferma quando si preme il tasto indietro
 Da inserire in ogni domanda, il tasto indietro porta automaticamente indietro senza popup di conferma.
 
