@@ -1209,10 +1209,69 @@ Rimuovere la parte di codice nell'onLoad, disabilita da sola le celle della prim
 
     tHead.prepend(newHeader)
         
-	
-	
 ```
-## Sezione D ##
+
+## SEZIONE C
+
+### Totali CC01D
+In onReady
+```javascript
+
+    var inputs = jQuery("#QID86 input");
+    var column = [ ];
+    
+    function columnExtractor(value){
+        value = value.slice(12);
+        switch(value[0] + value[1]){
+            case('8~'): return 0
+            case('9~'): return 1
+            case('10'): return 2
+            default : return 3
+        }    
+    };
+
+    function sumValues(e){
+        var vals = [];
+        var col = columnExtractor(e.target.id);
+        vals = column[col].map((entry, index) => {
+            if(index < 3){
+                return jQuery(entry).val().replaceAll('.', ''); //unformat
+            }else {
+                return 0
+            }
+        });
+        vals = vals.map(Number)
+        var total = vals.reduce((a,b) => {return a +b},0);
+        total = total.toString();
+        total = total.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+        jQuery(column[col][3]).val(total); //reformat
+    }
+
+    inputs.map((index,entry) => {
+        var col = columnExtractor(entry.id);
+        if(column[col] == undefined)column[col] = new Array();
+        column[col].push(entry);
+        if(index < 12) {
+            jQuery(entry).on('change', sumValues)
+            jQuery(entry).on('keypress', function(evt){
+                if(evt.which < 48 || evt.which > 57){
+                    evt.preventDefault();
+                    return false;
+                };
+            });
+            jQuery(entry).on('keyup', function(){
+                var value = jQuery(this).val();
+                value = value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                jQuery(this).val(value)
+            })     
+        };      
+        if(index > 11) {
+            jQuery(entry).attr('readonly', true);
+        }
+    });
+
+```
+## Sezione D 
 ### D02A, D02B - Impostare convalida data nella forma mm/aaaa
 Inserire nella relativa domanda
 ```javascript
