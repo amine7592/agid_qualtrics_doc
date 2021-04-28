@@ -1331,6 +1331,45 @@ In onReady
     });
 ```
 ## Sezione D 
+
+### Totali D05
+In onReady
+```javascript
+
+    var inputs = jQuery("#1_QID209 input");
+    
+    function sumValues(e){
+        console.log('called from ', e.target.id)
+        var one = jQuery(inputs[0]).val().replaceAll('.', '');
+        if(one == '') one = 0;
+        var two = jQuery(inputs[1]).val().replaceAll('.', '');
+        if(two == '') two = 0;
+        var total = parseInt(one) + parseInt(two);
+        total = total.toString();
+        total = total.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        jQuery(inputs[2]).val(total);   
+    }
+
+    inputs.map((index,entry) => {
+        if(index == 0 || index == 1) {
+            jQuery(entry).on('change', sumValues)
+            jQuery(entry).on('keypress', function(evt){
+                if(evt.which < 48 || evt.which > 57){
+                    evt.preventDefault();
+                    return false;
+                };
+            });
+            jQuery(entry).on('keyup', function(){
+                var value = jQuery(this).val();
+                value = value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                jQuery(this).val(value)
+            })     
+        };      
+        if(index == 2) {
+            jQuery(entry).attr('readonly', true);
+        }
+    });
+```
 ### D02A, D02B - Impostare convalida data nella forma mm/aaaa
 Inserire nella relativa domanda
 ```javascript
