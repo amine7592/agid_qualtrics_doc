@@ -278,7 +278,6 @@ Il trasferimento dei dati in un'altra domanda è stato eliminato, verrà impleme
     }
     /* RIGHE 1 a 4 */
     function dataTransfer(e){
-        console.log('called from ', e.target.id)
         var column = columnExtractor(e.target.id);
         var originIndex = column -5;
         var one = jQuery(firstQuestionTotals[originIndex]).val().replaceAll('.', '');
@@ -958,7 +957,6 @@ function valueFormatter(value){
     var secondValues = [];
 
     function secondRow(e){
-        console.log('second called')
         var column = columnExtractor(e.target.id);
         secondValues.length = 0;
         for(let i = 0; i < 4; i++){
@@ -1052,7 +1050,6 @@ function valueFormatter(value){
     var fourthValues = [];
 
     function fourthRow(e){
-        console.log('fourth called')
         var column = columnExtractor(e.target.id);
         fourthValues.length = 0;
         for(let i = 0; i < 6; i++){
@@ -1213,6 +1210,62 @@ Rimuovere la parte di codice nell'onLoad, disabilita da sola le celle della prim
 
 ## SEZIONE C
 
+### Totali CC01C
+In onReady
+```javascript
+ var inputs = jQuery("#QID85 input");
+    var column = [ ];
+    
+    function columnExtractor(value){
+        value = value.slice(12);
+        switch(value[0] + value[1]){
+            case('8~'): return 0
+            case('9~'): return 1
+            case('10'): return 2
+            default : return 3
+        }    
+    };
+
+    function sumValues(e){
+        var vals = [];
+        var col = columnExtractor(e.target.id);
+        vals = column[col].map((entry, index) => {
+            if(index < 3){
+                return jQuery(entry).val().replaceAll('.', ''); //unformat
+            }else {
+                return 0
+            }
+        });
+        vals = vals.map(Number)
+        var total = vals.reduce((a,b) => {return a +b},0);
+        total = total.toString();
+        total = total.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+        jQuery(column[col][3]).val(total); //reformat
+    }
+
+    inputs.map((index,entry) => {
+        var col = columnExtractor(entry.id);
+        if(column[col] == undefined)column[col] = new Array();
+        column[col].push(entry);
+        if(index < 12) {
+            jQuery(entry).on('change', sumValues)
+            jQuery(entry).on('keypress', function(evt){
+                if(evt.which < 48 || evt.which > 57){
+                    evt.preventDefault();
+                    return false;
+                };
+            });
+            jQuery(entry).on('keyup', function(){
+                var value = jQuery(this).val();
+                value = value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                jQuery(this).val(value)
+            })     
+        };      
+        if(index > 11) {
+            jQuery(entry).attr('readonly', true);
+        }
+    });
+```
 ### Totali CC01D
 In onReady
 ```javascript
@@ -1339,7 +1392,6 @@ In onReady
     var inputs = jQuery("#1_QID209 input");
     
     function sumValues(e){
-        console.log('called from ', e.target.id)
         var one = jQuery(inputs[0]).val().replaceAll('.', '');
         if(one == '') one = 0;
         var two = jQuery(inputs[1]).val().replaceAll('.', '');
