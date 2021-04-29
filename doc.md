@@ -60,7 +60,6 @@ var ids = [];
     
 var array = [];
 
-
 function rowExtractor(value, sliceVal){
     value = value.slice(sliceVal)
     if(value[1] == '~') return parseInt(value[0])
@@ -109,7 +108,9 @@ function sheetGenerator(){
             array = array.concat(temp);
         }
     })
-    return array = array.filter(entry => {if(entry !== undefined)return entry});
+    array = array.filter(entry => {if(entry !== undefined)return entry});
+	if(array[13][0] !== "Si" ){ array = array.slice(0,15)};
+	return array
 };
 
 function downloadExcel(){
