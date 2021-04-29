@@ -502,76 +502,79 @@ function sheetGenerator(){
     array.length = 0;
     console.log('starting sheet generator');
     ids.map(id => {
-        if(!specialIds.includes(id)){
-            //elaborate slice values
-            var truncated = id.slice(1);
-            var sliceVal = 4 + truncated.length;
+        var test = jQuery(id);
+        if(test[0] !== undefined && !(test[0].hasClassName('hidden'))){
+            if(!specialIds.includes(id)){
+                //elaborate slice values
+                var truncated = id.slice(1);
+                var sliceVal = 4 + truncated.length;
 
-            //temp array to concatenate
-            var temp = [];
-            temp[0] = [];
-            temp[0][0] = '-'
-            //table heads
-            var heads = jQuery(id + " table th").slice(2);
-            heads.map((index, entry) => {
-                if(index < 8){
-                    if(entry.innerText) temp[0].push(entry.innerText);
-                    else temp[0].push('-');
-                } else {
-                    temp[index - 7] = new Array();
-                    temp[index - 7].push(entry.innerText);
-                }
-            });
-            //table cells
-            var entries = jQuery(id + " input");
-            entries.map((index, entry) => {
-                var row = rowExtractor(entry.id, sliceVal);
-                temp[row].push(jQuery(entry).val())
-            });
-            //table title
-            var title = [jQuery(id + " label")[0].textContent]
-            temp.unshift([title]);
-            temp.push([]);
-            //concat to main array
-            array = array.concat(temp);
-            //special questions
-        } else if (id == '#QID228') {
-            var title = [jQuery("#QID228 h3").text()];
-            var first = ['N. prenotazioni via CUP online : ', jQuery("#QID228 input")[0].value];
-            var second = ['N. prenotazioni complessive : ', jQuery("#QID228 input")[1].value];
-            array.push(title, first, second, [])
-        } else if (id == '#QID230') {
-            var title = [jQuery("#QID230 h3").text()];
-            var first = ['N. referti digitali : ', jQuery("#QID230 input")[0].value];
-            var second = ['N. referti NON digitali : ', jQuery("#QID230 input")[1].value];
-            array.push(title, first,second, [])
-        } else if (id == '#QID231' || id == '#QID127') {
-            var title = [jQuery(id + " h3").text()];
-            var text = [jQuery(id + " input").val()];
-            array.push(title, text, second, [])
-        } else if (id == '#QID227') {
-            var title = [jQuery("#QID227 h3").text()];
-            var choise = [jQuery("#QID227 .q-checked").text()];
-            array.push(title, choise, [])
-        } else if (id == '#QID128' || id == '#QID226') {
-            var labels = [];
-            var checkStatus = [];
-            var wholeQuestion = [];
-            var questionLabels = jQuery(id + " label span");
-            var questionAnswers = jQuery(id + " .MultipleAnswer");
-            var title = [jQuery(id + " h3").text()]
-            questionLabels.each(function () {
-                labels.push(this.innerText)
-            });
-            questionAnswers.each(function () {
-                if (this.className.includes('q-checked')) checkStatus.push('Si')
-                else checkStatus.push('No')
-            });
-            array.push(title);
-            for (let i = 0; i < labels.length; i++) {
-                if (wholeQuestion[i] == undefined) wholeQuestion[i] = [];
-                array.push([labels[i], checkStatus[i]])
-            };
+                //temp array to concatenate
+                var temp = [];
+                temp[0] = [];
+                temp[0][0] = '-'
+                //table heads
+                var heads = jQuery(id + " table th").slice(2);
+                heads.map((index, entry) => {
+                    if(index < 8){
+                        if(entry.innerText) temp[0].push(entry.innerText);
+                        else temp[0].push('-');
+                    } else {
+                        temp[index - 7] = new Array();
+                        temp[index - 7].push(entry.innerText);
+                    }
+                });
+                //table cells
+                var entries = jQuery(id + " input");
+                entries.map((index, entry) => {
+                    var row = rowExtractor(entry.id, sliceVal);
+                    temp[row].push(jQuery(entry).val())
+                });
+                //table title
+                var title = [jQuery(id + " label")[0].textContent]
+                temp.unshift([title]);
+                temp.push([]);
+                //concat to main array
+                array = array.concat(temp);
+                //special questions
+            } else if (id == '#QID228') {
+                var title = [jQuery("#QID228 h3").text()];
+                var first = ['N. prenotazioni via CUP online : ', jQuery("#QID228 input")[0].value];
+                var second = ['N. prenotazioni complessive : ', jQuery("#QID228 input")[1].value];
+                array.push(title, first, second, [])
+            } else if (id == '#QID230') {
+                var title = [jQuery("#QID230 h3").text()];
+                var first = ['N. referti digitali : ', jQuery("#QID230 input")[0].value];
+                var second = ['N. referti NON digitali : ', jQuery("#QID230 input")[1].value];
+                array.push(title, first,second, [])
+            } else if (id == '#QID231' || id == '#QID127') {
+                var title = [jQuery(id + " h3").text()];
+                var text = [jQuery(id + " input").val()];
+                array.push(title, text, second, [])
+            } else if (id == '#QID227') {
+                var title = [jQuery("#QID227 h3").text()];
+                var choise = [jQuery("#QID227 .q-checked").text()];
+                array.push(title, choise, [])
+            } else if (id == '#QID128' || id == '#QID226') {
+                var labels = [];
+                var checkStatus = [];
+                var wholeQuestion = [];
+                var questionLabels = jQuery(id + " label span");
+                var questionAnswers = jQuery(id + " .MultipleAnswer");
+                var title = [jQuery(id + " h3").text()]
+                questionLabels.each(function () {
+                    labels.push(this.innerText)
+                });
+                questionAnswers.each(function () {
+                    if (this.className.includes('q-checked')) checkStatus.push('Si')
+                    else checkStatus.push('No')
+                });
+                array.push(title);
+                for (let i = 0; i < labels.length; i++) {
+                    if (wholeQuestion[i] == undefined) wholeQuestion[i] = [];
+                    array.push([labels[i], checkStatus[i]])
+                };
+            }
         }
     })
 
