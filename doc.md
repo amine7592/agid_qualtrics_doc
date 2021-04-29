@@ -1211,6 +1211,184 @@ Rimuovere la parte di codice nell'onLoad, disabilita da sola le celle della prim
 
 ## SEZIONE C
 
+### Riepilogo dati in Excel sezione C I
+In onLoad
+```javascript
+var body = jQuery("#SurveyEngineBody");
+body.prepend('<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>');
+```
+
+In onReady
+```javascript
+var observer = new MutationObserver(function() {
+    const div = document.querySelector("#NextButton");
+        if(div) {
+            div.style.display = "none";
+        };
+    });
+    observer.observe(document.querySelector("#Page"), {
+        childList: true,
+        subtree: true
+    });
+var excelButton = "<div style='text-align: center; display: center'><input id='excelButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='SALVA IN EXCEL' type='button' align='center'></input></div>";
+var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='AVANTI' type='button' align='center'></input>";
+jQuery("#Footer").prepend(excelButton);
+jQuery('#Buttons').prepend(fakeNext);
+
+var discard = ["#QID33", "#QID34", "#QID35"]; //titles, unused
+var typeA = ["#QID36", "#QID47"];
+var typeB = ["#QID43", "#QID63", "#QID62"];
+var typeC = ["#QID37", "#QID41"];
+var typeD = ["#QID58", "#QID60", "#QID61", "#QID59"];
+var typeE = ["#QID216", "#QID222"];
+var typeF = ["#QID217", "#QID223", "#QID221", "#QID156"];
+var typeG = ["#QID44", "#QID55", "#QID218", "#QID224", "#QID220", "#QID225"]; 
+
+var ids = [];
+    jQuery('div[questionId]').each(function(a,b,c){
+        ids.push("#" + jQuery(this).attr("questionId"));
+    });
+    ids = ids.filter(entry => !discard.includes(entry));
+    
+var array = [];
+
+function sheetGenerator(){
+    console.log('starting sheetGenerator')
+    array.length = 0;
+    ids.map((id, index) => {
+        var test = jQuery(id);
+        if(test[0] !== undefined && !(test[0].hasClassName('hidden'))) {
+            if(typeA.includes(id)){
+                var columns = 3;
+                var rows = 7
+                var title = jQuery(id + " h3")[0].innerText;
+                var checkboxes = jQuery(id + " input");
+                var boxesValues = [];
+                checkboxes.map((index, entry) => {
+                    if(entry.checked) boxesValues[index] = 'V';
+                    else boxesValues[index] = '';
+                });
+
+                var trs = jQuery(id + " tr th");
+                var labels = [];
+                var headers = ['-'];
+                var heads = trs.slice(0, columns);
+                trs = trs.slice(columns)
+                trs.map((index, entry) => {
+                    labels[index] = entry.innerText;
+                })
+                heads.map((index,entry) => {
+                    headers.push(entry.innerText)
+                })
+
+                var temp = [headers];
+                labels.map((entry, index) => {
+                    var test = index +1;
+                    if(temp[test] == undefined) temp[test] = new Array();
+                    temp[test].push(entry);     
+                    temp[test] = temp[test].concat(boxesValues.slice(columns * index, columns * (index+1)))
+                });
+                temp = temp.concat([]);
+                temp.unshift([title]);
+                array = array.concat(temp);
+            } else if(typeB.includes(id)){
+                var title = jQuery(id + " label")[0].textContent;
+                title = title.replaceAll("\"" , "'" );
+                var input = jQuery(id + " input").val();
+                var temp = [[title], [input], []];
+                array = array.concat(temp);
+            } else if(typeC.includes(id)){
+                var labels = jQuery(id + " label");
+                var inputs = jQuery(id + " input");
+                var temp = [];
+                temp[0] = [inputs[0].textContent]
+                labels.map((index, entry) => {
+                    if(index>0){
+                        temp[index] = new Array();
+                        temp[index].push(entry.textContent, jQuery(inputs[index -1]).val())
+                    }
+                });
+                temp.push([]); 
+                array = array.concat(temp);
+            }else if(typeD.includes(id)){
+                var columns = 2;
+                var title = jQuery(id + " h3")[0].textContent;
+                var checkboxes = jQuery(id + " input");
+                var rows = checkboxes.length / 2;
+                var headers = jQuery(id + " th");
+                var temp = [];
+                temp[0] = [title];
+                temp[1] = ['-', headers[0].innerText, headers[1].innerText];
+                headers = headers.slice(2);
+
+
+                for(var i = 0; i < rows; i++){
+                    var checkIndex = i * 2; 
+                    var first = checkboxes[checkIndex].checked;
+                    var second = checkboxes[checkIndex +1].checked;
+                    if(first) first = 'V'; else first = '-';
+                    if(second) second = 'V'; else second = '-' 
+                    temp[i +2] = new Array();
+                    temp[i+2].push(headers[i].innerText, first, second)
+                }
+                temp.push([]);
+                array = array.concat(temp);
+            } else if(typeE.includes(id)){
+                var title = jQuery(id + " h3")[0].innerText;
+                var answer = jQuery(id + " label")[0].hasClassName('q.checked') ? 'Sì' : 'No';
+                var temp = [[title], [answer], []];
+                array = array.concat(temp);
+            } else if(typeF.includes(id)){
+                var title = jQuery(id + " h3")[0].innerText;
+                var answer = jQuery(id + " input").val();
+                var temp = [[title], [answer], []];
+                array = array.concat(temp);
+            } else if(typeG.includes(id)){
+                var title = jQuery(id + " h3")[0].innerText;
+                var columns = 7;
+                var rows = jQuery(id + " th").length - 7; 
+                var temp = [];
+                temp[0] = [title];
+                temp[1] = ['-'];
+                jQuery(id + " th").slice(0, columns).map((index, entry) => {temp[1].push(entry.innerText)});
+                var labels = jQuery(id + " th").slice(columns);
+                var checkboxes = jQuery(id + " input").map((index, entry) => { if(entry.checked)return 'V'; else return '-'})
+
+                for(let i = 0; i < rows; i++){
+                    var checkindex = i * 7;
+                    temp[i+2] = new Array();
+                    temp[i+2].push(labels[i].innerText)
+                    for(let a = checkindex; a < checkindex + 7; a++){
+                        temp[i+2].push(checkboxes[a]);
+                    }
+                }
+                temp.push([]);
+                array = array.concat(temp);
+            }
+        }  
+    });
+    return array
+};
+
+function downloadExcel(){
+    console.log('download called with click')
+    var sheet = sheetGenerator();
+    var sezione = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(sezione, XLSX.utils.aoa_to_sheet(sheet), 'Sezione C I');
+    XLSX.writeFile(sezione, 'Sezione C I.xlsx');
+}
+
+function localStoring(){
+    console.log('local storing called with click');
+    var sheet = sheetGenerator();
+    localStorage.setItem('sezioneci', JSON.stringify(sheet));
+    jQuery("#NextButton").trigger('click');
+}
+
+jQuery("#excelButton").on('click', downloadExcel);
+jQuery('#fakeNext').on('click', localStoring);
+```
+
 ### Totali CC01C
 In onReady
 ```javascript
