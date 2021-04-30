@@ -2073,11 +2073,17 @@ jQuery("#excelButton").on('click', downloadExcel);
 jQuery('#fakeNext').on('click', localStoring);
 ```
 
-### Totali D05 - da sistemare
+### Totali D05
 In onReady
 ```javascript
-
-    var inputs = jQuery("#1_QID209 input");
+    var id = "QID209";
+    var ids =  [];
+    jQuery('div[questionId]').each(function(a,b,c){
+        ids.push("#" + jQuery(this).attr("questionId"));
+    });
+    var versionId = '';
+    ids.map(v => { if(v.includes(id)) versionId = v})
+    var inputs = jQuery(versionId + " input");
     
     function sumValues(e){
         var one = jQuery(inputs[0]).val().replaceAll('.', '');
