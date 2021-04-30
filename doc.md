@@ -2190,3 +2190,87 @@ observer.observe(document.querySelector("#Page"), {
 
 ```
 ​
+## SEZIONE E
+
+### Riepilogo Dati in Excel
+
+In onLoad
+```javascript
+var body = jQuery("#SurveyEngineBody");
+body.prepend('<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>');
+
+```
+In onReady
+```javascript
+var observer = new MutationObserver(function() {
+    const div = document.querySelector("#NextButton");
+        if(div) {
+            div.style.display = "none";
+        };
+    });
+    observer.observe(document.querySelector("#Page"), {
+        childList: true,
+        subtree: true
+    });
+var excelButton = "<div style='text-align: center; display: center'><input id='excelButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='SALVA IN EXCEL' type='button' align='center'></input></div>";
+var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='AVANTI' type='button' align='center'></input>";
+jQuery("#Footer").prepend(excelButton);
+jQuery('#Buttons').prepend(fakeNext);
+
+var excluded = ["#QID232", "#QID233", "#QID261", "#QID277", "#QID289", "#QID299", "#QID309"];  
+
+var ids = [];
+    jQuery('div[questionId]').each(function(a,b,c){
+        ids.push("#" + jQuery(this).attr("questionId"));
+});
+ids = ids.filter(i => !(excluded.includes(i)));
+
+var typeA = ids.filter(i => jQuery(i + " li").length !== 0); //selects
+var typeB = ids.filter(i => !(typeA.includes(i))); //inputs
+
+var array = [];
+
+function sheetGenerator(){
+    console.log('starting sheetGenerator')
+    array.length = 0;
+    ids.map((id, index) => {
+        var test = jQuery(id);
+        if(test[0] !== undefined && !(test[0].hasClassName('hidden'))) {
+            if(typeA.includes(id)){
+                var title = jQuery(id + " legend")[0].textContent;
+                title = title.replaceAll("\n" , " " );
+                var answer = '';
+                if(jQuery(id + " .q-checked").length !== 0) answer = jQuery(id + " .q-checked")[1].textContent;
+                var temp = [[title], [answer], []];
+                array = array.concat(temp)         
+            } else if(typeB.includes(id)){
+                var title = jQuery(id + " label")[0].textContent;
+                title = title.replaceAll("\n" , " " );
+                var input = jQuery(id + " input").val();
+                var temp = [[title], [input], []];
+                array = array.concat(temp);
+            }
+        }  
+    });
+    return array
+};
+
+function downloadExcel(){
+    console.log('download called with click')
+    var sheet = sheetGenerator();
+    var sezione = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(sezione, XLSX.utils.aoa_to_sheet(sheet), "Sezione E");
+    XLSX.writeFile(sezione, 'Sezione E.xlsx');
+}
+
+function localStoring(){
+    console.log('local storing called with click');
+    var sheet = sheetGenerator();
+    localStorage.setItem("sezionee", JSON.stringify(sheet));
+    jQuery("#NextButton").trigger('click');
+}
+
+jQuery("#excelButton").on('click', downloadExcel);
+jQuery('#fakeNext').on('click', localStoring);
+
+```
