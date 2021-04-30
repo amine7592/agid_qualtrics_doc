@@ -23,6 +23,55 @@ if (new URL(window.location.href).searchParams.get("Q_CHL") === "preview") {
 ​
 ## Parte II
 
+## Benvenuto - Intercettare download del template
+
+La domanda viene nascosta dalla vista dell'utente, tuttavia il click sul link risponde sì alla domanda. 
+Non è tecnicamente possibile verificare se poi l'utente abbia effettivamente scaricato il template o se al momento del salvataggio abbia cancellato il download.
+
+Nell'onReady della domanda da nascondere
+```javascript
+jQuery("#QID402").hide();
+
+```
+I seguenti snippet vanno nell'onReady di ciascuna domanda: 
+
+Domanda per **Regione**
+```javascript
+var link = jQuery("#QID405 a")[2]
+function answer(e){
+    jQuery("#QR\\~QID402\\~1").trigger('click');
+}
+link.on('click', answer);
+
+```
+
+Domanda per **Città Metropolitana**
+```javascript
+var link = jQuery("#QID403 a")[2]
+function answer(e){
+    jQuery("#QR\\~QID402\\~1").trigger('click');
+}
+link.on('click', answer);
+```
+
+Domanda per **Comune**
+```javascript
+var link = jQuery("#QID404 a")[2]
+function answer(e){
+    jQuery("#QR\\~QID402\\~1").trigger('click');
+}
+link.on('click', answer);
+```
+
+Domanda per **PAC**
+```javascript
+var link = jQuery("#QID2 a")[2]
+function answer(e){
+    jQuery("#QR\\~QID402\\~1").trigger('click');
+}
+link.on('click', answer);
+```
+
 ## SEZIONE A - Riepilogo Dati in excel
 
 in onLoad dell'intestazione della domanda
@@ -1913,6 +1962,16 @@ In onReady
 ```
 ## Sezione D 
 
+### Riepilogo Dati in Excel - Work in Progress
+Da inserire nella D00
+```javascript
+    function setLocalAmount(e){
+		var amount = parseInt(jQuery("#QID132 input").val())
+        localStorage.setItem('amount', amount);
+    };
+
+	jQuery("#QID132 input").on('change', setLocalAmount)
+```  
 ### Totali D05
 In onReady
 ```javascript
