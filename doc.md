@@ -567,7 +567,7 @@ function sheetGenerator(){
                 heads.map((index, entry) => {
                     if(index < 8){
                         if(entry.innerText) temp[0].push(entry.innerText);
-                        else temp[0].push('-');
+                        else temp[0].push(' ');
                     } else {
                         temp[index - 7] = new Array();
                         temp[index - 7].push(entry.innerText);
@@ -615,8 +615,8 @@ function sheetGenerator(){
                     labels.push(this.innerText)
                 });
                 questionAnswers.each(function () {
-                    if (this.className.includes('q-checked')) checkStatus.push('Si')
-                    else checkStatus.push('No')
+                    if (this.className.includes('q-checked')) checkStatus.push('X')
+                    else checkStatus.push(' ')
                 });
                 array.push(title);
                 for (let i = 0; i < labels.length; i++) {
@@ -1317,7 +1317,7 @@ function sheetGenerator(){
                 var checkboxes = jQuery(id + " input");
                 var boxesValues = [];
                 checkboxes.map((index, entry) => {
-                    if(entry.checked) boxesValues[index] = 'V';
+                    if(entry.checked) boxesValues[index] = 'X';
                     else boxesValues[index] = '';
                 });
 
@@ -1378,8 +1378,8 @@ function sheetGenerator(){
                     var checkIndex = i * 2; 
                     var first = checkboxes[checkIndex].checked;
                     var second = checkboxes[checkIndex +1].checked;
-                    if(first) first = 'V'; else first = '-';
-                    if(second) second = 'V'; else second = '-' 
+                    if(first) first = 'X'; else first = ' ';
+                    if(second) second = 'X'; else second = ' ' 
                     temp[i +2] = new Array();
                     temp[i+2].push(headers[i].innerText, first, second)
                 }
@@ -1387,7 +1387,7 @@ function sheetGenerator(){
                 array = array.concat(temp);
             } else if(typeE.includes(id)){
                 var title = jQuery(id + " h3")[0].innerText;
-                var answer = jQuery(id + " label")[0].hasClassName('q.checked') ? 'Sì' : 'No';
+                var answer = jQuery(id + " label")[0].hasClassName('q.checked') ? 'X' : ' ';
                 var temp = [[title], [answer], []];
                 array = array.concat(temp);
             } else if(typeF.includes(id)){
@@ -1404,7 +1404,7 @@ function sheetGenerator(){
                 temp[1] = ['-'];
                 jQuery(id + " th").slice(0, columns).map((index, entry) => {temp[1].push(entry.innerText)});
                 var labels = jQuery(id + " th").slice(columns);
-                var checkboxes = jQuery(id + " input").map((index, entry) => { if(entry.checked)return 'V'; else return '-'})
+                var checkboxes = jQuery(id + " input").map((index, entry) => { if(entry.checked)return 'X'; else return ' '})
 
                 for(let i = 0; i < rows; i++){
                     var checkindex = i * 7;
@@ -1604,8 +1604,8 @@ function sheetGenerator(){
                 var checkboxes = jQuery(id + " input");
                 var boxesValues = [];
                 checkboxes.map((index, entry) => {
-                    if(entry.checked) boxesValues[index] = 'V';
-                    else boxesValues[index] = '-';
+                    if(entry.checked) boxesValues[index] = 'X';
+                    else boxesValues[index] = ' ';
                 });
 
                 var trs = jQuery(id + " tr th");
@@ -1710,8 +1710,8 @@ function sheetGenerator(){
                 var checkboxes = jQuery(id + " input");
                 var boxesValues = [];
                 checkboxes.map((index, entry) => {
-                    if(entry.checked) boxesValues[index] = 'V';
-                    else boxesValues[index] = '';
+                    if(entry.checked) boxesValues[index] = 'X';
+                    else boxesValues[index] = ' ';
                 });
                 var trs = jQuery(id + " tr th");
                 var labels = [];
