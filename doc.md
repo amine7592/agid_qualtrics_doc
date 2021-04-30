@@ -72,7 +72,7 @@ function answer(e){
 link.on('click', answer);
 ```
 
-## SEZIONE A - Riepilogo Dati in excel
+## SEZIONE A - Riepilogo Dati in excel - WORK IN PROGRESS
 
 in onLoad dell'intestazione della domanda
 ```javascript
@@ -120,35 +120,19 @@ function sheetGenerator(){
     console.log('starting sheet generator');
     ids.map(id => {
         if(id == '#QID4'){        
-            //elaborate slice values
-            var truncated = id.slice(1);
-            var sliceVal = 4 + truncated.length;
-            //temp array to concatenate
-            var temp = [];
-            temp[0] = [];
-            temp[0][0] = '-'
-            //table heads
-            var heads = jQuery(id + " table th");
-            heads.map((index, entry) => {
-                if(index < 5){
-                    temp[0].push(entry.innerText);
-                } else {
-                    temp[index - 4] = new Array();
-                    temp[index - 4].push(entry.innerText);
-                }
-            });
-            //table cells
-            var entries = jQuery(id + " input");
-            entries.map((index, entry) => {
-                var row = rowExtractor(entry.id, sliceVal);
-                temp[row].push(jQuery(entry).val())
-            });
-            //table title
-            var title = ['A01. Dimensioni della PA']
-            temp.unshift([title]);
-            temp.push([]);
-            //concat to main array
-            array = array.concat(temp);
+            var temp = [['A01. Dimensioni della PA']];
+            temp[1] = ['-'];
+            var heads = jQuery("#QID4 th");
+            heads = heads.slice(1);
+
+            heads.map((i,v) => {
+                if(index <4)
+                temp[1].push jQuery(v).textContent;
+            })
+            var inputs = jQuery("#QID4 input");
+            //TODO
+
+
         }else{
             var title = [jQuery( id + " h3").text()] ; 
             var choise = [jQuery(id + " .q-checked").text()]; 
