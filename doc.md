@@ -2116,12 +2116,23 @@ In onReady
         }
     });
 ```
-### D02A, D02B - Impostare convalida data nella forma mm/aaaa - da sistemare
+### D02A, D02B - Impostare convalida data nella forma mm/aaaa
 Inserire nella relativa domanda
 ```javascript
-jQuery("#QR\\~1_QID136").attr("type", "month")
+var first = "_QID136";
+var second = "_QID137";
+var ids =  [];
+jQuery('div[questionId]').each(function(a,b,c){
+    ids.push(jQuery(this).attr("questionId"));
+}); 
+ids.map(v => {
+    if(v.includes(first)) first = v;
+    if(v.includes(second)) second = v;
+})
+console.log(first, second)
+jQuery("#QR\\~" + first).attr("type", "month")
 
-jQuery("#QR\\~1_QID137").attr("type", "month")
+jQuery("#QR\\~" + second).attr("type", "month")
 ```
 
 ## **Tutte le domande**
