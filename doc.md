@@ -2274,3 +2274,46 @@ jQuery("#excelButton").on('click', downloadExcel);
 jQuery('#fakeNext').on('click', localStoring);
 
 ```
+
+
+## Riepilogo finale dati in Excel
+
+### Codice
+Da inserire in onLoad in "Conferma Invio"
+```javascript
+var body = jQuery("#SurveyEngineBody");
+body.prepend('<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>');
+```
+Da inserire in onReady
+```javascript
+var excelButton = "<div style='text-align: center; display: center'><input id='excelButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='SALVA IN EXCEL' type='button' align='center'></input></div>";
+jQuery("#Footer").prepend(excelButton);
+
+function downloadRecap(){
+    console.log('download called with click')
+    var array = (Object.keys(localStorage).filter(key => key.includes('sezione'))).sort();
+    var workbook = XLSX.utils.book_new();
+    array.map((v,i) => {
+        var sheetTitle = v;
+        var temp = JSON.parse(localStorage.getItem(v));
+        var sheet = XLSX.utils.aoa_to_sheet(temp);
+        XLSX.utils.book_append_sheet(workbook, sheet, sheetTitle)
+    })
+    XLSX.writeFile(workbook, 'riepilogo.xlsx');
+}
+
+jQuery("#excelButton").on('click', downloadRecap);
+```
+### Spiegazione funzionamento salvataggio riepilogo finale in Excel
+Il questionario viene salvato per sezione nel browser ogni volta che l'utente preme il tasto avanti senza che questi ne abbia notifica. 
+
+1) Se si compila un'intera sezione e si preme il tasto indietro non avverrà alcun salvataggio, analogamente non ci sarà salvataggio se l'utente, una volta compilata una sezione, passa alla successiva usando l'indice.
+
+2) Se si torna su sezioni già compilate e salvate in automatico e si cambiano i dati, premendo avanti la copia salvata in locale verrà sovrascritta completamente dai nuovi dati presenti a schermo. Il processo non è reversibile.
+
+3) Le varie sezioni vengono salvate così come appaiono,ad esempio una domanda opzionale che compare solo in base a una risposta precedente o una domanda non destinata all'ente a cui appartiene l'utente che compila il form non verrà mai salvata in quanto non è visualizzata a schermo.
+
+4) Anche se non si risponde a una domanda questa verrà comunque salvata nel file excel se è presente nel form.
+
+Affinché il riepilogo completo di tutte le sezioni funzioni è necessario che ogni singola sezione sia stata visualizzata sul computer da cui si intende scaricare il file excel, nel browser da cui la si scarica, senza usare la navigazione in incognito, spostandosi tra sezioni premendo il tasto avanti e senza aver cancellato i dati di navigazione tra una sessione e l'altra.
+
