@@ -412,43 +412,40 @@ function rowExtractor(value, sliceVal){
 		console.log('starting sheet generator');
 		ids.map(id => {
             if(id !== "#QID187"){
-				//elaborate slice values
-				var truncated = id.slice(1);
-				var sliceVal = 4 + truncated.length;
+                var title = jQuery(id + " label")[0].textContent;
+                var temp = [[title], ['-']];
 
-				//temp array to concatenate
-				var temp = [];
-				temp[0] = [];
-				temp[0][0] = '-'
-				//table heads
-				var heads = jQuery(id + " table th").slice(2);
+				var heads = jQuery(id + " table th").slice(6);
 				heads.map((index, entry) => {
-					if(index < 8){
-						temp[0].push(entry.innerText);
+					if(index < 4){
+						temp[1].push(entry.innerText);
 					} else {
-						temp[index - 7] = new Array();
-						temp[index - 7].push(entry.innerText);
+                        var newIndex = index -2;
+						temp[newIndex] = new Array();
+						temp[newIndex].push(entry.innerText);
 					}
 				});
-				//table cells
+                var skipper = [0,1,2,3]
 				var entries = jQuery(id + " input");
-				entries.map((index, entry) => {
-					var row = rowExtractor(entry.id, sliceVal);
-					temp[row].push(jQuery(entry).val())
-				});
-				//table title
-				var title = jQuery(id + " label")[0].textContent;
-				temp.unshift([title]);
+                var filtered = entries.map((index, element) => {
+                    if(!skipper.includes(index % 8)) {
+                        return element
+                    }
+                });
+                var rowIndex = 2;
+                while(filtered.length !== 0){
+                    var pusher = filtered.slice(0, 4);
+                    pusher.each((index,entry) => temp[rowIndex].push(jQuery(entry).val()) );
+                    filtered = filtered.slice(4);
+                    rowIndex ++;
+                }
 				temp.push([]);
-				//concat to main array
 				array = array.concat(temp);
 		}else{
 		
-			//temp array to concatenate
 				var temp = [];
 				temp[0] = [];
 				temp[0][0] = '-'
-				//table heads
 				var heads = jQuery("#QID187 table th").slice(1);
 				heads.map((index, entry) => {
 					if(index < 4){
@@ -458,17 +455,14 @@ function rowExtractor(value, sliceVal){
 						temp[index - 3].push(entry.innerText);
 					}
 				});
-				//table cells
 				var entries = jQuery("#QID187 input");
 				entries.map((index, entry) => {
 					if(index < 4)temp[1].push(jQuery(entry).val())
                     else temp[2].push(jQuery(entry).val())
 				});
-				//table title
 				var title = "B11. Totale Spesa per Innovazione";
 				temp.unshift([title]);
 				temp.push([]);
-				//concat to main array
 				array = array.concat(temp);
         }
     })
