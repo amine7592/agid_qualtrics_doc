@@ -542,37 +542,35 @@ function sheetGenerator(){
         var test = jQuery(id);
         if(test[0] !== undefined && !(test[0].hasClassName('hidden'))){
             if(!specialIds.includes(id)){
-                //elaborate slice values
-                var truncated = id.slice(1);
-                var sliceVal = 4 + truncated.length;
+                var title = jQuery(id + " label")[0].textContent;
+                var temp = [[title], ['-']];
 
-                //temp array to concatenate
-                var temp = [];
-                temp[0] = [];
-                temp[0][0] = '-'
-                //table heads
-                var heads = jQuery(id + " table th").slice(2);
-                heads.map((index, entry) => {
-                    if(index < 8){
-                        if(entry.innerText) temp[0].push(entry.innerText);
-                        else temp[0].push(' ');
-                    } else {
-                        temp[index - 7] = new Array();
-                        temp[index - 7].push(entry.innerText);
+				var heads = jQuery(id + " table th").slice(6);
+				heads.map((index, entry) => {
+					if(index < 4){
+						temp[1].push(entry.innerText);
+					} else {
+                        var newIndex = index -2;
+						temp[newIndex] = new Array();
+						temp[newIndex].push(entry.innerText);
+					}
+				});
+                var skipper = [0,1,2,3]
+				var entries = jQuery(id + " input");
+                var filtered = entries.map((index, element) => {
+                    if(!skipper.includes(index % 8)) {
+                        return element
                     }
                 });
-                //table cells
-                var entries = jQuery(id + " input");
-                entries.map((index, entry) => {
-                    var row = rowExtractor(entry.id, sliceVal);
-                    temp[row].push(jQuery(entry).val())
-                });
-                //table title
-                var title = [jQuery(id + " label")[0].textContent]
-                temp.unshift([title]);
-                temp.push([]);
-                //concat to main array
-                array = array.concat(temp);
+                var rowIndex = 2;
+                while(filtered.length !== 0){
+                    var pusher = filtered.slice(0, 4);
+                    pusher.each((index,entry) => temp[rowIndex].push(jQuery(entry).val()) );
+                    filtered = filtered.slice(4);
+                    rowIndex ++;
+                }
+				temp.push([]);
+				array = array.concat(temp);
                 //special questions
             } else if (id == '#QID228') {
                 var title = [jQuery("#QID228 h3").text()];
