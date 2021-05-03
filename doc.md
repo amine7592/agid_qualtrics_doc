@@ -124,15 +124,25 @@ function sheetGenerator(){
             temp[1] = ['-'];
             var heads = jQuery("#QID4 th");
             heads = heads.slice(1);
-
-            heads.map((i,v) => {
-                if(index <4)
-                temp[1].push jQuery(v).textContent;
-            })
+            heads.map((index, entry) => {
+               if(index <4){
+                    temp[1].push(entry.innerText) 
+               } else {
+                   var newIndex = index-2;
+                   temp[newIndex] = new Array();
+                   temp[newIndex].push(entry.innerText);
+               };
+            });
             var inputs = jQuery("#QID4 input");
-            //TODO
-
-
+            inputs.map((index, value) => {
+                if(index%5 !== 0){
+                    var rowIndex = Math.floor(index/5) +2;
+                    if(temp[rowIndex] == undefined) temp[rowIndex] = new Array();
+                    temp[rowIndex].push(jQuery(value).val());
+                };
+            });
+            temp.push([]);
+            array = array.concat(temp);
         }else{
             var title = [jQuery( id + " h3").text()] ; 
             var choise = [jQuery(id + " .q-checked").text()]; 
