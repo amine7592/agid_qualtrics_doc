@@ -2145,7 +2145,7 @@ var sideBar = jQuery("#Toc ul li");
         }
     })
 ```
-Da inserire nella testa della prima sezione 'Piano Triennale per l'Informatica nella Pubblica Amministrazione etc' nell'onLoad per nascondere gli ultimi due link nell'indice generale. Va inserito inoltre nell' addOnUnload della testa della Sezione A per impedire ai link di comparire se l'utente dovesse premere il bottone indietro 
+Da inserire in ogni singola domanda della sezione di benvenuto nell'AddOnLoad e nell'AddOnUnloadnell'AddOnLoad per nascondere gli ultimi due link nell'indice generale. Va inserito inoltre nell' addOnUnload dell'header di ogni Sezione per impedire ai link di comparire se l'utente dovesse premere il bottone indietro 
 ```javascript
 var observer = new MutationObserver(function() {
     const toc = document.querySelector("#TOCPage");
