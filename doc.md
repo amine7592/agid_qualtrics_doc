@@ -2335,7 +2335,9 @@ Affinché il riepilogo completo di tutte le sezioni funzioni è necessario che o
 ### Banner di ringraziamento finale
 In conferma d'invio nell'onReady:
 ```javascript
-jQuery("NextButton").on('click', localStorage.setItem('sent', 'yes'))
+jQuery("#NextButton").on('click', function(){
+	   localStorage.setItem('sent', 'yes');
+	});
 ```
 
 In Benvenuto nell'onReady di Q.15 "I tuoi dati"
