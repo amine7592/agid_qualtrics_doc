@@ -2135,6 +2135,16 @@ var sideBar = jQuery("#Toc ul li");
         }
     })
 ```
+Per nascondere 3 voci :
+
+```javascript
+var sideBar = jQuery("#Toc ul li");
+    sideBar.map((index, entry) => {
+        if(index == sideBar.length -1 || index == sideBar.length -2 || index == sideBar.length -3){
+            jQuery(entry).hide()
+        }
+    })
+```
 Da inserire nella testa della prima sezione 'Piano Triennale per l'Informatica nella Pubblica Amministrazione etc' nell'onLoad per nascondere gli ultimi due link nell'indice generale. Va inserito inoltre nell' addOnUnload della testa della Sezione A per impedire ai link di comparire se l'utente dovesse premere il bottone indietro 
 ```javascript
 var observer = new MutationObserver(function() {
@@ -2144,6 +2154,25 @@ var observer = new MutationObserver(function() {
 
 		links.map((index, entry) => {
 			if(index == links.length -1 || index == links.length -2){
+				jQuery(entry).hide()
+			}
+    })
+        };
+    });
+    observer.observe(document.querySelector("#Page"), {
+        childList: true,
+        subtree: true
+    });
+```
+Per nascondere gli ultimi 3 link:
+```javascript
+var observer = new MutationObserver(function() {
+    const toc = document.querySelector("#TOCPage");
+        if(toc) {
+            var links = jQuery("#TOCPage li")
+
+		links.map((index, entry) => {
+			if(index == links.length -1 || index == links.length -2 || index == links.length -3){
 				jQuery(entry).hide()
 			}
     })
