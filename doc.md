@@ -2303,3 +2303,20 @@ Il questionario viene salvato per sezione nel browser ogni volta che l'utente pr
 
 Affinché il riepilogo completo di tutte le sezioni funzioni è necessario che ogni singola sezione sia stata visualizzata sul computer da cui si intende scaricare il file excel, nel browser da cui la si scarica, senza usare la navigazione in incognito, spostandosi tra sezioni premendo il tasto avanti e senza aver cancellato i dati di navigazione tra una sessione e l'altra.
 
+### Banner di ringraziamento finale
+In conferma d'invio nell'onReady:
+```javascript
+jQuery("NextButton").on('click', localStorage.setItem('sent', 'yes'))
+```
+
+In Benvenuto nell'onReady di Q.15 "I tuoi dati"
+```javascript
+var sent = localStorage.getItem('sent');
+if(sent === 'yes'){ 
+    jQuery("#EndOfSurvey").hide()
+
+    var thankNote = '<div id="thankNote" style="display: center; text-align: center; padding: 10px; font-family: sans-serif; border: none; margin: 10px; font-weight: bold; font-size: large "> Grazie per aver completato il questionario! Vi invitiamo a salvare in formato PDF la successiva pagina web di riepilogo dati.</div>';
+
+    jQuery("#QID3").prepend(thankNote)
+};
+```
