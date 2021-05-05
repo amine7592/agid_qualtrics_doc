@@ -1683,6 +1683,7 @@ jQuery('#Buttons').prepend(fakeNext);
 
 var typeA = ["#QID93", "#QID95", "#QID99", "#QID101"]; 
 var typeB = ["#QID96", "#QID97"]; 
+var typeC = ["#QID214"]
 
 var ids = [];
     jQuery('div[questionId]').each(function(a,b,c){
@@ -1757,6 +1758,22 @@ function sheetGenerator(){
                 })
                 temp.push([]);
                 array = array.concat(temp);
+            } else if(typeC.includes(id)){
+                var title = jQuery(id + " h3")[0].textContent;
+                var checked = jQuery(id + " .MultipleAnswer.q-checked");
+                var temp = [[title], []];
+                if(checked.length !== 0){
+                    checked.map((i,v) => { 
+                    var newIndex = i+1;
+                    if(temp[newIndex] == undefined){
+                        temp[newIndex] = new Array();
+                    }
+                    temp[newIndex].push(v.textContent);
+                })
+                }
+                temp.push([]);
+                array = array.concat(temp);                
+            } 
             } else { 
                 var title = jQuery(id + " h3")[0].textContent;
                 var answer = '';
