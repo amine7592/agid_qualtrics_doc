@@ -2247,7 +2247,7 @@ var body = jQuery("#SurveyEngineBody");
 body.prepend('<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>');
 
 ```
-In onReady
+In onReady, modificare la variabile typeB inserendo gli id delle domande di tipo input tra virgolette, preceduti da hashtag e separati da virgola.
 ```javascript
 var observer = new MutationObserver(function() {
     const div = document.querySelector("#NextButton");
@@ -2272,8 +2272,8 @@ var ids = [];
 });
 ids = ids.filter(i => !(excluded.includes(i)));
 
-var typeA = ids.filter(i => jQuery(i + " li").length !== 0); //selects
-var typeB = ids.filter(i => !(typeA.includes(i))); //inputs
+var typeA = ids.filter(i => jQuery(i + " li").length !== 0); 
+var typeB = ["#QID235", "#QID239"] //inserire a mano gli id delle domande di tipo input
 
 var array = [];
 
