@@ -2367,14 +2367,16 @@ Affinché il riepilogo completo di tutte le sezioni funzioni è necessario che o
 ### Banner di ringraziamento finale
 In conferma d'invio nell'onReady:
 ```javascript
+var test = window.location.href.toString().replaceAll('https://questionari.agid.gov.it/jfe/form/', '')
 jQuery("#NextButton").on('click', function(){
-	   localStorage.setItem('sent', 'yes');
+	   localStorage.setItem(test, 'yes');
 	});
 ```
 
 In Benvenuto nell'onReady di Q.15 "I tuoi dati"
 ```javascript
-var sent = localStorage.getItem('sent');
+var test = window.location.href.toString().replaceAll('https://questionari.agid.gov.it/jfe/form/', '')
+var sent = localStorage.getItem(test);
 if(sent === 'yes'){ 
     jQuery("#EndOfSurvey").hide()
 
