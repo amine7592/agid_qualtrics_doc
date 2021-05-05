@@ -1454,7 +1454,7 @@ jQuery('#Buttons').prepend(fakeNext);
 
 var typeA = ["#QID210", "#QID65", "#QID69", "#QID71", "#QID70", "#QID75"];
 var typeB = ["#QID68", "#QID66", "#QID72", "#QID76"];
-var typeC = ["#QID211", "#QID67"]
+var typeC = ["#QID211", "#QID67"];
 
 var ids = [];
     jQuery('div[questionId]').each(function(a,b,c){
@@ -1468,7 +1468,9 @@ function sheetGenerator(){
     console.log('starting sheetGenerator')
     array.length = 0;
     ids.map((id, index) => {
+
         var test = jQuery(id);
+
         if(test[0] !== undefined && !(test[0].hasClassName('hidden'))) {
             if(typeA.includes(id)){
                 //typeA
@@ -1486,19 +1488,20 @@ function sheetGenerator(){
                 var title = jQuery(id + " h3")[0].textContent;
                 var checked = jQuery(id + " .MultipleAnswer.q-checked");
                 var temp = [[title], []];
-                if(checked.length !== 0){
-                    checked.map((i,v) => { 
-                    var newIndex = i+1;
-                    if(temp[newIndex] == undefined){
-                        temp[newIndex] = new Array();
+                    if(checked.length !== 0){
+                        checked.map((i,v) => { 
+                        var newIndex = i+1;
+                        if(temp[newIndex] == undefined){
+                            temp[newIndex] = new Array();
+                        }
+                        temp[newIndex].push(v.textContent);
+                        })
                     }
-                    temp[newIndex].push(v.textContent);
-                })
-                }
                 temp.push([]);
                 array = array.concat(temp);                
             }  
-    });
+        }})
+    
     return array
 };
 
@@ -1773,7 +1776,6 @@ function sheetGenerator(){
                 }
                 temp.push([]);
                 array = array.concat(temp);                
-            } 
             } else { 
                 var title = jQuery(id + " h3")[0].textContent;
                 var answer = '';
@@ -1782,7 +1784,7 @@ function sheetGenerator(){
                 array = array.concat(temp);
             }
         }  
-    });
+    })
     return array
 };
 
