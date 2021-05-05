@@ -1373,7 +1373,7 @@ function sheetGenerator(){
                 array = array.concat(temp);
             } else if(typeE.includes(id)){
                 var title = jQuery(id + " h3")[0].innerText;
-                var answer = jQuery(id + " label")[0].hasClassName('q.checked') ? 'X' : ' ';
+                var answer = jQuery(id + " label")[0].hasClassName('q.checked') ? 'Si' : 'No';
                 var temp = [[title], [answer], []];
                 array = array.concat(temp);
             } else if(typeF.includes(id)){
