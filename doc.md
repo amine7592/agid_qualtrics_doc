@@ -1276,7 +1276,7 @@ jQuery('#Buttons').prepend(fakeNext);
 var discard = ["#QID33", "#QID34", "#QID35"]; //titles, unused
 var typeA = ["#QID36", "#QID47"];
 var typeB = ["#QID43", "#QID63", "#QID62", "#QID54", "#QID56"];
-var typeC = ["#QID37", "#QID41"];
+var typeC = ["#QID37", "#QID41", "#QID48", "#QID52"];
 var typeD = ["#QID58", "#QID60", "#QID61", "#QID59"];
 var typeE = ["#QID216", "#QID222"];
 var typeF = ["#QID217", "#QID223", "#QID221", "#QID156"];
@@ -1338,12 +1338,14 @@ function sheetGenerator(){
             } else if(typeC.includes(id)){
                 var labels = jQuery(id + " label");
                 var inputs = jQuery(id + " input");
-                var temp = [];
-                temp[0] = [inputs[0].textContent]
+                var title = jQuery(id + " h3")[0].textContent
+                var temp = [[title]];
+                temp[1] = [inputs[0].textContent]
                 labels.map((index, entry) => {
                     if(index>0){
-                        temp[index] = new Array();
-                        temp[index].push(entry.textContent, jQuery(inputs[index -1]).val())
+                        var newIndex = index + 1
+                        temp[newIndex] = new Array();
+                        temp[newIndex].push(entry.textContent, jQuery(inputs[index -1]).val())
                     }
                 });
                 temp.push([]); 
