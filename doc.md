@@ -1275,7 +1275,7 @@ jQuery('#Buttons').prepend(fakeNext);
 
 var discard = ["#QID33", "#QID34", "#QID35"]; //titles, unused
 var typeA = ["#QID36", "#QID47"];
-var typeB = ["#QID43", "#QID63", "#QID62"];
+var typeB = ["#QID43", "#QID63", "#QID62", "#QID54", "#QID56"];
 var typeC = ["#QID37", "#QID41"];
 var typeD = ["#QID58", "#QID60", "#QID61", "#QID59"];
 var typeE = ["#QID216", "#QID222"];
@@ -1419,7 +1419,7 @@ function downloadExcel(){
 function localStoring(){
     console.log('local storing called with click');
     var sheet = sheetGenerator();
-    localStorage.setItem('sezioneci', JSON.stringify(sheet));
+    localStorage.setItem('sezionec_01', JSON.stringify(sheet));
     jQuery("#NextButton").trigger('click');
 }
 
@@ -1516,7 +1516,7 @@ function downloadExcel(){
 function localStoring(){
     console.log('local storing called with click');
     var sheet = sheetGenerator();
-    localStorage.setItem('sezionecii', JSON.stringify(sheet));
+    localStorage.setItem('sezionec_02', JSON.stringify(sheet));
     jQuery("#NextButton").trigger('click');
 }
 
@@ -1651,7 +1651,7 @@ function downloadExcel(){
 function localStoring(){
     console.log('local storing called with click');
     var sheet = sheetGenerator();
-    localStorage.setItem('sezioneciii', JSON.stringify(sheet));
+    localStorage.setItem('sezionec_03', JSON.stringify(sheet));
     jQuery("#NextButton").trigger('click');
 }
 
@@ -1799,7 +1799,7 @@ function downloadExcel(){
 function localStoring(){
     console.log('local storing called with click');
     var sheet = sheetGenerator();
-    localStorage.setItem('sezioneciV', JSON.stringify(sheet));
+    localStorage.setItem('sezionec_04', JSON.stringify(sheet));
     jQuery("#NextButton").trigger('click');
 }
 
@@ -2084,7 +2084,8 @@ function downloadExcel(){
 function localStoring(){
     console.log('local storing called with click');
     var sheet = sheetGenerator();
-    var title = "sezioned_" + iterator;
+    var progressive = iterator.replaceAll('#', '').replaceAll('_','')
+    var title = "sezioned_" + progressive;
     localStorage.setItem(title, JSON.stringify(sheet));
     jQuery("#NextButton").trigger('click');
 }
@@ -2327,6 +2328,14 @@ jQuery('#fakeNext').on('click', localStoring);
 
 ## Riepilogo finale dati in Excel
 
+## Benvenuto
+
+Inserire questo snippet nell'onReady della domanda "I tuoi dati" della sezione di benvenuto, il codice controlla all'apertura della sezione se nella memoria locale siano già salavate delle sezioni e nel caso le cancella in modo da non far comparire nel download finale dati di sessioni precedenti.
+```javascript
+Object.keys(localStorage).map((e,i) => {
+    if(e.includes('sezione')) localStorage.removeItem(e)
+})
+```
 ### Codice
 Da inserire in onLoad in "Conferma Invio"
 ```javascript
