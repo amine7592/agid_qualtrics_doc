@@ -2408,5 +2408,6 @@ var sent = localStorage.getItem(test);
 if(sent === 'yes'){ 
     jQuery("#NextButton").hide()
     jQuery("#fakeNext").hide()
+    jQuery("#excelButton").hide()
 };
 ```
