@@ -2396,6 +2396,17 @@ if(sent === 'yes'){
 
     var thankNote = '<div id="thankNote" style="display: center; text-align: center; padding: 10px; font-family: sans-serif; border: none; margin: 10px; font-weight: bold; font-size: large "> Grazie per aver completato il questionario! Vi invitiamo a salvare in formato PDF la successiva pagina web di riepilogo dati.</div>';
 
-    jQuery("#QID3").prepend(thankNote)
+    jQuery("#QID3").prepend(thankNote);
+```
+
+### Nascondere bottoni avanti & download dati in riepilogo finale
+
+Da inserire in onReady subito dopo il codice per scaricare il riepilogo dati nella sezione CA
+```javascript
+var test = window.location.href.toString().replaceAll('https://questionari.agid.gov.it/jfe/form/', '')
+var sent = localStorage.getItem(test);
+if(sent === 'yes'){ 
+    jQuery("#NextButton").hide()
+    jQuery("#fakeNext").hide()
 };
 ```
