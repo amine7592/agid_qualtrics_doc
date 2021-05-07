@@ -2351,7 +2351,8 @@ jQuery("#Footer").prepend(excelButton);
 
 function downloadRecap(){
     console.log('download called with click')
-    var array = (Object.keys(localStorage).filter(key => key.includes('sezione'))).sort();
+    var array = (Object.keys(localStorage).filter(key => key.includes('sezione')));
+    array = array.sort((a,b) => a.localeCompare(b, undefined, {numeric: true}) );
     var workbook = XLSX.utils.book_new();
     array.map((v,i) => {
         var sheetTitle = v;
