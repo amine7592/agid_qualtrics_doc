@@ -1247,6 +1247,36 @@ Rimuovere la parte di codice nell'onLoad, disabilita da sola le celle della prim
         
 ```
 
+### BS 13A codice aggiornato
+In onReady, se si inserisce nella seconda casella un valore maggiore viene cancellata
+```javascript
+var id = "QID228";
+var inputs = jQuery("#" + id + " input");
+	function checkValue(){
+		var two = jQuery("#QID228 input")[1];
+		var one = jQuery("#QID228 input")[0];
+		var second = jQuery(two).val().replaceAll('.','');
+		var first = jQuery(one).val().replaceAll('.','');
+		if(second > first) jQuery(two).val('');
+	}
+jQuery(inputs).each(function(i,b){
+    jQuery(this).on("keypress",function(evt){
+                if(evt.which < 48 || evt.which > 57){
+                    evt.preventDefault();
+                    return false;
+                }
+            });
+    jQuery(this).on("keyup",function(evt){
+        jQuery(this).val(function(index, value) {
+            return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        });
+    }).trigger('change');
+	jQuery(this).on('change', checkValue)
+});
+	
+
+``` 
+
 ## SEZIONE C
 
 ### Riepilogo dati in Excel sezione C I
