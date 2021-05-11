@@ -2411,3 +2411,14 @@ if(sent === 'yes'){
     jQuery("#excelButton").hide()
 };
 ```
+### Testo nero in nota upload file
+In onReady piano ICT
+```javascript
+var test = jQuery(".Skin .dropzone-btn")[0];
+	jQuery(test).attr('style', "background: none; border: none; color: black")
+```
+In onReady nota d'accompagnamento
+```javascript
+var test = jQuery(".Skin .dropzone-btn")[1];
+	jQuery(test).attr('style', "background: none; border: none; color: black")
+```
