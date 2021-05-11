@@ -1984,6 +1984,7 @@ In onReady
 ```
 ## Sezione D 
 
+
 ### Riepilogo Dati in Excel
 Da inserire nella D00 in onReady, crea una variabile nel localStorage da riutilizzare per stabilire il numero di progetti da scaricare nel riepilogo finale.
 ```javascript
@@ -2035,6 +2036,8 @@ typeC = typeC.map((value, index) => {return iterator + value});
 ids = ids.map((value, index) => {return "#" + value})
 
 var array = [];
+var amount = [localStorage.getItem('amount')];
+if(amount !== '0') array.push(['D00: Numero di progetti che si desidera descrivere'], amount, []);
 
 function sheetGenerator(){
     console.log('starting sheetGenerator')
