@@ -1983,8 +1983,42 @@ In onReady
     });
 ```
 ## Sezione D 
+### Riepilogo Dati in Excel con zero progetti
+Da inserire in onLoad della testa della sezione D "Classificazione Spesa ICT per Progetti"
+```javascript
+var body = jQuery("#SurveyEngineBody");
+body.prepend('<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>');
+```
+Nell'onReady della Testa della sezione D "Classificazione Spesa ICT per Progetti"
 
+```javascript
 
+var observer = new MutationObserver(function() {
+    const div = document.querySelector("#NextButton");
+        if(div) {
+            div.style.display = "none";
+        };
+    });
+    observer.observe(document.querySelector("#Page"), {
+        childList: true,
+        subtree: true
+    });
+
+var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='AVANTI' type='button' align='center'></input>";
+jQuery('#Buttons').prepend(fakeNext);
+var array = [];
+
+function localStoring(){
+    console.log('starting localStoring');
+    var amount = localStorage.getItem('amount');
+    if(amount == '0'){
+        array.push(['Numero di progetti che si desidera descrivere'], ['0'], [])
+        localStorage.setItem('sezioned', JSON.stringify(array));
+    }; 
+    jQuery("#NextButton").trigger('click'); 
+};
+jQuery('#fakeNext').on('click', localStoring);
+```
 ### Riepilogo Dati in Excel
 Da inserire nella D00 in onReady, crea una variabile nel localStorage da riutilizzare per stabilire il numero di progetti da scaricare nel riepilogo finale.
 ```javascript
@@ -2354,7 +2388,14 @@ jQuery("#Footer").prepend(excelButton);
 
 function downloadRecap(){
     console.log('download called with click')
-    var array = (Object.keys(localStorage).filter(key => key.includes('sezione')));
+    var amount = localStorage.getItem('amount');
+    var array = [];
+    if(amount !== '0') {
+        array = (Object.keys(localStorage).filter(key => key.includes('sezione')));
+        array = array.filter(entry => entry !== 'sezioned');
+    } else { 
+        array = (Object.keys(localStorage).filter(key => key.includes('sezione')));
+    }
     array = array.sort((a,b) => a.localeCompare(b, undefined, {numeric: true}) );
     var workbook = XLSX.utils.book_new();
     array.map((v,i) => {
