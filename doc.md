@@ -2537,6 +2537,10 @@ function localStoring(){
 };
 jQuery('#fakeNext').on('click', localStoring);
 ```
+In onLoad domanda **D00**
+```javascript
+localStorage.setItem('amount', '0')
+```
 In onReady domanda **D00**
 ```javascript
  function setLocalAmount(e){
@@ -2669,7 +2673,8 @@ function downloadRecap(){
         array = array.filter(entry => entry !== 'sezioned');	
     } else { 	
         array = (Object.keys(localStorage).filter(key => key.includes('sezione')));
-        array = array.filter(entry => !entry.includes('sezioned'))
+        array = array.filter(entry => !entry.includes('sezioned'));
+        array.push('sezioned');
     }
     array = array.sort((a,b) => a.localeCompare(b, undefined, {numeric: true}) );
     var workbook = XLSX.utils.book_new();
