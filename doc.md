@@ -2541,6 +2541,7 @@ In onReady domanda **D00**
 ```javascript
  function setLocalAmount(e){
 		var amount = parseInt(jQuery("#QID132 input").val())
+        if(isNaN(amount)) amount = 0;
         localStorage.setItem('amount', amount);
     };
 
@@ -2668,6 +2669,7 @@ function downloadRecap(){
         array = array.filter(entry => entry !== 'sezioned');	
     } else { 	
         array = (Object.keys(localStorage).filter(key => key.includes('sezione')));
+        array = array.filter(entry => !entry.includes('sezioned'))
     }
     array = array.sort((a,b) => a.localeCompare(b, undefined, {numeric: true}) );
     var workbook = XLSX.utils.book_new();
@@ -2774,5 +2776,4 @@ function columnExtractor(value){
 
 
 // sezione d in bianco
-// riga 5 matrici totali
 // controllo amount in scarico
