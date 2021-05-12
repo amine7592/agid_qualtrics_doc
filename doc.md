@@ -2686,7 +2686,7 @@ jQuery("#excelButton").on('click', downloadRecap);
 ## SEZIONE B - Matrici
 
 ### Matrice Totale Acquisti HW
-Riutilizzare in altre matrici con totale. Vedi il commento nella funzione elaborateSixth per i dettagli 
+Riutilizzare in altre matrici con totale.
 ```javascript
 function columnExtractor(value){
         value = parseInt(value.slice(value.length - 6).slice(0, 5));
@@ -2716,10 +2716,12 @@ function columnExtractor(value){
         
     function elaborateSixth(one, two, three, four, five, column){
         var total = 0; 
-		if(isNaN(parseInt(two))) two = 0; //trasforma la percentuale della prima tabella in zero se non è stata compilata
-		if(isNaN(parseInt(four))) four = 0; // trasforma la percentuale della seconda tabella in zero se non è stata compilata
         if(isNaN(parseInt(one))) one = 0;
+        if(isNaN(parseInt(two))) two = 0; 
         if(isNaN(parseInt(three))) three = 0;
+        if(isNaN(parseInt(four))) four = 0; 
+        if(isNaN(parseInt(five))) five = 0;
+
         var first = parseInt(one) * parseInt(two) + parseInt(three) * parseInt(four);
         var second = first / parseInt(five);
         if(isNaN(second) || !isFinite(second))  total = 0;
@@ -2739,6 +2741,8 @@ function columnExtractor(value){
         jQuery(secondRow[originIndex]).val(two).trigger('change');
         jQuery(thirdRow[originIndex]).val(three).trigger('change');
         jQuery(fourthRow[originIndex]).val(four).trigger('change');
+        if(isNaN(parseInt(one))) one = 0; //se non è presente un totale nella cella setta il valore a zero
+        if(isNaN(parseInt(three))) three = 0; //se non è presente un totale nella cella setta il valore a zero
         var sum = parseInt(one) + parseInt(three);
         jQuery(fifthRow[originIndex]).val(sum).trigger('change');
         elaborateSixth(one, two, three, four, sum, originIndex);
@@ -2767,3 +2771,8 @@ function columnExtractor(value){
     var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Rilevazione 2020</th><th colspan='4' style='background-color:#D0E2F5'>Rilevazione 2021</th></tr>" 
     tHead.prepend(newHeader)
 ```
+
+
+// sezione d in bianco
+// riga 5 matrici totali
+// controllo amount in scarico
