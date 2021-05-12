@@ -2718,6 +2718,8 @@ function columnExtractor(value){
         var total = 0; 
 		if(isNaN(parseInt(two))) two = 0; //trasforma la percentuale della prima tabella in zero se non è stata compilata
 		if(isNaN(parseInt(four))) four = 0; // trasforma la percentuale della seconda tabella in zero se non è stata compilata
+        if(isNaN(parseInt(one))) one = 0;
+        if(isNaN(parseInt(three))) three = 0;
         var first = parseInt(one) * parseInt(two) + parseInt(three) * parseInt(four);
         var second = first / parseInt(five);
         if(isNaN(second) || !isFinite(second))  total = 0;
