@@ -2682,3 +2682,86 @@ function downloadRecap(){
 
 jQuery("#excelButton").on('click', downloadRecap);
 ```
+
+## SEZIONE B - Matrici
+
+### Matrice Totale Acquisti HW
+Riutilizzare in altre matrici con totale. Vedi il commento nella funzione elaborateSixth per i dettagli 
+```javascript
+function columnExtractor(value){
+        value = parseInt(value.slice(value.length - 6).slice(0, 5));
+        return value
+    };
+    
+    var inputs = jQuery("#QID17 input");
+    
+    var firstQuestion = jQuery("#QID15 input");
+    var firstQuestionTotals = firstQuestion.slice(-16).slice(4, 8);
+    var firstQuestionPercs = firstQuestion.slice(-4);
+    
+    var secondQuestion = jQuery("#QID184 input");
+    var secondQuestionTotals = secondQuestion.slice(-16).slice(4, 8)
+    var secondQuestionPercs = secondQuestion.slice(-4);
+    
+    var firstRow = inputs.map((index, entry) => {if(index>3 && index <8) return entry} );
+    var secondRow = inputs.map((index, entry) => {if(index>11 && index <16) return entry} );
+    var thirdRow = inputs.map((index, entry) => {if(index>19 && index < 24) return entry} );
+    var fourthRow = inputs.map((index, entry) => {if(index>27 && index < 32) return entry} );
+    var fifthRow = inputs.map((index, entry) => {if(index>35 && index < 40) return entry} );
+    var sixthRow = inputs.map((index, entry) => {if(index > 43 && index <48) return entry} );
+    
+	inputs.each(function(){
+        jQuery(this).attr("readonly", true)
+    });
+        
+    function elaborateSixth(one, two, three, four, five, column){
+        var total = 0; 
+		if(isNaN(parseInt(two))) two = 0; //trasforma la percentuale della prima tabella in zero se non è stata compilata
+		if(isNaN(parseInt(four))) four = 0; // trasforma la percentuale della seconda tabella in zero se non è stata compilata
+        var first = parseInt(one) * parseInt(two) + parseInt(three) * parseInt(four);
+        var second = first / parseInt(five);
+        if(isNaN(second) || !isFinite(second))  total = 0;
+        else total = Math.round(second);
+        jQuery(sixthRow[column]).val(total).trigger('change');
+    }
+    /* RIGHE 1 a 4 */
+    function dataTransfer(e){
+        console.log('called from ', e.target.id)
+        var column = columnExtractor(e.target.id);
+        var originIndex = column -5;
+        var one = jQuery(firstQuestionTotals[originIndex]).val().replaceAll('.', '');
+        var two = jQuery(firstQuestionPercs[originIndex]).val();
+        var three = jQuery(secondQuestionTotals[originIndex]).val().replaceAll('.', '');;
+        var four = jQuery(secondQuestionPercs[originIndex]).val();
+        jQuery(firstRow[originIndex]).val(one).trigger('change'); 
+        jQuery(secondRow[originIndex]).val(two).trigger('change');
+        jQuery(thirdRow[originIndex]).val(three).trigger('change');
+        jQuery(fourthRow[originIndex]).val(four).trigger('change');
+        var sum = parseInt(one) + parseInt(three);
+        jQuery(fifthRow[originIndex]).val(sum).trigger('change');
+        elaborateSixth(one, two, three, four, sum, originIndex);
+    }
+    
+    //event binding
+    for(let i = 0; i < firstQuestionTotals.length; i++){
+        jQuery(firstQuestionTotals[i]).on('change', dataTransfer);
+        jQuery(firstQuestionPercs[i]).on('change', dataTransfer);
+        jQuery(secondQuestionTotals[i]).on('change', dataTransfer);
+        jQuery(secondQuestionPercs[i]).on('change', dataTransfer);
+    };
+    
+    //binding format
+    
+    inputs.each(function(){	
+        jQuery(this).on("change",function(evt){
+                    jQuery(this).val(function(index, value) {
+                return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            });
+        });
+    })
+    
+    //HEADER
+    var tHead = jQuery("#QID17 thead"); 
+    var newHeader ="<tr><td></td><th colspan='4' style='background-color:#F0F6FC'>Rilevazione 2020</th><th colspan='4' style='background-color:#D0E2F5'>Rilevazione 2021</th></tr>" 
+    tHead.prepend(newHeader)
+```
