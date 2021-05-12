@@ -1247,35 +1247,6 @@ Rimuovere la parte di codice nell'onLoad, disabilita da sola le celle della prim
         
 ```
 
-### BS 13A codice aggiornato
-In onReady, se si inserisce nella seconda casella un valore maggiore viene cancellata
-```javascript
-var id = "QID228";
-var inputs = jQuery("#" + id + " input");
-	function checkValue(){
-		var two = jQuery("#QID228 input")[1];
-		var one = jQuery("#QID228 input")[0];
-		var second = jQuery(two).val().replaceAll('.','');
-		var first = jQuery(one).val().replaceAll('.','');
-		if(second > first) jQuery(two).val('');
-	}
-jQuery(inputs).each(function(i,b){
-    jQuery(this).on("keypress",function(evt){
-                if(evt.which < 48 || evt.which > 57){
-                    evt.preventDefault();
-                    return false;
-                }
-            });
-    jQuery(this).on("keyup",function(evt){
-        jQuery(this).val(function(index, value) {
-            return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        });
-    }).trigger('change');
-	jQuery(this).on('change', checkValue)
-});
-	
-
-``` 
 
 ## SEZIONE C
 
@@ -2057,7 +2028,7 @@ Da inserire nella D00 in onReady, crea una variabile nel localStorage da riutili
         localStorage.setItem('amount', amount);
     };
 
-	jQuery("#QID132 input").on('change', setLocalAmount)
+	jQuery("#QID132 input").on('keyup', setLocalAmount)
 ```  
 Nella sezione "Descrizione Progetto" in onLoad
 ```javascript
@@ -2100,12 +2071,12 @@ typeC = typeC.map((value, index) => {return iterator + value});
 ids = ids.map((value, index) => {return "#" + value})
 
 var array = [];
-var amount = [localStorage.getItem('amount')];
-if(amount !== '0') array.push(['D00: Numero di progetti che si desidera descrivere'], amount, []);
 
 function sheetGenerator(){
     console.log('starting sheetGenerator')
     array.length = 0;
+    var amount = [localStorage.getItem('amount')];
+	if(amount !== '0') array.push(['D00: Numero di progetti che si desidera descrivere'], amount, []);
     ids.map((id, index) => {
         var test = jQuery(id);
         if(test[0] !== undefined && !(test[0].hasClassName('hidden'))) {
@@ -2402,7 +2373,8 @@ jQuery('#fakeNext').on('click', localStoring);
 Inserire questo snippet nell'onReady della domanda "I tuoi dati" della sezione di benvenuto, il codice controlla all'apertura della sezione se nella memoria locale siano già salavate delle sezioni e nel caso le cancella in modo da non far comparire nel download finale dati di sessioni precedenti.
 ```javascript
 Object.keys(localStorage).map((e,i) => {
-    if(e.includes('sezione')) localStorage.removeItem(e)
+    if(e.includes('sezione')) localStorage.removeItem(e);
+    if(e.includes('amount')) localStorage.removeItem(e);	    
 })
 ```
 ### Codice
@@ -2485,14 +2457,228 @@ if(sent === 'yes'){
     jQuery("#excelButton").hide()
 };
 ```
-### Testo nero in nota upload file
-In onReady piano ICT
+
+### AGGIORNAMENTI 12/05
+
+### BS 13A codice aggiornato
+In onReady, se si inserisce nella seconda casella un valore maggiore viene cancellata
 ```javascript
-var test = jQuery(".Skin .dropzone-btn")[0];
-	jQuery(test).attr('style', "background: none; border: none; color: black")
+
+	var id = "QID228";
+	var inputs = jQuery("#" + id + " input");
+	
+	function checkValue(){
+		var two = jQuery("#QID228 input")[1];
+		var one = jQuery("#QID228 input")[0];
+		var second = parseInt(jQuery(two).val().replaceAll('.',''));
+		var first = parseInt(jQuery(one).val().replaceAll('.',''));
+		if(second > first) {
+			console.log('condition')
+			window.alert('Attenzione: il secondo valore non può essere maggiore del primo');
+			jQuery(two).val('')
+		}
+	};
+	
+	jQuery(inputs).each(function(i,b){
+		jQuery(this).on("keypress",function(evt){
+					if(evt.which < 48 || evt.which > 57){
+						evt.preventDefault();
+						return false;
+					}
+				});
+		jQuery(this).on("keyup",function(evt){
+			jQuery(this).val(function(index, value) {
+				return value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+			});
+		}).trigger('change');
+		jQuery(this).on('change', checkValue)
+	});
+``` 
+## Integrazioni per export sezione D 
+### Pulizia sessioni precedenti
+In onReady benvenuto - i tuoi dati
+```javascript
+	Object.keys(localStorage).map((e,i) => {
+    	if(e.includes('sezione')) localStorage.removeItem(e);
+		if(e.includes('amount')) localStorage.removeItem(e);
+})
+``` 
+### Sezione D 
+In onLoad **Classificazione spesa ICT per progetti**
+```javascript
+var body = jQuery("#SurveyEngineBody");
+body.prepend('<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>');
 ```
-In onReady nota d'accompagnamento
+In onReady
 ```javascript
-var test = jQuery(".Skin .dropzone-btn")[1];
-	jQuery(test).attr('style', "background: none; border: none; color: black")
+var observer = new MutationObserver(function() {
+    const div = document.querySelector("#NextButton");
+        if(div) {
+            div.style.display = "none";
+        };
+    });
+    observer.observe(document.querySelector("#Page"), {
+        childList: true,
+        subtree: true
+    });
+
+var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='AVANTI' type='button' align='center'></input>";
+jQuery('#Buttons').prepend(fakeNext);
+var array = [];
+
+function localStoring(){
+    console.log('starting localStoring clicking on fakenext');
+    var amount = localStorage.getItem('amount');
+    if(amount == '0'){
+        array.push(['D00: Numero di progetti che si desidera descrivere'], ['0'], [])
+        localStorage.setItem('sezioned', JSON.stringify(array));
+    }; 
+    jQuery("#NextButton").trigger('click'); 
+};
+jQuery('#fakeNext').on('click', localStoring);
+```
+In onReady domanda **D00**
+```javascript
+ function setLocalAmount(e){
+		var amount = parseInt(jQuery("#QID132 input").val())
+        localStorage.setItem('amount', amount);
+    };
+
+	jQuery("#QID132 input").on('keyup', setLocalAmount)
+```
+In onLoad **Classificazione Spesa ICT progetto N**
+```javascript
+var body = jQuery("#SurveyEngineBody");
+body.prepend('<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>');
+```
+In onReady 
+```javascript
+var observer = new MutationObserver(function() {
+    const div = document.querySelector("#NextButton");
+        if(div) {
+            div.style.display = "none";
+        };
+    });
+    observer.observe(document.querySelector("#Page"), {
+        childList: true,
+        subtree: true
+    });
+var excelButton = "<div style='text-align: center; display: center'><input id='excelButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='EXPORT DATI' type='button' align='center'></input></div>";
+var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='SALVA E PROCEDI' type='button' align='center'></input>";
+jQuery("#Footer").prepend(excelButton);
+jQuery('#Buttons').prepend(fakeNext);
+
+var typeA = ["QID134", "QID135", "QID136", "QID137", "QID179"];  
+var typeB = ["QID181", "QID139", "QID177", "QID140", "QID141","QID142", "QID143", "QID144", "QID178"]; 
+var typeC = ["QID209"]; 
+
+var ids = [];
+    jQuery('div[questionId]').each(function(a,b,c){
+        ids.push(jQuery(this).attr("questionId"));
+});
+ids = ids.slice(1);
+var iterator = '';
+if(ids[0][1] == '_') iterator ="#"+ ids[0][0] + "_";
+else iterator = "#" + ids[0][0] + ids[0][1] + "_";
+
+typeA = typeA.map((value, index) => {return iterator + value});
+typeB = typeB.map((value,index) => {return iterator + value});
+typeC = typeC.map((value, index) => {return iterator + value});
+ids = ids.map((value, index) => {return "#" + value})
+
+var array = [];
+
+function sheetGenerator(){
+    console.log('starting sheetGenerator')
+    array.length = 0;
+	var amount = [localStorage.getItem('amount')];
+	if(amount !== '0') array.push(['D00: Numero di progetti che si desidera descrivere'], amount, []);
+    ids.map((id, index) => {
+        var test = jQuery(id);
+        if(test[0] !== undefined && !(test[0].hasClassName('hidden'))) {
+            if(typeA.includes(id)){
+                var title = jQuery(id + " label")[0].textContent;
+                title = title.replaceAll("\n" , " " );
+                var input = jQuery(id + " input").val();
+                var temp = [[title], [input], []];
+                array = array.concat(temp);         
+            } else if(typeB.includes(id)){
+                var title = jQuery(id + " legend")[0].textContent;
+                title = title.replaceAll("\n" , " " );
+                var answer = '';
+                if(jQuery(id + " .q-checked").length !== 0) answer = jQuery(id + " .q-checked")[1].textContent;
+                var temp = [[title], [answer], []];
+                array = array.concat(temp)
+            } else if(typeC.includes(id)) {
+                var title = jQuery(id + " label")[0].innerText;
+                var heads = jQuery(id + " th");
+                var inputs = jQuery(id + " input");
+                var temp = [
+                    [title],
+                    ['-', heads[0].textContent], 
+                    [heads[1].innerText, jQuery(inputs[0]).val()],
+                    [heads[2].innerText, jQuery(inputs[1]).val()],
+                    [heads[3].innerText, jQuery(inputs[2]).val()],
+                    []
+                ];
+                array = array.concat(temp)
+            }
+        }  
+    });
+    return array
+};
+
+function downloadExcel(){
+    console.log('download called with click')
+    var sheet = sheetGenerator();
+    var sezione = XLSX.utils.book_new();
+    var title = "sezione D progetto" + iterator;
+    XLSX.utils.book_append_sheet(sezione, XLSX.utils.aoa_to_sheet(sheet), title);
+    XLSX.writeFile(sezione, 'Sezione D Progetto Corrente.xlsx');
+}
+
+function localStoring(){
+    console.log('local storing called with click');
+    var sheet = sheetGenerator();
+    var progressive = iterator.replaceAll('#', '').replaceAll('_','')
+    var title = "sezioned_" + progressive;
+    localStorage.setItem(title, JSON.stringify(sheet));
+    jQuery("#NextButton").trigger('click');
+}
+
+jQuery("#excelButton").on('click', downloadExcel);
+jQuery('#fakeNext').on('click', localStoring);
+```
+In onLoad di export complessivo dati 
+```javascript
+var body = jQuery("#SurveyEngineBody");
+body.prepend('<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>');
+```
+In onReady
+```javascript	
+var excelButton = "<div style='text-align: center; display: center'><input id='excelButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='EXPORT COMPLETO QUESTIONARIO' type='button' align='center'></input></div>";
+jQuery("#Footer").prepend(excelButton);
+
+function downloadRecap(){
+    console.log('download called with click')
+    var amount = localStorage.getItem('amount');
+    var array = [];
+    if(amount !== '0') {
+        array = (Object.keys(localStorage).filter(key => key.includes('sezione')));
+        array = array.filter(entry => entry !== 'sezioned');	
+    } else { 	
+        array = (Object.keys(localStorage).filter(key => key.includes('sezione')));
+    }
+    array = array.sort((a,b) => a.localeCompare(b, undefined, {numeric: true}) );
+    var workbook = XLSX.utils.book_new();
+    array.map((v,i) => {
+        var sheetTitle = v;
+        var temp = JSON.parse(localStorage.getItem(v));
+        var sheet = XLSX.utils.aoa_to_sheet(temp);
+        XLSX.utils.book_append_sheet(workbook, sheet, sheetTitle)
+    })
+    XLSX.writeFile(workbook, 'riepilogo.xlsx');
+}
+
+jQuery("#excelButton").on('click', downloadRecap);
 ```
