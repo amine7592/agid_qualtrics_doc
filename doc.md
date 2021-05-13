@@ -1455,9 +1455,9 @@ var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-t
 jQuery("#Footer").prepend(excelButton);
 jQuery('#Buttons').prepend(fakeNext);
 
-var typeA = ["#QID210", "#QID65", "#QID69", "#QID71", "#QID70", "#QID75"];
+var typeA = ["#QID210", "#QID65", "#QID69", "#QID71", "#QID70", "#QID75", "#QID67"];
 var typeB = ["#QID68", "#QID66", "#QID72", "#QID76"];
-var typeC = ["#QID211", "#QID67"];
+var typeC = ["#QID211"];
 
 var ids = [];
     jQuery('div[questionId]').each(function(a,b,c){
