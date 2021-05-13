@@ -2800,8 +2800,8 @@ var observer = new MutationObserver(function() {
         childList: true,
         subtree: true
     });
-var excelButton = "<div style='text-align: center; display: center'><input id='excelButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='SALVA IN EXCEL' type='button' align='center'></input></div>";
-var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='AVANTI' type='button' align='center'></input>";
+var excelButton = "<div style='text-align: center; display: center'><input id='excelButton' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='EXPORT DATI' type='button' align='center'></input></div>";
+var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='SALVA E PROCEDI' type='button' align='center'></input>";
 jQuery("#Footer").prepend(excelButton);
 jQuery('#Buttons').prepend(fakeNext);
 
@@ -2814,15 +2814,12 @@ var typeE = ["#QID216", "#QID222"];
 var typeF = ["#QID217", "#QID223", "#QID221", "#QID156"];
 var typeG = ["#QID44", "#QID55", "#QID218", "#QID224", "#QID220", "#QID225"]; 
 var typeH = ["#QID60"];
-
 var ids = [];
     jQuery('div[questionId]').each(function(a,b,c){
         ids.push("#" + jQuery(this).attr("questionId"));
     });
     ids = ids.filter(entry => !discard.includes(entry));
-    
 var array = [];
-
 function sheetGenerator(){
     console.log('starting sheetGenerator')
     array.length = 0;
@@ -2839,7 +2836,6 @@ function sheetGenerator(){
                     if(entry.checked) boxesValues[index] = 'X';
                     else boxesValues[index] = '';
                 });
-
                 var trs = jQuery(id + " tr th");
                 var labels = [];
                 var headers = ['-'];
@@ -2851,7 +2847,6 @@ function sheetGenerator(){
                 heads.map((index,entry) => {
                     headers.push(entry.innerText)
                 })
-
                 var temp = [headers];
                 labels.map((entry, index) => {
                     var test = index +1;
@@ -2893,8 +2888,6 @@ function sheetGenerator(){
                 temp[0] = [title];
                 temp[1] = ['-', headers[0].innerText, headers[1].innerText];
                 headers = headers.slice(2);
-
-
                 for(var i = 0; i < rows; i++){
                     var checkIndex = i * 2; 
                     var first = checkboxes[checkIndex].checked;
@@ -2926,7 +2919,6 @@ function sheetGenerator(){
                 jQuery(id + " th").slice(0, columns).map((index, entry) => {temp[1].push(entry.innerText)});
                 var labels = jQuery(id + " th").slice(columns);
                 var checkboxes = jQuery(id + " input").map((index, entry) => { if(entry.checked)return 'X'; else return ' '})
-
                 for(let i = 0; i < rows; i++){
                     var checkindex = i * 7;
                     temp[i+2] = new Array();
@@ -2939,7 +2931,7 @@ function sheetGenerator(){
                 array = array.concat(temp);
             } else if(typeH.includes(id)){
                 var test = jQuery("#QID60 th");
-                var temp = [["CA06. Alla luce dei servizi e dei canali di relazione appena indicati, avete adottato o previsto degli indicatori (KPI) per misurare l'efficacia dei servizi erogati ed il miglioramento generato dagli stessi?"], []];
+                var temp = [["CA06. Alla luce dei servizi e dei canali di relazione appena indicati, avete adottato o previsto degli indicatori (KPI) per misurare l'efficacia dei servizi erogati ed il miglioramento generato dagli stessi?"], ['-']];
                 test.map((i,v) => {
                     if(i<4){
                     temp[1].push(v.innerText);
@@ -2948,7 +2940,7 @@ function sheetGenerator(){
                     temp[i -2].push(v.innerText);
                     }
                 });
-                var anwers = jQuery("#QID60 input");
+                var answers = jQuery("#QID60 input");
                 answers.map((i,v) => {
                     if(i < 4){
                         v.checked ? temp[2].push('X') : temp[2].push('');
@@ -2968,8 +2960,8 @@ function downloadExcel(){
     console.log('download called with click')
     var sheet = sheetGenerator();
     var sezione = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(sezione, XLSX.utils.aoa_to_sheet(sheet), 'Sezione C I');
-    XLSX.writeFile(sezione, 'Sezione C I.xlsx');
+    XLSX.utils.book_append_sheet(sezione, XLSX.utils.aoa_to_sheet(sheet), 'Sezione C Servizi');
+    XLSX.writeFile(sezione, 'Sezione C Servizi.xlsx');
 }
 
 function localStoring(){
