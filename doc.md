@@ -2974,3 +2974,19 @@ function localStoring(){
 jQuery("#excelButton").on('click', downloadExcel);
 jQuery('#fakeNext').on('click', localStoring);
 ```
+
+## FASE 2 17/05
+
+### Import dati radio button
+Da inserire in onReady modificando manualmente id e risposta. La risposta deve essere uguale al 100% quella a schermo (inclusa capitalizzazione e spazi). Se non è stata fornita nessuna risposta nserire una stringa vuota in answer ('')
+```javascript
+//RADIO BUTTON
+var id = '#QID6'; //modificare
+var answer = 'Nessuna risposta' //modificare
+
+var labels = jQuery(id + " .SingleAnswer");
+labels.map((i,v) => {
+    var test = v.innerText;
+    if(test == answer) jQuery(v).trigger('click')
+})
+```
