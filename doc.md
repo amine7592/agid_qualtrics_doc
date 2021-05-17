@@ -2978,7 +2978,8 @@ jQuery('#fakeNext').on('click', localStoring);
 ## FASE 2 17/05
 
 ### Import dati radio button
-Da inserire in onReady modificando manualmente id e risposta. La risposta deve essere uguale al 100% quella a schermo (inclusa capitalizzazione e spazi). Se non è stata fornita nessuna risposta nserire una stringa vuota in answer ('')
+**Esempio per A02**
+Da inserire in onReady modificando manualmente id e risposta. La risposta deve essere uguale al 100% quella a schermo (inclusa capitalizzazione e spazi).
 ```javascript
 //RADIO BUTTON
 var id = '#QID6'; //modificare
@@ -2989,4 +2990,28 @@ labels.map((i,v) => {
     var test = v.innerText;
     if(test == answer) jQuery(v).trigger('click')
 })
+```
+### Import dati scelta multipla
+**Esempio per BS12**
+Da inserire in onReady modificando manualmnete id e array delle risposte.
+```javascript
+function preFill(){
+	var id = "#QID128"; //cambiare
+	var answers = [ 
+		"Governance della spesa sanitaria tramite sistemi decisionali", //cambiare
+		"Gestione Anagrafiche/Banche dati e nomenclatori (es.anagrafe strutture, flussi informativi, anagrafe assistiti)" //cambiare
+	];
+
+	var labels = jQuery(id + " .MultipleAnswer");
+		labels.map((i,v) => {
+			if(answers.includes(v.innerText)){
+				if(!v.hasClassName('q-checked')){
+					jQuery(v).trigger('click')
+				}
+			}
+		})
+	}
+	preFill();
+});
+
 ```
