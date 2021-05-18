@@ -2979,9 +2979,8 @@ jQuery('#fakeNext').on('click', localStoring);
 
 ### Import dati radio button
 **Esempio per A02**
-Da inserire in onReady modificando manualmente id e risposta. La risposta deve essere uguale al 100% quella a schermo (inclusa capitalizzazione e spazi).
+Da inserire in onReady modificando manualmente id e risposta.
 ```javascript
-//RADIO BUTTON
 var id = '#QID5'; //modificare
 var selected = "${e://Field/Q2.3}" 
 
@@ -2998,6 +2997,44 @@ Esempio funzionante con la sezione B Sanità.
 ```javascript
 var firstBlock = "#QID189" //cambiare
 jQuery(firstBlock).attr("tabindex",-1).focus();
+```
+
+### Import dati scelta multipla
+**Esempio per BS12**
+Da inserire in onReady.
+Per adattarla ad altre modificare la variabile id, le possibili risposte nell'array availableOptions e il campo precaricato Q4.21 in selected
+
+```javascript
+	var id = "#QID128"; //cambiare
+	var availableOptions = [ 
+		"Governance della spesa sanitaria tramite sistemi decisionali",
+        "Percorsi assistenziali e cura(es. gestione ricoveri)",
+        "Monitoraggio dei Servizi territoriali",
+        "Gestione Epidemiologica (come sistemi di biosorveglianza con dati in real time)",
+        "Gestione Anagrafiche/Banche dati e nomenclatori (es.anagrafe strutture, flussi informativi, anagrafe assistiti)",
+        "Paghe e stipendi (per i Medici di Medicina Generale/Pediatri Libera Scelta e tutto il personale medico operante nel territorio regionale)",
+        "Modelli direzionali, cruscotti, analisi predittiva e dei dati storici",
+        "Implementazione del FSE",
+        "Sistema amministrativo contabile unico e consolidato",
+        "Servizi on line al cittadino (cambio medico, referti…)",
+        "Piano Nazionale della Cronicità (PNC)",
+        "Population Health Management (modello che presuppone, tra i vari ambiti, la responsabilizzazione degli assistiti, il rafforzamento della governance, la revisione dei modelli di cura)"
+	]; //cambiare 
+    var selected = '${e://Field/Q4.21}'; //cambiare q.21
+    
+    var userChoices = availableOptions.map(entry => {
+        if(selected.includes(entry)) return entry
+        }).filter(entry => entry !== undefined);
+    
+    var labels = jQuery(id + " .MultipleAnswer");
+    
+    labels.map((i,v) => {
+        if(userChoices.includes(v.innerText)){
+            if(!v.hasClassName('q-checked')){
+                jQuery(v).trigger('click')
+            }
+        }
+    })
 ```
 
 
