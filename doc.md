@@ -3036,5 +3036,79 @@ Per adattarla ad altre modificare la variabile id, le possibili risposte nell'ar
         }
     })
 ```
+### Import matrice radio
+Esempio per CA01, da inserire in onReady.
+Per adattare ad altre domande modificare l'array answers con le variabili locali, l'id della domanda in boxes, le opzioni nelle varie optionOne, optionTwo, optionThree, il numero di colonne in availableOptions e le colonne nel mapping
+```javascript
+var answers = [
+    "${e://Field/Q6.4_1}", //inserire variabili locali
+    "${e://Field/Q6.4_2}",
+    "${e://Field/Q6.4_3}",
+    "${e://Field/Q6.4_4}",
+    "${e://Field/Q6.4_5}",
+    "${e://Field/Q6.4_6}",
+    "${e://Field/Q6.4_7}"
+];
 
+var boxes = jQuery("#QID36 input");  //modifica id
+
+var optionOne = "Non previsto";  //risposta colonna 1
+var optionTwo = "Pianificato/In fase sperimentale"; //risposta colonna 2
+var optionThree = "Piena adozione"; //risposta colonna 3
+
+var availableOptions = 3; //numero di colonne
+
+answers = answers.map(entry => {
+   if(entry == optionOne) entry = 1; //colonna 1
+   if(entry == optionTwo) entry = 2; //colonna 2
+   if(entry == optionThree) entry = 3; //colonna 3
+})
+
+
+boxes.map((i,v) => {
+    var column = i % availableOptions;
+    var row = Math.floor(i / availableOptions);
+    if(answers[row] == column) jQuery(v).click();
+})
+```
+
+**Esempio per domanda a 5 colonne e 9 righe**
+```javascript
+var answers = [
+    "${e://Field/Q_BOH}",
+    "${e://Field/Q_BOH}",
+    "${e://Field/Q_BOH}",
+    "${e://Field/Q_BOH}",
+    "${e://Field/Q_BOH}",
+    "${e://Field/Q_BOH}",
+    "${e://Field/Q_BOH}",
+    "${e://Field/Q_BOH}",
+    "${e://Field/Q_BOH}"
+];
+
+var boxes = jQuery("#QID_BOH_ input");  
+
+var optionOne = "risposta";  
+var optionTwo = "seconda risposta"; 
+var optionThree = "terza risposta"; 
+var optionFour = "quarta risposta";
+var optionFive = "quinta risposta";
+
+var availableOptions = 5; 
+
+answers = answers.map(entry => {
+   if(entry == optionOne) entry = 1; 
+   if(entry == optionTwo) entry = 2; 
+   if(entry == optionThree) entry = 3; 
+   if(entry == optionFour) entry = 4;
+   if(entry == optionFive) entry = 5;
+})
+
+
+boxes.map((i,v) => {
+    var column = i % availableOptions;
+    var row = Math.floor(i / availableOptions);
+    if(answers[row] == column) jQuery(v).click();
+})
+```
 
