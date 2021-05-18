@@ -2993,7 +2993,7 @@ labels.map((i,v) => {
 ```
 ### Import dati scelta multipla
 **Esempio per BS12**
-Da inserire in onReady modificando manualmnete id e array delle risposte.
+Da inserire in onReady modificando manualmnete id della domanda e risposte.
 ```javascript
 function preFill(){
 	var id = "#QID128"; //cambiare
@@ -3014,4 +3014,28 @@ function preFill(){
 	preFill();
 });
 
+```
+### Impedire autoscroll
+Inserire nell'**ultima domanda** di ogni sezione, alla fine dell'onReady, inserendo l'id del blocco titolo.
+Esempio funzionante con la sezione B Sanità.
+```javascript
+var firstBlock = "#QID189" //cambiare
+jQuery(firstBlock).attr("tabindex",-1).focus();
+```
+
+### Matrice con radio button
+Esempio funzionante per **CA01** da inserire in onReady.
+Per usarlo con simili sostituire #QID36 con l'id della domanda, availableOptions col numero di colonne di bottoni, in provided answers sostituire i numeri con la colonna d'appartenenza della risposta per ogni riga. 
+```javascript
+var boxes = jQuery("#QID36 input"); //id domanda
+
+var availableOptions = 3; //numero colonne
+
+var providedAnswers = [ 1, 2, 3, 2, 1, 2, 3 ]; //risposta data per riga
+
+boxes.map((i,v) => {
+    var rowIndex = i % availableOptions + 1;
+    var row = Math.floor(i / availableOptions);
+    if(providedAnswers[row] == rowIndex) jQuery(v).click();
+})
 ```
