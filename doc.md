@@ -2982,39 +2982,16 @@ jQuery('#fakeNext').on('click', localStoring);
 Da inserire in onReady modificando manualmente id e risposta. La risposta deve essere uguale al 100% quella a schermo (inclusa capitalizzazione e spazi).
 ```javascript
 //RADIO BUTTON
-var id = '#QID6'; //modificare
-var answer = 'Nessuna risposta' //modificare
+var id = '#QID5'; //modificare
+var selected = "${e://Field/Q2.3}" 
 
 var labels = jQuery(id + " .SingleAnswer");
 labels.map((i,v) => {
     var test = v.innerText;
-    if(test == answer) jQuery(v).trigger('click')
+    if(test == selected) jQuery(v).trigger('click')
 })
 ```
-### Import dati scelta multipla
-**Esempio per BS12**
-Da inserire in onReady modificando manualmnete id della domanda e risposte.
-```javascript
-function preFill(){
-	var id = "#QID128"; //cambiare
-	var answers = [ 
-		"Governance della spesa sanitaria tramite sistemi decisionali", //cambiare
-		"Gestione Anagrafiche/Banche dati e nomenclatori (es.anagrafe strutture, flussi informativi, anagrafe assistiti)" //cambiare
-	];
 
-	var labels = jQuery(id + " .MultipleAnswer");
-		labels.map((i,v) => {
-			if(answers.includes(v.innerText)){
-				if(!v.hasClassName('q-checked')){
-					jQuery(v).trigger('click')
-				}
-			}
-		})
-	}
-	preFill();
-});
-
-```
 ### Impedire autoscroll
 Inserire nell'**ultima domanda** di ogni sezione, alla fine dell'onReady, inserendo l'id del blocco titolo.
 Esempio funzionante con la sezione B Sanità.
@@ -3023,19 +3000,4 @@ var firstBlock = "#QID189" //cambiare
 jQuery(firstBlock).attr("tabindex",-1).focus();
 ```
 
-### Matrice con radio button
-Esempio funzionante per **CA01** da inserire in onReady.
-Per usarlo con simili sostituire #QID36 con l'id della domanda, availableOptions col numero di colonne di bottoni, in provided answers sostituire i numeri con la colonna d'appartenenza della risposta per ogni riga. 
-```javascript
-var boxes = jQuery("#QID36 input"); //id domanda
 
-var availableOptions = 3; //numero colonne
-
-var providedAnswers = [ 1, 2, 3, 2, 1, 2, 3 ]; //risposta data per riga
-
-boxes.map((i,v) => {
-    var rowIndex = i % availableOptions + 1;
-    var row = Math.floor(i / availableOptions);
-    if(providedAnswers[row] == rowIndex) jQuery(v).click();
-})
-```
