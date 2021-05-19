@@ -3122,4 +3122,36 @@ boxes.map((i,v) => {
 		}
 })
 ```
+### Import matrice con checkbox a selezione multipla
+Da inserire in onReady;
+Esempio testato con CA07, per adattare ad altre domande sostituire l'id in questionBoxes, le variabili locali in userChoices e le stringhe delle opzioni.
 
+```javascript
+var questionBoxes = jQuery("#QID61 input"); //sostituire id
+
+var userChoices = [
+    "${e://Field/Q6.29_1}", //sostituire variabili locali
+    "${e://Field/Q6.29_2}",
+    "${e://Field/Q6.29_3}",
+    "${e://Field/Q6.29_4}",
+    "${e://Field/Q6.29_5}",
+    "${e://Field/Q6.29_6}",
+];
+
+var firstOption = "Servizi al cittadino"; //prima risposta
+var secondOption = "Servizi alle imprese"; //seconda risposta
+var bothOptions = "Servizi al cittadino,Servizi alle imprese"; //entrambe
+
+var checkStatus = [];
+
+userChoices.map(entry => {
+    if(entry == firstOption) checkStatus.push(1,0);
+    else if(entry == secondOption) checkStatus.push(0,1);
+    else if(entry == bothOptions) checkStatus.push(1,1);
+    else checkStatus.push(0,0);
+});
+
+questionBoxes.map((i,v) => {
+    if(checkStatus[i] == 1 && !v.checked) jQuery(v).click();
+});
+```
