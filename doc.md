@@ -3122,33 +3122,102 @@ boxes.map((i,v) => {
 		}
 })
 ```
-### Import matrice con checkbox a selezione multipla
-Da inserire in onReady;
-Esempio testato con CA07, per adattare ad altre domande sostituire l'id in questionBoxes, le variabili locali in userChoices e le stringhe delle opzioni.
+### Import dati matrice a selezione multipla a più colonne
+Da inserire in onReady.
+Esempio per CA05, per adattare sostituire id domanda nella prima riga, variabili locali in userChoices , nomi delle rispose nei vari firstOption e, qualora dovessero esserci più o meno opzioni aggiungere o rimuovere variabili con suffisso Option e opzioni nel mapping (vedi commenti).
 
 ```javascript
-var questionBoxes = jQuery("#QID61 input"); //sostituire id
+var questionBoxes = jQuery("#QID58 input"); //sostituire id
 
 var userChoices = [
-    "${e://Field/Q6.29_1}", //sostituire variabili locali
-    "${e://Field/Q6.29_2}",
-    "${e://Field/Q6.29_3}",
-    "${e://Field/Q6.29_4}",
-    "${e://Field/Q6.29_5}",
-    "${e://Field/Q6.29_6}",
+    "${e://Field/Q6.26_1}", //sostituire variabili locali
+    "${e://Field/Q6.26_2}",
+    "${e://Field/Q6.26_3}",
+    "${e://Field/Q6.26_4}",
+    "${e://Field/Q6.26_5}"
 ];
 
-var firstOption = "Servizi al cittadino"; //prima risposta
-var secondOption = "Servizi alle imprese"; //seconda risposta
-var bothOptions = "Servizi al cittadino,Servizi alle imprese"; //entrambe
+var firstOption = "Completamente d'accordo"; //sostituire
+var secondOption = "Abbastanza d'accordo"; //sostituire o eliminare
+var thirdOption = "Né d'accordo né in disaccordo"; //sostituire o eliminare
+var fourthOption = "Abbastanza in disaccordo"; //sostituire o eliminare
+var fifthOption = "Completamente in disaccordo" //sostituire o eliminare
 
 var checkStatus = [];
 
 userChoices.map(entry => {
-    if(entry == firstOption) checkStatus.push(1,0);
-    else if(entry == secondOption) checkStatus.push(0,1);
-    else if(entry == bothOptions) checkStatus.push(1,1);
-    else checkStatus.push(0,0);
+    var row = [];
+    if(entry.includes(firstOption)) row[0] = 1; else row[0] = 0; //sostituire o eliminare
+    if(entry.includes(secondOption)) row[1] = 1; else row[1] = 0; //sostituire o eliminare
+    if(entry.includes(thirdOption)) row[2] = 1; else row[2] = 0; //sostituire o eliminare
+    if(entry.includes(fourthOption)) row[3] = 1; else row[3] = 0; //sostituire o eliminare
+    if(entry.includes(fifthOption)) row[4] = 1; else row[4] = 0; //sostituire o eliminare
+    checkStatus = checkStatus.concat(row);
+});
+
+questionBoxes.map((i,v) => {
+    if(checkStatus[i] == 1 && !v.checked) jQuery(v).click();
+});
+
+```
+
+**Esempio a 2 colonne e 5 righe**
+```javascript
+var questionBoxes = jQuery("#IDDOMANDA input");
+
+var userChoices = [
+    "${e://Field/Q6.26_1}",
+    "${e://Field/Q6.26_2}",
+    "${e://Field/Q6.26_3}",
+    "${e://Field/Q6.26_4}",
+    "${e://Field/Q6.26_5}"
+];
+
+var firstOption = "Risposta uno";
+var secondOption = "Risposta due";
+
+var checkStatus = [];
+
+userChoices.map(entry => {
+    var row = [];
+    if(entry.includes(firstOption)) row[0] = 1; else row[0] = 0;
+    if(entry.includes(secondOption)) row[1] = 1; else row[1] = 0;
+    checkStatus = checkStatus.concat(row);
+});
+
+questionBoxes.map((i,v) => {
+    if(checkStatus[i] == 1 && !v.checked) jQuery(v).click();
+});
+```
+**Esempio domanda a 6 colonne e 3 righe**
+
+```javascript
+var questionBoxes = jQuery("#IDDOMANDA input");
+
+var userChoices = [
+    "${e://Field/Q6.26_1}",
+    "${e://Field/Q6.26_2}",
+    "${e://Field/Q6.26_3}",
+];
+
+var firstOption = "Risposta uno";
+var secondOption = "Risposta due";
+var thirdOption = "Risposta tre";
+var fourthOption = "Risposta quattro";
+var fifthOption = "Risposta cinque";
+var sixthOption = "Risposta sei";
+
+var checkStatus = [];
+
+userChoices.map(entry => {
+    var row = [];
+    if(entry.includes(firstOption)) row[0] = 1; else row[0] = 0;
+    if(entry.includes(secondOption)) row[1] = 1; else row[1] = 0;
+    if(entry.includes(thirdOption)) row[2] = 1; else row[2] = 0;
+    if(entry.includes(fourthOption)) row[3] = 1; else row[3] = 0;
+    if(entry.includes(fifthOption)) row[4] = 1; else row[4] = 0;
+    if(entry.includes(sixthOption)) row[5] = 1; else row[5] = 0;
+    checkStatus = checkStatus.concat(row);
 });
 
 questionBoxes.map((i,v) => {
