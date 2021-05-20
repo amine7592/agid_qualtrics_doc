@@ -3224,3 +3224,153 @@ questionBoxes.map((i,v) => {
     if(checkStatus[i] == 1 && !v.checked) jQuery(v).click();
 });
 ```
+
+### Import date sezione D - D02A
+In onReady della domanda.
+```javascript
+
+var userChoices = [
+    "${e://Field/1_Q11.4}",
+    "${e://Field/2_Q11.4}", 
+    "${e://Field/3_Q11.4}", 
+    "${e://Field/4_Q11.4}", 
+    "${e://Field/5_Q11.4}", 
+    "${e://Field/6_Q11.4}", 
+    "${e://Field/7_Q11.4}", 
+    "${e://Field/8_Q11.4}", 
+    "${e://Field/9_Q11.4}", 
+    "${e://Field/10_Q11.4}", 
+    "${e://Field/11_Q11.4}", 
+    "${e://Field/12_Q11.4}", 
+    "${e://Field/13_Q11.4}", 
+    "${e://Field/14_Q11.4}", 
+    "${e://Field/15_Q11.4}", 
+    "${e://Field/16_Q11.4}", 
+    "${e://Field/17_Q11.4}", 
+    "${e://Field/18_Q11.4}", 
+    "${e://Field/19_Q11.4}", 
+    "${e://Field/20_Q11.4}", 
+    "${e://Field/21_Q11.4}", 
+    "${e://Field/22_Q11.4}", 
+    "${e://Field/23_Q11.4}", 
+    "${e://Field/24_Q11.4}", 
+    "${e://Field/25_Q11.4}", 
+    "${e://Field/26_Q11.4}", 
+    "${e://Field/27_Q11.4}", 
+    "${e://Field/28_Q11.4}", 
+    "${e://Field/29_Q11.4}", 
+    "${e://Field/30_Q11.4}", 
+    "${e://Field/31_Q11.4}", 
+    "${e://Field/32_Q11.4}", 
+    "${e://Field/33_Q11.4}", 
+    "${e://Field/34_Q11.4}", 
+    "${e://Field/35_Q11.4}", 
+    "${e://Field/36_Q11.4}", 
+    "${e://Field/37_Q11.4}", 
+    "${e://Field/38_Q11.4}", 
+    "${e://Field/39_Q11.4}", 
+    "${e://Field/40_Q11.4}", 
+    "${e://Field/41_Q11.4}", 
+    "${e://Field/42_Q11.4}", 
+    "${e://Field/43_Q11.4}", 
+    "${e://Field/44_Q11.4}", 
+    "${e://Field/45_Q11.4}", 
+    "${e://Field/46_Q11.4}", 
+    "${e://Field/47_Q11.4}", 
+    "${e://Field/48_Q11.4}", 
+    "${e://Field/49_Q11.4}", 
+    "${e://Field/50_Q11.4}"
+];
+
+var firstDate = "_QID136";
+var ids =  [];
+
+jQuery('div[questionId]').each(function(a,b,c){
+    ids.push(jQuery(this).attr("questionId"));
+}); 
+
+ids.map(v => {
+    if(v.includes(firstDate)) firstDate = v;
+});
+
+var answerIndex = 0;
+if(firstDate[1] == "_") answerIndex = parseInt(firstDate[1]) -1 ;
+else answerIndex = parseInt(firstDate[0] + firstDate[1]) -1 ;
+
+jQuery("#" + firstDate).val(userChoices[answerIndex]);
+```
+
+### D02B
+
+In onReady
+```javascript
+var userChoices = [
+    "${e://Field/1_Q11.5}",
+    "${e://Field/2_Q11.5}", 
+    "${e://Field/3_Q11.5}", 
+    "${e://Field/4_Q11.5}", 
+    "${e://Field/5_Q11.5}", 
+    "${e://Field/6_Q11.5}", 
+    "${e://Field/7_Q11.5}", 
+    "${e://Field/8_Q11.5}", 
+    "${e://Field/9_Q11.5}", 
+    "${e://Field/10_Q11.5}", 
+    "${e://Field/11_Q11.5}", 
+    "${e://Field/12_Q11.5}", 
+    "${e://Field/13_Q11.5}", 
+    "${e://Field/14_Q11.5}", 
+    "${e://Field/15_Q11.5}", 
+    "${e://Field/16_Q11.5}", 
+    "${e://Field/17_Q11.5}", 
+    "${e://Field/18_Q11.5}", 
+    "${e://Field/19_Q11.5}", 
+    "${e://Field/20_Q11.5}", 
+    "${e://Field/21_Q11.5}", 
+    "${e://Field/22_Q11.5}", 
+    "${e://Field/23_Q11.5}", 
+    "${e://Field/24_Q11.5}", 
+    "${e://Field/25_Q11.5}", 
+    "${e://Field/26_Q11.5}", 
+    "${e://Field/27_Q11.5}", 
+    "${e://Field/28_Q11.5}", 
+    "${e://Field/29_Q11.5}", 
+    "${e://Field/30_Q11.5}", 
+    "${e://Field/31_Q11.5}", 
+    "${e://Field/32_Q11.5}", 
+    "${e://Field/33_Q11.5}", 
+    "${e://Field/34_Q11.5}", 
+    "${e://Field/35_Q11.5}", 
+    "${e://Field/36_Q11.5}", 
+    "${e://Field/37_Q11.5}", 
+    "${e://Field/38_Q11.5}", 
+    "${e://Field/39_Q11.5}", 
+    "${e://Field/40_Q11.5}", 
+    "${e://Field/41_Q11.5}", 
+    "${e://Field/42_Q11.5}", 
+    "${e://Field/43_Q11.5}", 
+    "${e://Field/44_Q11.5}", 
+    "${e://Field/45_Q11.5}", 
+    "${e://Field/46_Q11.5}", 
+    "${e://Field/47_Q11.5}", 
+    "${e://Field/48_Q11.5}", 
+    "${e://Field/49_Q11.5}", 
+    "${e://Field/50_Q11.5}"
+];
+
+var secondDate = "_QID137";
+var ids =  [];
+
+jQuery('div[questionId]').each(function(a,b,c){
+    ids.push(jQuery(this).attr("questionId"));
+}); 
+
+ids.map(v => {
+    if(v.includes(secondDate)) secondDate = v;
+});
+
+var answerIndex = 0;
+if(secondDate[1] == "_") answerIndex = parseInt(secondDate[1]) -1 ;
+else answerIndex = parseInt(secondDate[0] + secondDate[1]) -1 ;
+
+jQuery("#" + secondDate).val(userChoices[answerIndex]);
+```
