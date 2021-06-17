@@ -3374,3 +3374,56 @@ else answerIndex = parseInt(secondDate[0] + secondDate[1]) -1 ;
 
 jQuery("#" + secondDate).val(userChoices[answerIndex]);
 ```
+
+
+
+### AGGIORNAMENTO 17/06 - Timestamp download del template
+Rispetto alla versione precedente cambia il corpo della funzione answer che si occupa di settare un timestamp nel campo della domanda nascosta:
+
+
+Nell'onReady della domanda da nascondere
+```javascript
+jQuery("#QID402").hide();
+
+```
+OnReady di ogni blocco in cui c'è il link di download
+Domanda per **Regione**
+```javascript
+var link = jQuery("#QID405 a")[2]
+function answer(e){
+   var timestamp = "Template scaricato il " + new Date().toLocaleString()
+    jQuery("#QID402 input").val(" " + jQuery("#QID402 input").val() + " " + timestamp).trigger("keyup")
+}
+link.on('click', answer);
+
+```
+
+Domanda per **Città Metropolitana**
+```javascript
+var link = jQuery("#QID403 a")[2]
+function answer(e){
+    var timestamp = "Template scaricato il " + new Date().toLocaleString()
+    jQuery("#QID402 input").val(" " + jQuery("#QID402 input").val() + " " + timestamp).trigger("keyup")
+}
+link.on('click', answer);
+```
+
+Domanda per **Comune**
+```javascript
+var link = jQuery("#QID404 a")[2]
+function answer(e){
+    var timestamp = "Template scaricato il " + new Date().toLocaleString()
+    jQuery("#QID402 input").val(" " + jQuery("#QID402 input").val() + " " + timestamp).trigger("keyup")
+}
+link.on('click', answer);
+```
+
+Domanda per **PAC**
+```javascript
+var link = jQuery("#QID2 a")[2]
+function answer(e){
+    var timestamp = "Template scaricato il " + new Date().toLocaleString()
+    jQuery("#QID402 input").val(" " + jQuery("#QID402 input").val() + " " + timestamp).trigger("keyup")
+}
+link.on('click', answer);
+```
