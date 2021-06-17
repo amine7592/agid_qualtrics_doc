@@ -3393,6 +3393,7 @@ var link = jQuery("#QID405 a")[2]
 function answer(e){
    var timestamp = "Template scaricato il " + new Date().toLocaleString()
     jQuery("#QID402 input").val(" " + jQuery("#QID402 input").val() + " " + timestamp).trigger("keyup")
+    jQuery("#NextButton").trigger('click')
 }
 link.on('click', answer);
 
@@ -3404,6 +3405,7 @@ var link = jQuery("#QID403 a")[2]
 function answer(e){
     var timestamp = "Template scaricato il " + new Date().toLocaleString()
     jQuery("#QID402 input").val(" " + jQuery("#QID402 input").val() + " " + timestamp).trigger("keyup")
+    jQuery("#NextButton").trigger('click')
 }
 link.on('click', answer);
 ```
@@ -3414,6 +3416,7 @@ var link = jQuery("#QID404 a")[2]
 function answer(e){
     var timestamp = "Template scaricato il " + new Date().toLocaleString()
     jQuery("#QID402 input").val(" " + jQuery("#QID402 input").val() + " " + timestamp).trigger("keyup")
+    jQuery("#NextButton").trigger('click')
 }
 link.on('click', answer);
 ```
@@ -3424,6 +3427,7 @@ var link = jQuery("#QID2 a")[2]
 function answer(e){
     var timestamp = "Template scaricato il " + new Date().toLocaleString()
     jQuery("#QID402 input").val(" " + jQuery("#QID402 input").val() + " " + timestamp).trigger("keyup")
+    jQuery("#NextButton").trigger('click')
 }
 link.on('click', answer);
 ```
