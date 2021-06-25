@@ -3431,3 +3431,11 @@ function answer(e){
 }
 link.on('click', answer);
 ```
+
+### Aggiornamento 25/06 - avviso browser non supportati
+
+Aggiungere nell'onReady di "I tuoi dati" nella sezione di benvenuto:
+```javascript	
+var UA = navigator.userAgent;
+    if(!UA.includes("Chrome")) window.alert("Il browser in uso non è pienamente compatibile con il software del questionario. Si prega di utilizzare Google Chrome")
+```
