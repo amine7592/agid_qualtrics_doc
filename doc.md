@@ -3439,3 +3439,109 @@ Aggiungere nell'onReady di "I tuoi dati" nella sezione di benvenuto:
 var UA = navigator.userAgent;
     if(!UA.includes("Chrome")) window.alert("Il browser in uso non è pienamente compatibile con il software del questionario. Si prega di utilizzare Google Chrome")
 ```
+
+### Codice sezione D
+
+Questo è il codice integrale da inserire in testa alla sezione D (q10.1 Classificazione spesa ict per progetti), va eliminato invece tutto il codice custom della domanda d00
+### onLoad:
+```javascript
+jQuery('#Plug').attr('style', 'display:none !important'); 
+jQuery("#Plug a").attr("href", "javascript:void(0)");
+	
+var sideBar = jQuery("#Toc ul li");
+    sideBar.map((index, entry) => {
+        if(index == sideBar.length -1 || index == sideBar.length -2 || index == sideBar.length -3){
+            jQuery(entry).hide()
+        }
+    })
+	
+	
+	
+var body = jQuery("#SurveyEngineBody");
+body.prepend('<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>');
+	
+	localStorage.setItem('amount', '0')
+```
+### OnReady: 
+```javascript
+
+	var element, name, arr;
+  element = document.getElementById("TocSidebarContainer");
+  name = "closed"; 
+  arr = element.className.split(" ");
+  if (arr.indexOf(name) == -1) {
+    element.className += " " + name;
+  }  
+   element.style.display="block"
+   element.style.left= "-380px";
+
+	
+	
+	
+var observer = new MutationObserver(function() {
+    
+    const div = document.querySelector("#Page > div > div.PageErrorDialog.TOC");
+    if (div) {
+        div.style.display = "none";
+        jQuery("#Page > div > div.PageErrorDialog.TOC > div.ErrorButtons > button:nth-child(1)").trigger('click');
+        observer.disconnect();
+        observer = null;
+    }
+});
+observer.observe(document.querySelector("#Page"), {
+    childList: true,
+    subtree: true
+});
+		
+var observer = new MutationObserver(function() {
+    const div = document.querySelector("#NextButton");
+        if(div) {
+            div.style.display = "none";
+        };
+    });
+    observer.observe(document.querySelector("#Page"), {
+        childList: true,
+        subtree: true
+    });
+
+var fakeNext = "<input id='fakeNext' class='JumpButton Button' style= '-webkit-text-size-adjust: 100%;-webkit-tap-highlight-color: rgba(0,0,0,0); direction: inherit; box-sizing: border-box; font-family: sans-serif; border: none; color: #fff; padding: 8px 20px; cursor: pointer; margin: 10; text-align: center; text-decoration: none; -webkit-appearance: none; transition: background .3s; background-color: #0059b3; font-size: 1.125rem; border-radius: 0px;'  title='XLSX button' value='SALVA E PROCEDI' type='button' align='center'></input>";
+jQuery('#Buttons').prepend(fakeNext);
+var array = [];
+
+	function setLocalAmount(e){
+		var amount = parseInt(jQuery("#QID132 input").val())
+        if(isNaN(amount)) amount = 0; 
+        localStorage.setItem('amount', amount);
+		localStoring();
+    };
+
+    function localStoring(){
+        console.log('starting localStoring clicking on fakenext');
+        var amount = localStorage.getItem('amount');
+        if(amount == '0'){
+            array.push(['D00: Numero di progetti che si desidera descrivere'], ['0'], [])
+            localStorage.setItem('sezioned', JSON.stringify(array));
+        }; 
+        jQuery("#NextButton").trigger('click'); 
+    };
+jQuery('#fakeNext').on('click', setLocalAmount);	
+```
+### onUnload
+```javascript
+	var observer = new MutationObserver(function() {
+    const toc = document.querySelector("#TOCPage");
+        if(toc) {
+            var links = jQuery("#TOCPage li")
+
+		links.map((index, entry) => {
+			if(index == links.length -1 || index == links.length -2 || index == links.length -3){
+				jQuery(entry).hide()
+			}
+    })
+        };
+    });
+    observer.observe(document.querySelector("#Page"), {
+        childList: true,
+        subtree: true
+    });
+```
