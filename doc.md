@@ -3545,3 +3545,53 @@ jQuery('#fakeNext').on('click', setLocalAmount);
         subtree: true
     });
 ```
+
+## Aggiornamento 28/07
+
+### Colore box domanda di verifica
+Nell'onReady della domanda
+```javascript
+
+    jQuery("#QID409 input").attr("style", "background-color: lightblue")
+
+```
+*lightblue* può essere sostituito con altro (es: black, red, teal etc) o anche con codici esadecimali,rgb ed rgba.
+
+### Popup con messaggio personalizzato premendo indietro
+
+Eliminare da ogni testa di  domanda il codice per nascondere il popup standard che segue:
+
+```javascript
+var observer = new MutationObserver(function() {
+    
+    const div = document.querySelector("#Page > div > div.PageErrorDialog.TOC");
+    if (div) {
+        div.style.display = "none";
+        jQuery("#Page > div > div.PageErrorDialog.TOC > div.ErrorButtons > button:nth-child(1)").trigger('click');
+        observer.disconnect();
+        observer = null;
+    }
+});
+observer.observe(document.querySelector("#Page"), {
+    childList: true,
+    subtree: true
+});
+
+```
+e sostituirlo con questo 
+```javascript
+var observer = new MutationObserver(function() {
+    
+    const div = document.querySelector("#Page > div > div.PageErrorDialog.TOC");
+    if (div) {
+        div.style.display = "none";
+        window.alert("custom message"); //messaggio del popup
+		 jQuery("#Page > div > div.PageErrorDialog.TOC > div.ErrorButtons > button:nth-child(1)").trigger('click');
+    }
+});
+observer.observe(document.querySelector("#Page"), {
+    childList: true,
+    subtree: true
+});
+```
+Il messaggio visualizzato "custom message" può essere sostituito con testo a piacere, qualora nel testo siano presenti delle virgolette va racchiuso tra due apostrofi (es: **'testo con "delle" virgolette'**), il contrario se dovesse includere apostrofi (es: **"testo con l'apostrofo"**)
