@@ -3595,3 +3595,12 @@ observer.observe(document.querySelector("#Page"), {
 });
 ```
 Il messaggio visualizzato "custom message" può essere sostituito con testo a piacere, qualora nel testo siano presenti delle virgolette va racchiuso tra due apostrofi (es: **'testo con "delle" virgolette'**), il contrario se dovesse includere apostrofi (es: **"testo con l'apostrofo"**)
+
+
+
+### Inserimento testo in domanda di prova per internet explorer
+
+Nell'onReady della domanda di prova
+```javascript
+jQuery("#QID409 input").val("testo personalizzato")});
+```
