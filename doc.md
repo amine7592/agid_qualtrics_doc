@@ -3604,3 +3604,11 @@ Nell'onReady della domanda di prova
 ```javascript
 jQuery("#QID409 input").val("testo personalizzato")});
 ```
+
+### Inserimento banner in domanda di prova per internet explorer
+
+Nell'onReady della domanda di prova
+```javascript
+const warningDiv = "<div style='background-color: lightblue; text-align: center'> Testo Personalizzato </div>"
+jQuery("#QID409").append(warningDiv)
+```
